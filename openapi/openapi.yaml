@@ -14,12 +14,8 @@ info:
   description:
     $ref: ./info-description.md
 tags:
-  - name: Echo
-    description: Example echo operations.
-  - name: User
-    description: Operations about users.
-  - name: Tag
-    description: This is a tag description.
+  - name: OrderCreateRequest
+    description: Creating new order.
 servers:
   - url: 'https://{tenant}/api/v1'
     variables:
@@ -28,14 +24,8 @@ servers:
         description: Your tenant id
   - url: 'https://example.com/api/v1'
 paths:
-  '/users/{username}':
-    $ref: 'paths/users_{username}.yaml'
-  /echo:
-    $ref: paths/echo.yaml
-  /pathItem:
-    $ref: paths/path-item.yaml
-  /pathItemWithExamples:
-    $ref: paths/path-item-with-examples.yaml
+  '/orders':
+    $ref: paths\orderCreateRequest.yaml
 components:
   securitySchemes:
     main_auth:
