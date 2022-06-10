@@ -1,0 +1,30 @@
+type: array
+description: Section containing data of the ordered products. Section products is an array of objects of type product.
+required: 
+  -  name, unitPrice, quantity
+items:
+  type: object
+  properties: 
+    name: 
+      type: string
+      description: Name of the product
+      example: Wireless Mouse for Laptop
+    unitPrice:
+      type: string
+      description: Unit price
+      example: "15000"
+    quantity:
+      type: string
+      description: Quantity
+      example: "1"
+    virtual:
+      type: boolean
+      enum: 
+        - true
+        - false
+      description: Product type, which can be virtual or material.
+      example: true
+    listingDate:
+      type: string
+      description: Marketplace date from which the product (or offer) is available, ISO format applies.
+      example: "2019-03-27T10:57:59.000+01:00"

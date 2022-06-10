@@ -1,18 +1,17 @@
-post:
   tags:
-    - OrderCreateRequest
+  - Order
   summary: Creating new order.
-  description: Creating new order
+  description: OrderCreateRequest
   operationId: orderCreateRequest
   security:
     - api_key: []
-    - basic_auth: []
+  parameters:
+    $ref: ../components/headers/ReqHeaders.yaml
   requestBody:
     content:
       application/json:
         schema:
           type: object
-          title: Scalar
           required:
             - customerIp
             - merchantPosId
@@ -96,124 +95,9 @@ post:
               examples:
                 - www.example.com/path
             buyer:
-              type: object
-              description: Section containing buyer data.
-              properties:
-                customerId:
-                  type: string
-                  description: ID of the customer used in merchant system
-                email:
-                  type: string
-                  description: Buyer's email address.
-                  example: email@email.com
-                phone:
-                  type: string
-                  description: Buyer's telephone number. Please use +[country code] [number] format.
-                  example: +48 225108001
-                firstName:
-                  type: string
-                  description: Buyer's first name.
-                  example: John
-                lastName:
-                  type: string
-                  description: Buyer's last name
-                  example: Doe
-                nin:
-                  type: string
-                  description: National Identification Number
-                language:
-                  type: string
-                  description: Language code, ISO-639-1 compliant. Denotes the language version of PayU hosted payment page and of e-mail messages sent from PayU to the payer.
-                  example: pl
-                  enum:
-                    - pl
-                    - en
-                    - cs
-                    - bg
-                    - da
-                    - de
-                    - el
-                    - es
-                    - et
-                    - fi
-                    - fr
-                    - hr
-                    - hu
-                    - it
-                    - lt
-                    - lv
-                    - nl
-                    - pt
-                    - ro
-                    - ru
-                    - sk
-                    - sl
-                    - sr
-                    - sv
-                    - tr
-                    - uk
-                delivery:
-                  type: object
-                  description: Section containing delivery address. For a list of parameters, see section delivery
-                  properties:
-                    street:
-                      type: string
-                      description: Full street address, incl. apartment number.
-                    postalBox:
-                      type: string
-                      description: Postal box
-                    postalCode:
-                      type: string
-                      description: Postal code
-                    city:
-                      type: string
-                      description: city
-                    state:
-                      type: string
-                      description: Country principal subdivision like "state" or "province". If provided, must be a valid ISO 3166-2 code (e.g. "UT" for Utah in the USA or "30" for "Wielkopolskie" in Poland).
-                      example: "30"
-                    countryCode:
-                      type: string
-                      description: Two-letter country code compliant with ISO-3166.
-                    name: 
-                      type: string
-                      description: Address description
-                    recipientName:
-                      type: string
-                      description: Recipient name
-                    recipientEmail:
-                      type: string
-                      description: Ecipient email
-                    recipientPhone:
-                      type: string
-                      description: Recipient phone number
+              $ref: ..\components\objects\Buyer.yaml
             products:
-              type: array
-              description: Section containing data of the ordered products. Section products is an array of objects of type product.
-              required: 
-                -  name, unitPrice, quantity
-              items:
-                type: object
-                properties: 
-                  name: 
-                    type: string
-                    description: Name of the product
-                  unitPrice:
-                    type: string
-                    description: Unit price
-                  quantity:
-                    type: string
-                    description: Quantity
-                  virtual:
-                    type: boolean
-                    enum: 
-                      - true
-                      - false
-                    description: Product type, which can be virtual or material.
-                    example: true
-                  listingDate:
-                    type: string
-                    description: Marketplace date from which the product (or offer) is available, ISO format applies, e.g. "2019-03-27T10:57:59.000+01:00".
+              $ref: ..\components\arrays\Products.yaml
             payMethods:
               type: object
               description: Section containing data of the ordered products. Section products is an array of objects of type product.
@@ -429,15 +313,6 @@ post:
                         hasSuccessfullyFinishedOrderInShop:
                           type: string
                           description: nformation whether there were previous, successfully completed orders for applicant.
-
-
-
-
-
-
-
-
-
     description: Parameters for OrderCreateRequest
     required: true
   responses:
@@ -450,9 +325,10 @@ post:
             properties: 
               status:
                 type: object
-                properties: 
+                properties:
                   statusCode:
                     type: string
+                    description: Response code
                     example: SUCCESS
               redirectUri:
                 type: string
@@ -464,7 +340,7 @@ post:
                 type: string
                 example: "{YOUR_EXT_ORDER_ID}"
     '201':
-      description: OK
+      description: Created
       content:
         application/json:
           schema:
@@ -486,37 +362,23 @@ post:
                 type: string
                 example: "{YOUR_EXT_ORDER_ID}"
     '302':
-      description: CREATED
+      description: Found
       content:
         application/json:
           schema:
-            oneOf: 
-              - type: object
+            type: object
+            properties: 
+              status:
+                type: object
                 properties: 
-                  status:
-                    type: object
-                    properties: 
-                      statusCode:
-                        type: string
-                  redirectUri:
+                  statusCode:
                     type: string
-                  orderId:
-                    type: string
-                  extOrderId:
-                    type: string
-              - type: object
-                properties: 
-                  status:
-                    type: object
-                    properties: 
-                      statusCode:
-                        type: string
-                  redirectUri:
-                    type: string
-                  orderId:
-                    type: string
-                  extOrderId:
-                    type: string
+              redirectUri:
+                type: string
+              orderId:
+                type: string
+              extOrderId:
+                type: string
           examples: 
             success:
               summary: SUCCESS
@@ -534,4 +396,24 @@ post:
                 extOrderId: "{YOUR_EXT_ORDER_ID}"
             
     '400':
-      $ref: ../components/responses/Problem.yaml
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties: 
+              status:
+                type: object
+                properties: 
+                  statusCode:
+                    type: string
+          examples: 
+            error_syntax:
+              summary: ERROR_SYNTAX
+              value: 
+                status: ERROR_SYNTAX
+            error_value_invalid:
+              summary: ERROR_VALUE_INVALID
+              value: 
+                status: ERROR_VALUE_INVALID
+  

@@ -1,7 +1,13 @@
 type: oauth2
-flows:
+flows: 
   implicit:
-    authorizationUrl: 'http://example.com/api/oauth/dialog'
+    authorizationUrl: https://example.com/api/oauth/dialog
     scopes:
-      'read:users': read users info
-      'write:users': modify or remove users
+      write:pets: modify pets in your account
+      read:pets: read your pets
+  authorizationCode:
+    authorizationUrl: https://example.com/api/oauth/dialog
+    tokenUrl: https://example.com/api/oauth/token
+    scopes:
+      write:pets: modify pets in your account
+      read:pets: read your pets 

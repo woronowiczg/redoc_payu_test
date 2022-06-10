@@ -1,0 +1,825 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Example.com
+  termsOfService: https://example.com/terms/
+  contact:
+    email: contact@example.com
+    url: http://example.com/contact
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  x-logo:
+    url: https://redocly.github.io/openapi-template/logo.png
+  description: "This is an **example** API to demonstrate features of the OpenAPI specification.\r\n\r\n# Introduction\r\n\r\nThis API definition is intended to to be a good starting point for\r\ndescribing your API in \r\n\r\n[OpenAPI/Swagger\r\nformat](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md).\r\n\r\nIt also demonstrates features of the\r\n[create-openapi-repo](https://github.com/Redocly/create-openapi-repo) tool\r\nand \r\n\r\nthe [Redoc](https://github.com/Redocly/Redoc) documentation engine. Beyond\r\nthe standard OpenAPI syntax, we use a few \r\n\r\n[vendor\r\nextensions](https://github.com/Redocly/Redoc/blob/master/docs/redoc-vendor-extensions.md).\r\n\r\n\r\n# OpenAPI Specification\r\n\r\nThe goal of The OpenAPI Specification is to define a standard,\r\nlanguage-agnostic interface to REST APIs which\r\n\r\nallows both humans and computers to discover and understand the capabilities\r\nof the service without access to source\r\n\r\ncode, documentation, or through network traffic inspection. When properly\r\ndefined via OpenAPI, a consumer can \r\n\r\nunderstand and interact with the remote service with a minimal amount of\r\nimplementation logic. Similar to what\r\n\r\ninterfaces have done for lower-level programming, OpenAPI removes the\r\nguesswork in calling the service.\r\n"
+servers:
+  - url: https://secure.payu.com/api/v2_1
+    description: Production Server
+  - url: https://secure.snd.payu.com/api/v2_1
+    description: Sandbox Test Server
+paths:
+  /orders:
+    post:
+      tags:
+        - Order
+      summary: Creating new order.
+      description: OrderCreateRequest
+      operationId: orderCreateRequest
+      security:
+        - api_key: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - customerIp
+                - merchantPosId
+                - description
+                - currencyCode
+                - totalAmount
+                - products
+              properties:
+                extOrderId:
+                  type: string
+                  description: >-
+                    ID of an order used in merchant system. Order identifier
+                    assigned by the merchant. It enables merchants to find a
+                    specific order in their system. This value must be unique
+                    within a single POS.
+                  examples:
+                    - extOrderId
+                notifyUrl:
+                  type: string
+                  description: The address for sending notifications
+                  examples:
+                    - www.notify.com
+                customerIp:
+                  type: string
+                  description: >-
+                    Payer’s IP address, e.g. 123.123.123.123. Note: 0.0.0.0 is
+                    not accepted.
+                  examples:
+                    - 127.0.0.1
+                merchantPosId:
+                  type: string
+                  description: Point of sale ID.
+                  examples:
+                    - '140332'
+                validityTime:
+                  type: string
+                  description: >-
+                    Duration for the validity of an order (in seconds), during
+                    which time payment must be made. Default value 86400.
+                  example: '100000'
+                description:
+                  type: string
+                  description: Description of the an order.
+                  examples:
+                    - description
+                additionalDescription:
+                  type: string
+                  description: Additional description of the order.
+                  examples:
+                    - Additional description.
+                visibleDescription:
+                  type: string
+                  maxLength: 80
+                  description: ext visible on the PayU payment page (max. 80 chars).
+                  examples:
+                    - Visible description.
+                statementDescription:
+                  type: string
+                  maxLength: 22
+                  description: >-
+                    Payment recipient name followed by payment description
+                    (order ID, ticket number etc) visible on card statement. The
+                    name should be easy to recognize by the cardholder. If field
+                    is not provided, static name configured by PayU will be
+                    used.
+                  examples:
+                    - shop.com
+                    - '124343'
+                currencyCode:
+                  type: string
+                  description: Currency code compliant with ISO 4217 (e.g EUR).
+                  examples:
+                    - EUR
+                totalAmount:
+                  type: string
+                  description: >-
+                    Total price of the order in pennies (e.g. 1000 is 10.00
+                    EUR). Applies also to currencies without subunits (e.g. 1000
+                    is 10 HUF).
+                  example: '1000'
+                cardOnFile:
+                  type: string
+                  description: description cardOnFile
+                  enum:
+                    - FIRST
+                    - STANDARD_CARDHOLDER
+                    - STANDARD_MERCHANT
+                recurring:
+                  type: string
+                  description: description recurring
+                  enum:
+                    - FIRST
+                    - STANDARD
+                continueUrl:
+                  type: string
+                  description: >-
+                    Address for redirecting the customer after payment is
+                    commenced.
+                  examples:
+                    - www.example.com/path
+                buyer:
+                  $ref: '#/components/schemas/Buyer'
+                products:
+                  $ref: '#/components/schemas/Products'
+                payMethods:
+                  type: object
+                  description: >-
+                    Section containing data of the ordered products. Section
+                    products is an array of objects of type product.
+                  properties:
+                    payMethod:
+                      type: object
+                      required:
+                        - type
+                        - value
+                      properties:
+                        type:
+                          type: string
+                          description: Payment method type.
+                          enum:
+                            - PBL
+                            - CARD_TOKEN
+                            - PAYMENT_WALL
+                        value:
+                          type: string
+                          description: Payment type for PBL, CARD_TOKEN.
+                          example: c
+                        authorizationCode:
+                          type: string
+                          description: >-
+                            Optional, usage differs depending on payment method.
+                            For BLIK integrated transparently: enables to
+                            collect 6-digit BLIK code on your website instead of
+                            redirecting to BLIK.
+                          example: '777123'
+                mcpData:
+                  type: object
+                  description: >-
+                    Section allows to pass currency conversion details if you
+                    chose to use Multi-Currency Pricing.
+                  required:
+                    - mcpCurrency
+                    - mcpAmount
+                    - mcpRate
+                    - mcpFxTableId
+                    - mcpPartnerId
+                  properties:
+                    mcpCurrency:
+                      type: string
+                      description: termCurrency from the rate table.
+                    mcpAmount:
+                      type: string
+                      description: baseCurrency amount converted to termCurrency.
+                    mcpRate:
+                      type: string
+                      description: Applied conversion rate.
+                    mcpFxTableId:
+                      type: string
+                      description: Applied FX rate table id.
+                    mcpPartnerId:
+                      type: string
+                      description: Id provided by PayU.
+                threeDsAuthentication:
+                  type: object
+                  description: >-
+                    Contains optional fields required by 3DS 2 authentication
+                    protocol.
+                  required:
+                    - sdk
+                  properties:
+                    challangeRequested:
+                      type: string
+                      description: >-
+                        Merchant's preference regarding 3DS 2 challenge.
+                        Exclusive with exemption. Maybe overridden by PayU
+                      enum:
+                        - 'YES'
+                        - 'NO'
+                        - MANDATE
+                    exemption:
+                      type: object
+                      required:
+                        - value
+                        - rejectionHandling
+                      description: >-
+                        Merchant's preference regarding SCA exemption to be used
+                        to exempt card payment from 3DS authentication.
+                        Exclusive with challengeRequested. Requires additional
+                        configuration to be enabled
+                      properties:
+                        value:
+                          type: string
+                          description: >-
+                            Either LOW_RISK (also known as TRA - transaction
+                            risk analysis compliant with SCA requirements has
+                            been performed by the merchant) or LOW_VALUE (low
+                            value payment, up to 30 EUR or equivalent in other
+                            currency).
+                          enum:
+                            - LOW_RISK
+                            - LOW_VALUE
+                        rejectionHandling:
+                          type: string
+                          description: >-
+                            Either PERFORM_AUTHENTICATION (PayU will return
+                            response with WARNING_CONTINUE_3DS and redirection
+                            URL code if exemption cannot be applied) or DECLINE
+                            (PayU will decline the payment if exemption cannot
+                            be applied - error message will be returned
+                            synchronously in OrderCreateResponse)
+                          enum:
+                            - PERFORM_AUTHENTICATION
+                            - DECLINE
+                        riskScore:
+                          type: string
+                          maxLength: 128
+                          description: >-
+                            Risk score assigned by merchant's antifraud tool.
+                            For informative purposes only.
+                credit:
+                  type: object
+                  description: >-
+                    Section containing credit data. This information is not
+                    required, but it is strongly recommended to include it.
+                    Otherwise the buyer will be prompted to provide missing data
+                    on provider page when payment by Installments or Pay later.
+                  properties:
+                    shoppingCarts:
+                      type: array
+                      description: >-
+                        Section containing data of the ordered products. Section
+                        <credit.shoppingCarts> is an array of objects of type
+                        shoppingCart.
+                      items:
+                        type: object
+                        properties:
+                          shippingMethod:
+                            type: object
+                            description: >-
+                              Section containing data of shipping method.
+                              Section <shippingMethod> is a single object of
+                              type shippingMethod.
+                            properties:
+                              type:
+                                type: string
+                                description: Type of shipment
+                                enum:
+                                  - COURIER
+                                  - COLLECTION_POINT_PICKUP
+                                  - PARCEL_LOCKER
+                                  - STORE_PICKUP
+                              price:
+                                type: string
+                                description: Shipping cost
+                              address:
+                                type: object
+                                description: >-
+                                  Section containing data about shipping
+                                  address. Section <shippingMethod.address> is a
+                                  single object of type address
+                                properties:
+                                  pointId:
+                                    type: string
+                                    description: >-
+                                      The full name of the pickup point,
+                                      including its unique identifier.
+                                    example: Parcel locker POZ29A
+                                  street:
+                                    type: string
+                                    description: >-
+                                      Street name, possibly including house and
+                                      flat number.
+                                  streetNo:
+                                    type: string
+                                    description: Street number
+                                  flatNo:
+                                    type: string
+                                    description: Flat number
+                                  postalCode:
+                                    type: string
+                                    description: Postal Code
+                                  city:
+                                    type: string
+                                    description: City
+                                  countryCode:
+                                    type: string
+                                    description: >-
+                                      Two-letter country code compliant with
+                                      ISO-3166.
+                          products:
+                            type: array
+                            description: >-
+                              Section containing data about ordered products.
+                              Section <products> is an array of objects of type
+                              product.
+                            required:
+                              - name, unitPrice, quantity
+                            items:
+                              type: object
+                              properties:
+                                name:
+                                  type: string
+                                  description: Name of the product
+                                unitPrice:
+                                  type: string
+                                  description: Unit price
+                                quantity:
+                                  type: string
+                                  description: Quantity
+                                virtual:
+                                  type: boolean
+                                  enum:
+                                    - true
+                                    - false
+                                  description: >-
+                                    Product type, which can be virtual or
+                                    material.
+                                  example: true
+                          extCustomerId:
+                            type: string
+                            description: >-
+                              Submerchant identifier. This field should be
+                              consistent with field extCustomerId in
+                              shoppingCarts section when order is placed in
+                              marketplace.
+                    applicant:
+                      type: object
+                      description: Section containing data of person applying for a credit.
+                      properties:
+                        email:
+                          type: string
+                          description: Applicant’s email address
+                        phone:
+                          type: string
+                          description: Applicant’s phone number
+                        firstName:
+                          type: string
+                          description: Applicant’s first name
+                        lastName:
+                          type: string
+                          description: Applicant’s last name
+                        language:
+                          type: string
+                          description: >-
+                            Language code, ISO-639-1 compliant. Denotes the
+                            language version of PayU hosted payment page and of
+                            e-mail messages sent from PayU to the payer.
+                        nin:
+                          type: string
+                          description: National Identification Number
+                        address:
+                          type: object
+                          description: Section containing data about applicant’s address.
+                          properties:
+                            street:
+                              type: string
+                              description: >-
+                                Street name, possibly including house and flat
+                                number.
+                            streetNo:
+                              type: string
+                              description: Street number
+                            flatNo:
+                              type: string
+                              description: Flat number
+                            postalCode:
+                              type: string
+                              description: Postal Code
+                            city:
+                              type: string
+                              description: City
+                            countryCode:
+                              type: string
+                              description: Two-letter country code compliant with ISO-3166.
+                        additionalInfo:
+                          type: object
+                          description: >-
+                            Additional information about person applying for
+                            credit.
+                          properties:
+                            hasSuccessfullyFinishedOrderInShop:
+                              type: string
+                              description: >-
+                                nformation whether there were previous,
+                                successfully completed orders for applicant.
+        description: Parameters for OrderCreateRequest
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+                        description: Response code
+                        example: SUCCESS
+                  redirectUri:
+                    type: string
+                    example: '{payment_summary_redirection_url}'
+                  orderId:
+                    type: string
+                    example: WZHF5FFDRJ140731GUEST000P01
+                  extOrderId:
+                    type: string
+                    example: '{YOUR_EXT_ORDER_ID}'
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+                        example: SUCCESS
+                  redirectUri:
+                    type: string
+                    example: '{payment_summary_redirection_url}'
+                  orderId:
+                    type: string
+                    example: WZHF5FFDRJ140731GUEST000P01
+                  extOrderId:
+                    type: string
+                    example: '{YOUR_EXT_ORDER_ID}'
+        '302':
+          description: Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+                  redirectUri:
+                    type: string
+                  orderId:
+                    type: string
+                  extOrderId:
+                    type: string
+              examples:
+                success:
+                  summary: SUCCESS
+                  value:
+                    status: SUCCESS
+                    redirectUri: '{payment_summary_redirection_url}'
+                    orderId: WZHF5FFDRJ140731GUEST000P01
+                    extOrderId: '{YOUR_EXT_ORDER_ID}'
+                warning_continue_redirect:
+                  summary: WARNING_CONTINUE_REDIRECT
+                  value:
+                    status: WARNING_CONTINUE_REDIRECT
+                    redirectUri: '{payment_summary_redirection_url}'
+                    orderId: WZHF5FFDRJ140731GUEST000P01
+                    extOrderId: '{YOUR_EXT_ORDER_ID}'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+              examples:
+                error_syntax:
+                  summary: ERROR_SYNTAX
+                  value:
+                    status: ERROR_SYNTAX
+                error_value_invalid:
+                  summary: ERROR_VALUE_INVALID
+                  value:
+                    status: ERROR_VALUE_INVALID
+  /orders/{orderId}:
+    get:
+      tags:
+        - Order
+      operationId: orderId
+      summary: Retrieve order data
+      security:
+        - api_key: []
+      parameters:
+        - name: orderId
+          in: path
+          example: WZHF5FFDRJ140731GUEST000P01
+          description: Order ID generated by the PayU system
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    description: Array of order objects.
+                    items:
+                      - type: object
+                        properties:
+                          orderId:
+                            type: string
+                            description: Order ID generated by the PayU system.
+                            example: '{orderId}'
+                          extOrderId:
+                            type: string
+                            description: External order ID (assigned by the shop).
+                            example: '343242'
+                          orderCreateDate:
+                            type: string
+                            description: Order creation timestamp.
+                            example: '2014-10-27T14:58:17.443+01:00'
+                          notifyUrl:
+                            type: string
+                            description: Address for sending notifications.
+                            example: http://localhost/OrderNotify/
+                          customerIp:
+                            type: string
+                            description: >-
+                              Customer's IP address. Note: 0.0.0.0 is not
+                              accepted.
+                            example: 127.0.0.1
+                          merchantPosId:
+                            type: string
+                            description: Point of sale ID.
+                            example: '145227'
+                          description:
+                            type: string
+                            description: Description for order.
+                            example: New Order
+                          validityTime:
+                            type: string
+                            description: >-
+                              Duration for the validity of an order (in
+                              seconds), during which time payment must be made.
+                            default: '86400'
+                          currencyCode:
+                            type: string
+                            description: Currency code compliant with ISO 4217.
+                            example: PLN
+                          totalAmount:
+                            type: string
+                            description: Total price of the order.
+                            example: '3200'
+                          buyer:
+                            $ref: '#/components/schemas/Buyer'
+                          products:
+                            $ref: '#/components/schemas/Products'
+                  status:
+                    $ref: '#/components/schemas/Status'
+                  properties:
+                    $ref: '#/components/schemas/Properties'
+        '400':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+                        example: ERROR
+                  redirectUri:
+                    type: string
+                    example: '{payment_summary_redirection_url}'
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      in: header
+      name: api_key
+  schemas:
+    BuyerDelivery:
+      type: object
+      description: >-
+        Section containing delivery address. For a list of parameters, see
+        section delivery
+      properties:
+        street:
+          type: string
+          description: Full street address, incl. apartment number.
+        postalBox:
+          type: string
+          description: Postal box
+        postalCode:
+          type: string
+          description: Postal code
+        city:
+          type: string
+          description: city
+        state:
+          type: string
+          description: >-
+            Country principal subdivision like "state" or "province". If
+            provided, must be a valid ISO 3166-2 code (e.g. "UT" for Utah in the
+            USA or "30" for "Wielkopolskie" in Poland).
+          example: '30'
+        countryCode:
+          type: string
+          description: Two-letter country code compliant with ISO-3166.
+        name:
+          type: string
+          description: Address description
+        recipientName:
+          type: string
+          description: Recipient name
+        recipientEmail:
+          type: string
+          description: Ecipient email
+        recipientPhone:
+          type: string
+          description: Recipient phone number
+    Buyer:
+      type: object
+      description: Section containing buyer data.
+      properties:
+        customerId:
+          type: string
+          description: ID of the customer used in merchant system
+        email:
+          type: string
+          description: Buyer's email address.
+          example: email@email.com
+        phone:
+          type: string
+          description: >-
+            Buyer's telephone number. Please use +[country code] [number]
+            format.
+          example: +48 225108001
+        firstName:
+          type: string
+          description: Buyer's first name.
+          example: John
+        lastName:
+          type: string
+          description: Buyer's last name
+          example: Doe
+        nin:
+          type: string
+          description: National Identification Number
+        language:
+          type: string
+          description: >-
+            Language code, ISO-639-1 compliant. Denotes the language version of
+            PayU hosted payment page and of e-mail messages sent from PayU to
+            the payer.
+          example: pl
+          enum:
+            - pl
+            - en
+            - cs
+            - bg
+            - da
+            - de
+            - el
+            - es
+            - et  fi
+            - fr
+            - hr
+            - hu
+            - it
+            - lt
+            - lv
+            - nl
+            - pt
+            - ro
+            - ru
+            - sk
+            - sl
+            - sr
+            - sv
+            - tr
+            - uk
+        delivery:
+          $ref: '#/components/schemas/BuyerDelivery'
+    Products:
+      type: array
+      description: >-
+        Section containing data of the ordered products. Section products is an
+        array of objects of type product.
+      required:
+        - name, unitPrice, quantity
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Name of the product
+            example: Wireless Mouse for Laptop
+          unitPrice:
+            type: string
+            description: Unit price
+            example: '15000'
+          quantity:
+            type: string
+            description: Quantity
+            example: '1'
+          virtual:
+            type: boolean
+            enum:
+              - true
+              - false
+            description: Product type, which can be virtual or material.
+            example: true
+          listingDate:
+            type: string
+            description: >-
+              Marketplace date from which the product (or offer) is available,
+              ISO format applies.
+            example: '2019-03-27T10:57:59.000+01:00'
+    Status:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: Response code
+        statusDesc:
+          type: string
+          description: Response status description
+    Properties:
+      type: array
+      description: Array of objects related to transaction identification.
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            description: >-
+              Static value. The payment identifier, displayed on transaction
+              statements as "Trans ID" and within the transaction search option
+              in the Management Panel.
+            example: PAYMENT_ID
+          value:
+            type: string
+            description: Transaction ID in PayU system.
+            example: '1234567890'
