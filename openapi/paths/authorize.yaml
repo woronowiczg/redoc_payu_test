@@ -1,13 +1,12 @@
 tags:
-    - Oauth
-summary: Authorize payment
+    - Authorize payment
+summary: Create OAuth token
 description: |
     You authenticate with OAuth standard by obtaining a token, which is used for further communication with PayU servers. You can view authorization data from the management panel. There are two grant types: 
     - <code>client_credentials</code> for standard integration,
     - <code>trusted_merchant</code> used for authentication of requests made for logged-in shop/application users with fixed <code>extCustomerId</code>.
 
     Access token is valid for 43199 seconds.
-    |
 operationId: oauth
 parameters:
     - name: grant_type
@@ -19,6 +18,12 @@ parameters:
           enum:
               - client_credentials
               - trusted_merchant
+    - name: client_id
+      in: query
+      description: Merchant's POS identifier in PayU's system. Can be found in PayU's merchant panel.
+      required: true
+      schema: 
+        type: string
     - name: client_secret
       in: query
       description: Merchant's secret key. Can be found in PayU's merchant panel.
@@ -27,13 +32,13 @@ parameters:
           type: string
     - name: email
       in: query
-      description: Customer's email address in merchant's system. Required only in <code>trusted_merchant</code>.
+      description: Customer's email address in merchant's system. __Required nad used only in <code>trusted_merchant</code>__.
       required: true
       schema:
           type: string
     - name: extCustomerId
       in: query
-      description: Customer's identifier in the merchant's system. Required only in <code>trusted_merchant</code>.
+      description: Customer's identifier in the merchant's system. __Required and used only in <code>trusted_merchant</code>__.
       required: true
       schema:
           type: string
@@ -51,7 +56,7 @@ parameters:
 #           - $ref: ..\components\schemas\authSchemas\TrustedMerchant.yaml
 responses:
     '200':
-        description: OAuth access token obtained
+        description: OK
         content:
             application/json:
                 schema:
@@ -73,9 +78,23 @@ responses:
                             type: string
                             enum: [client_credentials, trusted_merchant]
     '400':
-        description: 'invalid input, incorrect request content-type'
+        description: Bad Request
+        content:
+          application/json:
+              schema:
+                  type: object
+                  required:
+                      - error
+                      - error_description
+                  properties:
+                      error:
+                          type: string
+                          format: string
+                      error_description:
+                          type: string
+                          format: string
     '401':
-        description: 'invalid OAuth protocol credentials'
+        description: Unauthorized
         content:
             application/json:
                 schema:

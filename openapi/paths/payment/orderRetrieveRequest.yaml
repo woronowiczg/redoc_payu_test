@@ -86,6 +86,19 @@ responses:
                     example: "3200"
                   buyer:
                     $ref: ..\..\components\objects\Buyer.yaml
+                  payMethod:
+                    type: object
+                    description: Used payment method.
+                    properties: 
+                      amount:
+                        type: string
+                        description: Order amount.
+                      type: 
+                        type: string
+                        description: Payment method code.
+                  status:
+                    type: string
+                    description: Order status.
                   products:
                     $ref: ..\..\components\arrays\Products.yaml
             status:
@@ -108,4 +121,20 @@ responses:
             redirectUri:
               type: string
               example: "{payment_summary_redirection_url}"
+  '404':
+    description: Not Found
+    content: 
+      application/json: 
+        schema: 
+          type: object
+          properties: 
+            status:
+              type: object
+              properties: 
+                statusCode:
+                  type: string
+                severity:
+                  type: string
+                statusDesc:
+                  type: string
     
