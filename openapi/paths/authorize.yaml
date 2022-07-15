@@ -1,0 +1,92 @@
+tags:
+    - Oauth
+summary: Authorize payment
+description: |
+    You authenticate with OAuth standard by obtaining a token, which is used for further communication with PayU servers. You can view authorization data from the management panel. There are two grant types: 
+    - <code>client_credentials</code> for standard integration,
+    - <code>trusted_merchant</code> used for authentication of requests made for logged-in shop/application users with fixed <code>extCustomerId</code>.
+
+    Access token is valid for 43199 seconds.
+    |
+operationId: oauth
+parameters:
+    - name: grant_type
+      in: query
+      description: Authorization mode.
+      required: true
+      schema:
+          type: string
+          enum:
+              - client_credentials
+              - trusted_merchant
+    - name: client_secret
+      in: query
+      description: Merchant's secret key. Can be found in PayU's merchant panel.
+      required: true
+      schema:
+          type: string
+    - name: email
+      in: query
+      description: Customer's email address in merchant's system. Required only in <code>trusted_merchant</code>.
+      required: true
+      schema:
+          type: string
+    - name: extCustomerId
+      in: query
+      description: Customer's identifier in the merchant's system. Required only in <code>trusted_merchant</code>.
+      required: true
+      schema:
+          type: string
+# requestBody:
+#   content:
+#     application/json:
+#       schema:
+#         discriminator:
+#           propertyName: grant_type
+#           mapping:
+#             client_credentials: ..\components\schemas\authSchemas\ClientCredentials.yaml
+#             trusted_merchant: ..\components\schemas\authSchemas\TrustedMerchant.yaml
+#         anyOf:
+#           - $ref: ..\components\schemas\authSchemas\ClientCredentials.yaml
+#           - $ref: ..\components\schemas\authSchemas\TrustedMerchant.yaml
+responses:
+    '200':
+        description: OAuth access token obtained
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        access_token:
+                            type: string
+                            format: uuid
+                        token_type:
+                            type: string
+                            enum: [bearer]
+                        refresh_token:
+                            type: string
+                            format: uuid
+                        expires_in:
+                            type: integer
+                            enum: [43199]
+                        grant_type:
+                            type: string
+                            enum: [client_credentials, trusted_merchant]
+    '400':
+        description: 'invalid input, incorrect request content-type'
+    '401':
+        description: 'invalid OAuth protocol credentials'
+        content:
+            application/json:
+                schema:
+                    type: object
+                    required:
+                        - error
+                        - error_description
+                    properties:
+                        error:
+                            type: string
+                            format: string
+                        error_description:
+                            type: string
+                            format: string

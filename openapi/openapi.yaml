@@ -1,33 +1,36 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Example.com
-  termsOfService: 'https://example.com/terms/'
-  contact:
-    email: contact@example.com
-    url: 'http://example.com/contact'
-  license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  title: PayU REST API
   x-logo:
     url: 'https://redocly.github.io/openapi-template/logo.png'
   description:
     $ref: ./info-description.md
 servers:
-  - url: 'https://secure.payu.com/api/v2_1'
+  - url: 'https://secure.payu.com'
     description: Production Server
-  - url: 'https://secure.snd.payu.com/api/v2_1'
+  - url: 'https://secure.snd.payu.com'
     description: Sandbox Test Server
 paths:
-  /orders:
+  /pl/standard/user/oauth/authorize:
     post:
-      $ref: paths\orderCreateRequest.yaml
-  /orders/{orderId}:
+      $ref: paths\authorize.yaml
+  /api/v2_1/orders:
+    post:
+      $ref: paths\payment\orderCreateRequest.yaml
+  /api/v2_1/orders/{orderId}:
     get:
-      $ref: paths\orderRetrieveRequest.yaml
+      $ref: paths\payment\orderRetrieveRequest.yaml
+  /api/v2_1/orders/{orderId}/refunds:
+    post:
+      $ref: paths\refund\createRefund.yaml
+    get: 
+      $ref: paths\refund\retrieveOrderRefundsData.yaml
+  /api/v2_1/orders/{orderId}/refunds/{refundId}:
+    get: 
+      $ref: paths\refund\retrieveRefund.yaml
 components:
-  securitySchemes:
-    api_key:
-      type: apiKey
-      in: header
-      name: api_key
+  securitySchemes: 
+    OAuth token:
+      $ref: .\components\securitySchemes\oauth.yaml
+      
