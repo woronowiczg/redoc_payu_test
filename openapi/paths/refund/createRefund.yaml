@@ -38,6 +38,8 @@ requestBody:
     application/json:
       schema:
         type: object
+        required: 
+          -  refund
         properties:
           refund:
             type: object
@@ -48,15 +50,13 @@ requestBody:
               description:
                 type: string
                 description: Refund description
-                example: Refund for order <orderId>
               amount:
                 type: string
                 description: Amount of the refund. If this is left blank, all funds will be returned to the buyer.
-                example: 10000
+                example: "10000"
               extRefundId:
                 type: string
                 description: External refund ID.
-                example: hdjJduUEEH2
               currencyCode:
                 type: string
                 description: 	Currency code compliant with ISO 4217.
@@ -64,7 +64,6 @@ requestBody:
               bankDescription:
                 type: string
                 description: Bank operation description.
-                example: Refund for bought goods.
               type:
                 type: string
                 description: Operation type.
@@ -82,7 +81,6 @@ responses:
             orderId:
               type: string
               description: ID of refunded order.
-              example: WZGF5FFDRJ140731GUEST000P01
             refund:
               type: object
               description: Refund details.
@@ -90,15 +88,13 @@ responses:
                 description:
                   type: string
                   description: Refund description
-                  example: Refund for order <orderId>
                 amount:
                   type: string
                   description: Amount of the refund. If this is left blank, all funds will be returned to the buyer.
-                  example: 10000
+                  example: "10000"
                 extRefundId:
                   type: string
                   description: External refund ID.
-                  example: hdjJduUEEH2
                 currencyCode:
                   type: string
                   description: 	Currency code compliant with ISO 4217.
@@ -106,7 +102,6 @@ responses:
                 bankDescription:
                   type: string
                   description: Bank operation description.
-                  example: Refund for bought goods.
                 creationDateTime:
                   type: string
                   description: Date of refund creation.

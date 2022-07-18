@@ -23,8 +23,6 @@ requestBody:
           extOrderId:
             type: string
             description: ID of an order used in merchant system. Order identifier assigned by the merchant. It enables merchants to find a specific order in their system. This value must be unique within a single POS.
-            examples: 
-              - extOrderId
           notifyUrl:
             type: string
             description: The address for sending notifications
@@ -46,27 +44,18 @@ requestBody:
             example: "100000"
           description:
             type: string
-            description: 	Description of the an order.
-            examples: 
-              - description
+            description: 	Description of the order.
           additionalDescription:
             type: string
             description: Additional description of the order.
-            examples: 
-              - Additional description.
           visibleDescription:
             type: string
             maxLength: 80
-            description: ext visible on the PayU payment page (max. 80 chars).
-            examples: 
-              - Visible description.
+            description: ext visible on the PayU payment page.
           statementDescription:
             type: string
             maxLength: 22
             description: Payment recipient name followed by payment description (order ID, ticket number etc) visible on card statement. The name should be easy to recognize by the cardholder. If field is not provided, static name configured by PayU will be used.
-            examples: 
-              - shop.com
-              - "124343"
           currencyCode:
             type: string
             description: Currency code compliant with ISO 4217 (e.g EUR).
@@ -411,7 +400,14 @@ responses:
               properties: 
                 statusCode:
                   type: string
-                  description: Payment status.
+                severity:
+                  type: string
+                code:
+                  type: string
+                codeLiteral:
+                  type: string
+                statusDesc:
+                  type: string
         # examples: 
         #   error_syntax:
         #     summary: ERROR_SYNTAX
@@ -421,3 +417,21 @@ responses:
         #     summary: ERROR_VALUE_INVALID
         #     value: 
         #       status: ERROR_VALUE_INVALID
+  '401':
+    description: Unauthorized
+    content: 
+      application/json: 
+        schema: 
+          type: object
+          properties: 
+            status:
+              type: object
+              properties: 
+                statusCode:
+                  type: string
+                code:
+                  type: string
+                codeLiteral:
+                  type: string
+                statusDesc:
+                  type: string
