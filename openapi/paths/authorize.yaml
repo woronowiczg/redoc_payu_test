@@ -32,7 +32,7 @@ parameters:
           type: string
     - name: email
       in: query
-      description: Customer's email address in merchant's system. __Required nad used only in <code>trusted_merchant</code>__.
+      description: Customer's email address in merchant's system. __Required and used only in <code>trusted_merchant</code>__.
       required: true
       schema:
           type: string

@@ -9,6 +9,7 @@ lint:
     no-unused-components: error
 features.openapi:
   showConsole: true
+  pathInMiddlePanel: true
   htmlTemplate: ./docs/index.html
   theme:
     colors:

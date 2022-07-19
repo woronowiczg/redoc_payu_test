@@ -1,6 +1,6 @@
 tags: 
   - Refund
-summary: Retrieve all refunds for the specific <orderId>
+summary: Retrieve all refunds for the specific orderId
 operationId: orderRefunds
 security: 
   -  OAuth token: []
