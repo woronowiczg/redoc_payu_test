@@ -21,6 +21,11 @@ paths:
   /api/v2_1/orders/{orderId}:
     get:
       $ref: paths\payment\orderRetrieveRequest.yaml
+    delete:
+      $ref: paths\payment\orderCancel.yaml
+  /api/v2_1/orders/{orderId}/status:
+    put: 
+      $ref: paths\payment\orderCapture.yaml
   /api/v2_1/orders/{orderId}/refunds:
     post:
       $ref: paths\refund\createRefund.yaml

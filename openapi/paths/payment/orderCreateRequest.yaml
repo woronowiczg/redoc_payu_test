@@ -318,16 +318,12 @@ responses:
                 statusCode:
                   type: string
                   description: Response code
-                  example: SUCCESS
             redirectUri:
               type: string
-              example: "{payment_summary_redirection_url}"
             orderId:
               type: string
-              example: WZHF5FFDRJ140731GUEST000P01
             extOrderId:
               type: string
-              example: "{YOUR_EXT_ORDER_ID}"
   '201':
     description: Created
     content:
@@ -340,16 +336,12 @@ responses:
               properties: 
                 statusCode:
                   type: string
-                  example: SUCCESS
             redirectUri:
               type: string
-              example: "{payment_summary_redirection_url}"
             orderId:
               type: string
-              example: WZHF5FFDRJ140731GUEST000P01
             extOrderId:
               type: string
-              example: "{YOUR_EXT_ORDER_ID}"
   '302':
     description: Found
     content:
@@ -419,6 +411,24 @@ responses:
         #       status: ERROR_VALUE_INVALID
   '401':
     description: Unauthorized
+    content: 
+      application/json: 
+        schema: 
+          type: object
+          properties: 
+            status:
+              type: object
+              properties: 
+                statusCode:
+                  type: string
+                code:
+                  type: string
+                codeLiteral:
+                  type: string
+                statusDesc:
+                  type: string
+  '403':
+    description: Forbidden
     content: 
       application/json: 
         schema: 
