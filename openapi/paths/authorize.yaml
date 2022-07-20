@@ -64,6 +64,7 @@ responses:
                     properties:
                         access_token:
                             type: string
+                            description: Token used for authentication of API calls.
                             format: uuid
                         token_type:
                             type: string
@@ -73,11 +74,13 @@ responses:
                             format: uuid
                         expires_in:
                             type: integer
+                            description: Token expiration time (in seconds).
                             enum: [43199]
                         grant_type:
                             type: string
+                            description: Token authentication mode 
                             enum: [client_credentials, trusted_merchant]
-    '400':
+    400:
         description: Bad Request
         content:
           application/json:
@@ -93,7 +96,7 @@ responses:
                       error_description:
                           type: string
                           format: string
-    '401':
+    401:
         description: Unauthorized
         content:
             application/json:

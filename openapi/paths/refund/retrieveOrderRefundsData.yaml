@@ -33,7 +33,7 @@ parameters:
     style: simple
     example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  '200':
+  200:
     description: OK
     content:
       application/json:
@@ -75,7 +75,7 @@ responses:
                       - PENDING
                       - CANCELED
                       - FINALIZED
-  '404':
+  404:
     description: NOT FOUND
     content: 
       application/json: 
@@ -87,7 +87,9 @@ responses:
               properties: 
                 statusCode:
                   type: string
+                  description: Error type.
                 severity:
                   type: string
                 statusDesc:
                   type: string
+                  description: Error description.

@@ -31,7 +31,7 @@ parameters:
     style: simple
     example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  '200':
+  200:
     description: OK
     content:
       application/json:
@@ -105,7 +105,7 @@ responses:
               $ref: ..\..\components\objects\Status.yaml
             properties:
               $ref: ..\..\components\arrays\Properties.yaml
-  '400':
+  400:
     description: Error
     content:
       application/json:
@@ -121,7 +121,7 @@ responses:
             redirectUri:
               type: string
               example: "{payment_summary_redirection_url}"
-  '404':
+  404:
     description: Not Found
     content: 
       application/json: 
@@ -133,8 +133,10 @@ responses:
               properties: 
                 statusCode:
                   type: string
+                  description: Error type.
                 severity:
                   type: string
                 statusDesc:
                   type: string
+                  description: Error description.
     

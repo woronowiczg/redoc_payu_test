@@ -305,7 +305,7 @@ requestBody:
   description: Parameters for OrderCreateRequest
   required: true
 responses:
-  '200':
+  200:
     description: OK
     content:
       application/json:
@@ -324,7 +324,7 @@ responses:
               type: string
             extOrderId:
               type: string
-  '201':
+  201:
     description: Created
     content:
       application/json:
@@ -342,7 +342,7 @@ responses:
               type: string
             extOrderId:
               type: string
-  '302':
+  302:
     description: Found
     content:
       application/json:
@@ -380,7 +380,7 @@ responses:
         #       orderId: WZHF5FFDRJ140731GUEST000P01
         #       extOrderId: "{YOUR_EXT_ORDER_ID}"
           
-  '400':
+  400:
     description: Bad Request
     content:
       application/json:
@@ -392,14 +392,18 @@ responses:
               properties: 
                 statusCode:
                   type: string
+                  description: Error type.
                 severity:
                   type: string
                 code:
                   type: string
+                  description: Identification code of specific error.
                 codeLiteral:
                   type: string
+                  description: Cause of the error.
                 statusDesc:
                   type: string
+                  description: Error description.
         # examples: 
         #   error_syntax:
         #     summary: ERROR_SYNTAX
@@ -409,7 +413,7 @@ responses:
         #     summary: ERROR_VALUE_INVALID
         #     value: 
         #       status: ERROR_VALUE_INVALID
-  '401':
+  401:
     description: Unauthorized
     content: 
       application/json: 
@@ -421,13 +425,17 @@ responses:
               properties: 
                 statusCode:
                   type: string
+                  description: Error type.
                 code:
                   type: string
+                  description: Identification code of specific error.
                 codeLiteral:
                   type: string
+                  description: Cause of the error.
                 statusDesc:
                   type: string
-  '403':
+                  description: Error description.
+  403:
     description: Forbidden
     content: 
       application/json: 
@@ -439,9 +447,13 @@ responses:
               properties: 
                 statusCode:
                   type: string
+                  description: Error type.
                 code:
                   type: string
+                  description: Identification code of specific error.
                 codeLiteral:
                   type: string
+                  description: Cause of the error.
                 statusDesc:
                   type: string
+                  description: Error description.

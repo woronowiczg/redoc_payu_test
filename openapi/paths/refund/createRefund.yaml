@@ -144,10 +144,11 @@ responses:
                   type: string
                 code: 
                   type: string
+                  description: Identification code of specific error.
                 codeLiteral:
                   type: string
                   description: Cause of error.
                 statusDesc:
                   type: string
-                  description: Description of the error.
+                  description: Error description.
 

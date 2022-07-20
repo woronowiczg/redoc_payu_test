@@ -44,7 +44,7 @@ parameters:
     style: simple
     example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  '200':
+  200:
     description: OK
     content:
       application/json:
@@ -60,7 +60,7 @@ responses:
             -  $ref: ..\..\components\schemas\refundSchemas\refundRetrieveFInalized.yaml
             -  $ref: ..\..\components\schemas\refundSchemas\refundRetrievePending.yaml
             -  $ref: ..\..\components\schemas\refundSchemas\refundRetrieveCanceled.yaml
-  '404':
+  404:
     description: NOT FOUND
     content: 
       application/json: 
@@ -72,10 +72,13 @@ responses:
               properties: 
                 statusCode:
                   type: string
+                  description: Error type.
                 severity:
                   type: string
                 statusDesc:
                   type: string
+                  description: Error description.
+          
 
 
 

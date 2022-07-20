@@ -28,7 +28,7 @@ Sandbox is an almost identical copy of PayU production system. It can be used fo
 
 __Public test POS (point of sale)__
 
-Although it is best to create your own account to later be able to configure it as needed, you may also use a public sandbox test POS without registering:
+Although it is best to __<a href="https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/" target="_blank">create your own account</a>__ to later be able to configure it as needed, you may also use a public sandbox test POS without registering:
 
 | Key name                       | Value                            |
 |--------------------------------|---------------------------------:|
