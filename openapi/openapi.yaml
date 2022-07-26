@@ -3,7 +3,7 @@ info:
   version: 1.0.0
   title: PayU REST 
   x-logo:
-    url: 'https://redocly.github.io/openapi-template/logo.png'
+    url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
   description:
     $ref: ./info-description.md
 servers:
