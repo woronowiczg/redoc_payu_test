@@ -2,11 +2,13 @@ tags:
     - Authorize payment
 summary: Create OAuth token
 description: |
-    You authenticate with OAuth standard by obtaining a token, which is used for further communication with PayU servers. You can view authorization data from the management panel. There are two grant types: 
+    You authenticate with OAuth standard by obtaining a token, which is used for further communication with PayU servers. You can view authorization data from the management panel.
+    
+    Each payment should be authorized in one of two available modes: 
     - <code>client_credentials</code> for standard integration,
     - <code>trusted_merchant</code> used for authentication of requests made for logged-in shop/application users with fixed <code>extCustomerId</code>.
 
-    Access token is valid for 43199 seconds.
+    Generated access token is valid for 43199 seconds.
 operationId: oauth
 parameters:
     - name: grant_type
@@ -78,7 +80,7 @@ responses:
                             enum: [43199]
                         grant_type:
                             type: string
-                            description: Token authentication mode 
+                            description: Token authentication mode.
                             enum: [client_credentials, trusted_merchant]
     400:
         description: Bad Request
@@ -90,12 +92,12 @@ responses:
                       - error
                       - error_description
                   properties:
-                      error:
-                          type: string
-                          format: string
-                      error_description:
-                          type: string
-                          format: string
+                        error:
+                            type: string
+                            description: Cause of the error.
+                        error_description:
+                            type: string
+                            description: Error description.
     401:
         description: Unauthorized
         content:
@@ -108,7 +110,7 @@ responses:
                     properties:
                         error:
                             type: string
-                            format: string
+                            description: Cause of the error.
                         error_description:
                             type: string
-                            format: string
+                            description: Error description.

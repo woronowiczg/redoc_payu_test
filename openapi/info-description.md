@@ -39,7 +39,7 @@ Although it is best to __<a href="https://registration-merch-prod.snd.payu.com/b
 
 The availability of the sandbox environment can be checked on the __<a href="https://status.snd.payu.com/" target="_blank">Status page</a>__.
 
-__Test cards__
+__Testing card payments__
 
 In order to test card payments on sandbox, please use credentials displayed on the __<a href="https://developers.payu.com/en/overview.html#sandbox" target="_blank">Overview</a>__ documentation page.
 
