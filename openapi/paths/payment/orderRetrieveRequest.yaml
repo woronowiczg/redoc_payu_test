@@ -85,7 +85,7 @@ responses:
                     description: Total price of the order.
                     example: "3200"
                   buyer:
-                    $ref: ..\..\components\objects\Buyer.yaml
+                    $ref: ../../components/objects/Buyer.yaml
                   payMethod:
                     type: object
                     description: Used payment method.
@@ -100,11 +100,11 @@ responses:
                     type: string
                     description: Order status.
                   products:
-                    $ref: ..\..\components\arrays\Products.yaml
+                    $ref: ../../components/arrays/Products.yaml
             status:
-              $ref: ..\..\components\objects\Status.yaml
+              $ref: ../../components/objects/Status.yaml
             properties:
-              $ref: ..\..\components\arrays\Properties.yaml
+              $ref: ../../components/arrays/Properties.yaml
   400:
     description: Error
     content:

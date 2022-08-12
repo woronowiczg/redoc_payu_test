@@ -84,9 +84,9 @@ requestBody:
             examples:
               - www.example.com/path
           buyer:
-            $ref: ..\..\components\objects\Buyer.yaml
+            $ref: ../../components/objects/Buyer.yaml
           products:
-            $ref: ..\..\components\arrays\Products.yaml
+            $ref: ../../components/arrays/Products.yaml
           payMethods:
             type: object
             description: Section containing data of the ordered products. Section products is an array of objects of type product.
