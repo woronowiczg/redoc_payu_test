@@ -55,7 +55,7 @@ responses:
             mapping:
               FINALIZED: ../../components/schemas/refundSchemas/refundRetrieveFinalized.yaml
               PENDING: ../../components/schemas/refundSchemas/refundRetrievePending.yaml
-              CANCELED: ../../components/schemas/refundSchemas/refundRetrieveCanceled.yaml\
+              CANCELED: ../../components/schemas/refundSchemas/refundRetrieveCanceled.yaml
           anyOf: 
             -  $ref: ../../components/schemas/refundSchemas/refundRetrieveFInalized.yaml
             -  $ref: ../../components/schemas/refundSchemas/refundRetrievePending.yaml
