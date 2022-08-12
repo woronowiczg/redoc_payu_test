@@ -26,9 +26,10 @@ properties:
   statusDatetime:
     type: string
     description: Timestamp of the status.
-    example: "2020-07-02T09:19:04.013+02:00"
+    example: "2020-07-02T09:19:04.016+02:00"
   status:
     type: string
     description: Refund status code.
     example: FINALIZED
+
               
