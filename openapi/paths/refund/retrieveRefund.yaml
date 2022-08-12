@@ -53,9 +53,9 @@ responses:
           discriminator: 
             propertyName: status
             mapping:
-              FINALIZED: ../../components/schemas/refundSchemas/refundRetrieveFinalized.yaml
-              PENDING: ../../components/schemas/refundSchemas/refundRetrievePending.yaml
-              CANCELED: ../../components/schemas/refundSchemas/refundRetrieveCanceled.yaml
+              FINALIZED: '../../components/schemas/refundSchemas/refundRetrieveFinalized.yaml'
+              PENDING: '../../components/schemas/refundSchemas/refundRetrievePending.yaml'
+              CANCELED: '../../components/schemas/refundSchemas/refundRetrieveCanceled.yaml'
           anyOf: 
             -  $ref: ../../components/schemas/refundSchemas/refundRetrieveFInalized.yaml
             -  $ref: ../../components/schemas/refundSchemas/refundRetrievePending.yaml
