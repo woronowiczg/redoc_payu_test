@@ -176,7 +176,7 @@ requestBody:
                   sdkAppID:
                     type: string
                     example: 9063b12c-fcde-43c7-b28e-8d0af5520e8a
-                  askEncData:
+                  sdkEncData:
                     type: string
                     description: Data encrypted by the 3DS SDK.
                   sdkTransID:
