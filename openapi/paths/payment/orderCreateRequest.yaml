@@ -76,8 +76,37 @@ requestBody:
             $ref: ../../components/objects/Buyer.yaml
           products:
             $ref: ../../components/arrays/Products.yaml
-          payMethods:
-            $ref: ../../components/objects/payMethods.yaml
+          # payMethods:
+              # type: object
+              # description: Section allows to directly invoke payment method. Section <code>payMethods</code> is one object of <code>payMethod</code> type.
+              # properties: 
+              #   payMethod:
+              #     type: object
+              #     required: [type, value]
+              #     properties: 
+              #       type:
+              #         type: string
+              #         description: Payment method type.
+              #         enum: [PBL, CARD_TOKEN, PAYMENT_WALL]
+              #       value:
+              #         type: string
+              #         description: Payment type for PBL, CARD_TOKEN.
+              #         example: c
+              #       authorizationCode:
+              #         type: string
+              #         description: "Optional, usage differs depending on payment method. For BLIK integrated transparently: enables to collect 6-digit BLIK code on your website instead of redirecting to BLIK."
+              #         example: "777123"
+              #       specificData:
+              #         type: array
+              #         description: Additional data for some Visa Checkout integrations.
+              #         items: 
+              #           type: object
+              #           properties:
+              #             name:
+              #               type: string
+              #             value:
+              #               type: string
+                      
           mcpData:
             type: object
             description: Section allows to pass currency conversion details if you chose to use Multi-Currency Pricing.
@@ -407,7 +436,7 @@ responses:
               enum: [3DS, 3DS2]
             orderId:
               type: string
-              description: Order identifier given by PayU
+              description: Order identifier given by PayU.
             payMethods:
               type: object
               properties: 
