@@ -68,7 +68,7 @@ properties:
                     Two-letter country code compliant with
                     ISO-3166.
         products:
-          $ref: ..\arrays\Products.yaml
+          $ref: ../arrays/Products.yaml
           # type: array
           # description: >-
           #   Section containing data about ordered products.
