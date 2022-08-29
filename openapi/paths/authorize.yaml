@@ -47,11 +47,11 @@ requestBody:
                 discriminator:
                     propertyName: grant_type
                     mapping:
-                        client_credentials: ..\components\schemas\authSchemas\ClientCredentials.yaml
-                        trusted_merchant: ..\components\schemas\authSchemas\TrustedMerchant.yaml
+                        client_credentials: ../components/schemas/authSchemas/ClientCredentials.yaml
+                        trusted_merchant: ../components/schemas/authSchemas/TrustedMerchant.yaml
                 anyOf:
-                    - $ref: ..\components\schemas\authSchemas\ClientCredentials.yaml
-                    - $ref: ..\components\schemas\authSchemas\TrustedMerchant.yaml
+                    - $ref: ../components/schemas/authSchemas/ClientCredentials.yaml
+                    - $ref: ../components/schemas/authSchemas/TrustedMerchant.yaml
 responses:
     '200':
         description: OK
