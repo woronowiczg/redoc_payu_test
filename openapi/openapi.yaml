@@ -1,7 +1,8 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: PayU REST 
+  title: PayU REST
+  license: PayU
   x-logo:
     url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
   description:
