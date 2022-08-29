@@ -9,7 +9,7 @@ description: |
     - <code>trusted_merchant</code> used for authentication of requests made for logged-in shop/application users with fixed <code>extCustomerId</code>.
 
     Generated access token is valid for 43199 seconds.
-operationId: oauths
+operationId: oauth
 requestBody:
     content: 
         application/x-www-form-urlencoded:
