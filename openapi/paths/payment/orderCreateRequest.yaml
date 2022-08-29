@@ -76,7 +76,7 @@ requestBody:
           products:
             $ref: ../../components/arrays/Products.yaml
           payMethods:
-            $ref: ../../components/objects/payMethods.yaml
+            $ref: ../../components/objects/payMethod.yaml
           mcpData:
             type: object
             description: Section allows to pass currency conversion details if you chose to use Multi-Currency Pricing.
