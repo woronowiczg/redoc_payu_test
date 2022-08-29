@@ -27,4 +27,6 @@ properties:
               type: string
             value:
               type: string
-          
+      amount:
+        type: string
+        description: Additional information required for Marketplace integration - must be equal to totalAmount as sum of amount parameters objects in ShoppingCards array
