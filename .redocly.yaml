@@ -27,6 +27,3 @@ features.openapi:
       - lang: JavaScript
       - lang: PHP
       - lang: Python
-      - lang: C#
-      - lang: Java
-      - lang: Go
