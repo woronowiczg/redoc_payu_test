@@ -1,0 +1,22 @@
+type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+      properties:
+        grant_type:
+          type: string
+          enum: [client_credentials, trusted_merchant]
+        client_id:
+          type: integer
+          format: string
+        client_secret:
+          type: string
+          format: string
+        email:
+          type: string
+          format: string
+        ext_customer_id:
+          type: string
+          format: string
+    OAuthResponse:
