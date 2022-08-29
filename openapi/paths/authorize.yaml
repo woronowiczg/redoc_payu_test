@@ -42,7 +42,7 @@ operationId: oauth
 #           type: string
 requestBody:
     content:
-        application/json:
+        application/x-www-form-urlencoded: 
             schema:
                 discriminator:
                     propertyName: grant_type
@@ -53,7 +53,7 @@ requestBody:
                     - $ref: ../components/schemas/authSchemas/ClientCredentials.yaml
                     - $ref: ../components/schemas/authSchemas/TrustedMerchant.yaml
 responses:
-    '200':
+    200:
         description: OK
         content:
             application/json:
