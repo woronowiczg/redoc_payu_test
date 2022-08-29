@@ -48,7 +48,7 @@ parameters:
    content:
      application/x-www-form-urlencoded:
        schema:
-        type: ParemeterList
+        type: array
         required:
         - grant_type
         - client_id
