@@ -1,6 +1,6 @@
 tags:
   - Payment
-summary: Creating new order.
+summary: Creating new order
 description: OrderCreateRequest
 operationId: orderCreateRequest
 security:
