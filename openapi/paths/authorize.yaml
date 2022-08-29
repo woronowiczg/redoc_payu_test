@@ -11,10 +11,10 @@ description: |
     Generated access token is valid for 43199 seconds.
 operationId: oauth
 requestBody:
-    content:
+    content: 
         application/x-www-form-urlencoded:
-            schema:
-                $ref: ../components/schemas/OAuth.yaml
+    schema:
+        $ref: ../components/schemas/OAuth.yaml
 responses:
     '200':
         description: OK
