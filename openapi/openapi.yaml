@@ -2,6 +2,9 @@ openapi: 3.1.0
 info:
   version: 1.0.0
   title: PayU REST 
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
   x-logo:
     url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
   description:

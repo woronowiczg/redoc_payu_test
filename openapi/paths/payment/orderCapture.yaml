@@ -1,6 +1,6 @@
 tags:
   - Payment
-summary: Complete waiting order.
+summary: Complete waiting order
 description: Capture order
 operationId: orderCapture
 security:

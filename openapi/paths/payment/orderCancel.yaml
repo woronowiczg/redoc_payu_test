@@ -1,6 +1,6 @@
 tags:
   - Payment
-summary: Cancel waiting order.
+summary: Cancel waiting order
 description: Cancel order
 operationId: orderCancel
 security:
