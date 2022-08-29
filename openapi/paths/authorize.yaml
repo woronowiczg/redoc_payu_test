@@ -54,29 +54,26 @@ parameters:
         - client_id
         - client_secret
         properties:
-         grant_type:
-          type: string
-          enum: [client_credentials, trusted_merchant]
-         client_id:
-          type: integer
-          format: string
-         client_secret:
-          type: string
-          format: string
-         email:
-          type: string
-          format: string
-         ext_customer_id:
-          type: string
-          format: string
-#         discriminator:
-#           propertyName: grant_type
-#           mapping:
-#             client_credentials: ..\components\schemas\authSchemas\ClientCredentials.yaml
-#             trusted_merchant: ..\components\schemas\authSchemas\TrustedMerchant.yaml
-#         anyOf:
-#           - $ref: ..\components\schemas\authSchemas\ClientCredentials.yaml
-#           - $ref: ..\components\schemas\authSchemas\TrustedMerchant.yaml
+            grant_type:
+                type: string
+                enum: [client_credentials, trusted_merchant]
+                description: Authorization mode.
+            client_id:
+                type: integer
+                format: string
+                description: Merchant's POS identifier in PayU's system. Can be found in PayU's merchant panel.
+            client_secret:
+                type: string
+                format: string
+                description: Merchant's secret key. Can be found in PayU's merchant panel.
+            email:
+                type: string
+                format: string
+                description: Customer's email address in merchant's system. __Required and used only in <code>trusted_merchant</code>__.
+            ext_customer_id:
+                type: string
+                format: string
+                description: Customer's identifier in the merchant's system. __Required and used only in <code>trusted_merchant</code>__.
 responses:
     '200':
         description: OK
