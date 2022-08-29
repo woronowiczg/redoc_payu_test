@@ -2,7 +2,9 @@ openapi: 3.1.0
 info:
   version: 1.0.0
   title: PayU REST
-  license: PayU
+  license:
+    name: GPLv3
+    url: https://www.gnu.org/licenses/gpl-3.0.html
   x-logo:
     url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
   description:
