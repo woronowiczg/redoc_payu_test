@@ -21,8 +21,7 @@ requestBody:
           notifyUrl:
             type: string
             description: The address for sending notifications
-            examples:
-              - www.notify.com
+            example: https://your.eshop.com/notify
           customerIp:
             type: string
             description: "Payer’s IP address, e.g. 123.123.123.123. Note: 0.0.0.0 is not accepted."
