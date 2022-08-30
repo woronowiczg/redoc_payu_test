@@ -12,11 +12,18 @@ description: |
 operationId: oauth
 requestBody:
     content: 
-        application/x-www-form-urlencoded:
+        application/x-www-form-urlencoded: 
             schema:
-                $ref: ../components/schemas/OAuth.yaml
+                discriminator:
+                    propertyName: grant_type
+                    mapping:
+                        client_credentials: ../components/schemas/authSchemas/ClientCredentials.yaml
+                        trusted_merchant: ../components/schemas/authSchemas/TrustedMerchant.yaml
+                anyOf:
+                    - $ref: ../components/schemas/authSchemas/ClientCredentials.yaml
+                    - $ref: ../components/schemas/authSchemas/TrustedMerchant.yaml
 responses:
-    '200':
+    200:
         description: OK
         content:
             application/json:
