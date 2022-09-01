@@ -1,0 +1,35 @@
+type: object
+properties:
+  refundId:
+    type: string
+    description: ID of the refund
+    example: "5000000142"
+  extRefundId:
+    type: string
+    description: External refund ID.
+    example: hdjJduUEEH2
+  amount:
+    type: string
+    description: Amount of the refund. If this is left blank, all funds will be returned to the buyer.
+    example: 10000
+  description:
+    type: string
+    description: Refund description
+    example: Refund for order <orderId>
+  creationDateTime:
+    type: string
+    description: Date of refund creation.
+    example: "2020-07-02T09:19:03.896+02:00"
+  currencyCode:
+    type: string
+    description: 	Currency code compliant with ISO 4217.
+  statusDatetime:
+    type: string
+    description: Timestamp of the status.
+    example: "2020-07-02T09:19:04.016+02:00"
+  status:
+    type: string
+    description: Refund status code.
+    example: FINALIZED
+
+              

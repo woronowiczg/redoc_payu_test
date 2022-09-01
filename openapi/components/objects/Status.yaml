@@ -1,0 +1,8 @@
+type: object
+properties:
+  statusCode:
+    type: string
+    description: Response code
+  statusDesc:
+    type: string
+    description: Response status description

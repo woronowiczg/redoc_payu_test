@@ -1,0 +1,44 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: PayU REST 
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  x-logo:
+    url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
+  description:
+    $ref: ./info-description.md
+servers:
+  - url: 'https://secure.payu.com'
+    description: Production Server
+  - url: 'https://secure.snd.payu.com'
+    description: Sandbox Test Server
+paths:
+  /pl/standard/user/oauth/authorize:
+    post:
+      $ref: paths/authorize.yaml
+  /api/v2_1/orders:
+    post:
+      $ref: paths/payment/orderCreateRequest.yaml
+  /api/v2_1/orders/{orderId}:
+    get:
+      $ref: paths/payment/orderRetrieveRequest.yaml
+    delete:
+      $ref: paths/payment/orderCancel.yaml
+  /api/v2_1/orders/{orderId}/status:
+    put: 
+      $ref: paths/payment/orderCapture.yaml
+  /api/v2_1/orders/{orderId}/refunds:
+    post:
+      $ref: paths/refund/createRefund.yaml
+    get: 
+      $ref: paths/refund/retrieveOrderRefundsData.yaml
+  /api/v2_1/orders/{orderId}/refunds/{refundId}:
+    get: 
+      $ref: paths/refund/retrieveRefund.yaml
+components:
+  securitySchemes: 
+    OAuth token:
+      $ref: ./components/securitySchemes/oauth.yaml
+      

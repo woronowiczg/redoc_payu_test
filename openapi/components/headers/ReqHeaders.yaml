@@ -1,0 +1,16 @@
+- name: Content-Type
+  in: header
+  description: Content type
+  required: true
+  schema:
+    type: string
+  style: simple
+  example: application/json
+- name: Authorization
+  in:  header
+  description: Auth token
+  required: true
+  schema:
+    type: string
+  style: simple
+  example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd

@@ -1,0 +1,32 @@
+type: object
+description: Section containing buyer data.
+properties:
+  customerId:
+    type: string
+    description: ID of the customer used in merchant system
+  email:
+    type: string
+    description: Buyer's email address.
+    example: email@email.com
+  phone:
+    type: string
+    description: Buyer's telephone number. Please use +[country code] [number] format.
+    example: +48 225108001
+  firstName:
+    type: string
+    description: Buyer's first name.
+    example: John
+  lastName:
+    type: string
+    description: Buyer's last name
+    example: Doe
+  nin:
+    type: string
+    description: National Identification Number
+  language:
+    type: string
+    description: Language code, ISO-639-1 compliant. Denotes the language version of PayU hosted payment page and of e-mail messages sent from PayU to the payer.
+    example: pl
+    enum: [pl, en, cs, bg, da, de, el, es, et  fi, fr, hr, hu, it, lt, lv, nl, pt, ro, ru, sk, sl, sr, sv, tr, uk]
+  delivery:
+    $ref: BuyerDelivery.yaml

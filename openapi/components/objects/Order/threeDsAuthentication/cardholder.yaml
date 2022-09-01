@@ -1,0 +1,10 @@
+type: object
+description: Describes cardholder's account data in merchant's possession, including details of account run for the cardholder in merchant's system.
+properties: 
+  name:
+    type: string
+    description: Cardholder name and surname.
+  accountInformation:
+    $ref: cardholder/accountInformation.yaml
+  billingAddress:
+    $ref: cardholder/billingAddress.yaml

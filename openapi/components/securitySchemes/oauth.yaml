@@ -1,0 +1,5 @@
+type: apiKey
+name: Authorization
+in: header
+description:
+  Authorization token generated using client_secret key from the merchant panel.
