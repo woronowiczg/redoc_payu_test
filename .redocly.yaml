@@ -11,7 +11,7 @@ features.openapi:
   showConsole: true
   pathInMiddlePanel: true
   htmlTemplate: ./docs/index.html
-  onlyRequiredInSamples: true
+  # onlyRequiredInSamples: true
   theme:
     colors:
       primary:
