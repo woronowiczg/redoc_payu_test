@@ -1,0 +1,27 @@
+type: object
+properties: 
+  street:
+    type: string
+    minLength: 1
+    maxLength: 50
+    description: Full street address, incl. apartment number.
+  postalCode:
+    type: string
+    minLength: 1
+    maxLength: 16
+    description: Postal/ZIP code.
+  city:
+    type: string
+    minLength: 1
+    maxLength: 50
+    description: City name.
+  state:
+    type: string
+    minLength: 1
+    maxLength: 3
+    description: Country principal subdivision like "state" or "province". If provided, must be a two-letter country code compliant with ISO-3166.
+  countryCode:
+    type: string
+    minLength: 1
+    maxLength: 2
+    description: Two-letter country code compliant with ISO-3166.

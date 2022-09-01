@@ -1,0 +1,19 @@
+type: object
+description: >-
+  Section containing data of shipping method.
+  Section <shippingMethod> is a single object of
+  type shippingMethod.
+properties:
+  type:
+    type: string
+    description: Type of shipment
+    enum:
+      - COURIER
+      - COLLECTION_POINT_PICKUP
+      - PARCEL_LOCKER
+      - STORE_PICKUP
+  price:
+    type: string
+    description: Shipping cost
+  address:
+    $ref: shippingMethod/address.yaml

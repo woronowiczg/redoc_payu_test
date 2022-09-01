@@ -1,0 +1,69 @@
+type: object
+description: >-
+  Section containing credit data. This information is not
+  required, but it is strongly recommended to include it.
+  Otherwise the buyer will be prompted to provide missing data
+  on provider page when payment by Installments or Pay later.
+properties:
+  shoppingCarts:
+    $ref: credit/shoppingCart.yaml
+  applicant:
+    type: object
+    description: Section containing data of person applying for a credit.
+    properties:
+      email:
+        type: string
+        description: Applicant’s email address
+      phone:
+        type: string
+        description: Applicant’s phone number
+      firstName:
+        type: string
+        description: Applicant’s first name
+      lastName:
+        type: string
+        description: Applicant’s last name
+      language:
+        type: string
+        description: >-
+          Language code, ISO-639-1 compliant. Denotes the
+          language version of PayU hosted payment page and of
+          e-mail messages sent from PayU to the payer.
+      nin:
+        type: string
+        description: National Identification Number
+      address:
+        type: object
+        description: Section containing data about applicant’s address.
+        properties:
+          street:
+            type: string
+            description: >-
+              Street name, possibly including house and flat
+              number.
+          streetNo:
+            type: string
+            description: Street number
+          flatNo:
+            type: string
+            description: Flat number
+          postalCode:
+            type: string
+            description: Postal Code
+          city:
+            type: string
+            description: City
+          countryCode:
+            type: string
+            description: Two-letter country code compliant with ISO-3166.
+      additionalInfo:
+        type: object
+        description: >-
+          Additional information about person applying for
+          credit.
+        properties:
+          hasSuccessfullyFinishedOrderInShop:
+            type: string
+            description: >-
+              Information whether there were previous,
+              successfully completed orders for applicant.
