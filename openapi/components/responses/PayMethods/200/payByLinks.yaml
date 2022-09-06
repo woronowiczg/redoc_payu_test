@@ -1,0 +1,18 @@
+type: array
+description: Section containing available PayByLink payment methods
+items:
+  type: object
+  properties: 
+    value:
+      type: string
+    brandImageUrl:
+      type: string
+    name:
+      type: string
+    status:
+      type: string
+      enum: [ENABLED, DISABLED, TEMPORARY_DISABLED]
+    minAmount:
+      type: number
+    maxAmount:
+      type: number

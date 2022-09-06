@@ -1,5 +1,5 @@
 tags:
-    - Authorize payment
+    - OAuth authorization
 summary: Create OAuth token
 description: |
     You authenticate with OAuth standard by obtaining a token, which is used for further communication with PayU servers. You can view authorization data from the management panel.
@@ -48,9 +48,11 @@ requestBody:
                     mapping:
                         client_credentials: ../components/schemas/authSchemas/ClientCredentials.yaml
                         trusted_merchant: ../components/schemas/authSchemas/TrustedMerchant.yaml
+                        partner:  ../components/schemas/authSchemas/Partner.yaml
                 anyOf:
                     - $ref: ../components/schemas/authSchemas/ClientCredentials.yaml
                     - $ref: ../components/schemas/authSchemas/TrustedMerchant.yaml
+                    - $ref:  ../components/schemas/authSchemas/Partner.yaml
 responses:
     200:
         description: OK

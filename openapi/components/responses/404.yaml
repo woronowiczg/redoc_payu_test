@@ -1,0 +1,14 @@
+type: object
+properties: 
+  status:
+    type: object
+    properties: 
+      statusCode:
+        type: string
+        description: Error type.
+      severity:
+        type: string
+        description: erroer severity type.
+      statusDesc:
+        type: string
+        description: Error description.

@@ -9,7 +9,7 @@ items:
     shippingMethod:
       $ref: shoppingCart/shippingMethod.yaml
     products:
-      $ref: ../../../arrays/Order/credit/shoppingCart/products.yaml
+      $ref: shoppingCart/products.yaml
       # type: array
       # description: >-
       #   Section containing data about ordered products.

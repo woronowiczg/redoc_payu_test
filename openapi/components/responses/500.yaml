@@ -1,0 +1,17 @@
+type: object
+properties: 
+  status:
+    type: object
+    properties: 
+      statusCode:
+        type: string
+        description: Error type.
+      code:
+        type: string
+        description: Identification code of specific error.
+      codeLiteral:
+        type: string
+        description: Cause of the error.
+      statusDesc:
+        type: string
+        description: Error description.

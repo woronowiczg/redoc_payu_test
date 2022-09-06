@@ -1,0 +1,24 @@
+type: array
+description: Section containing saved card tokens
+items:
+  type: object
+  properties: 
+    value:
+      type: string
+    brandImageUrl:
+      type: string
+    preferred:
+      type: boolean
+    status:
+      type: string
+      enum: [NEW, ACTIVE, EXPIRED]
+    cardExpirationYear:
+      type: integer
+    cardExpirationMonth:
+      type: integer
+    cardNumberMasked:
+      type: string
+    cardScheme:
+      type: string
+    cardBrand:
+      type: string

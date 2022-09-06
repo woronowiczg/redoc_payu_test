@@ -24,7 +24,13 @@ features.openapi:
   generateCodeSamples:
     languages:  # Array of language config objects; indicates in which languages to generate code samples.
       - lang: curl
-      - lang: Node.js
-      - lang: JavaScript
+      - lang: Java
       - lang: PHP
+      - lang: Node.js
       - lang: Python
+      - lang: JavaScript
+      - lang: Go
+      - lang: Ruby
+      - lang: R
+      - lang: Java+Apache
+      - lang: C#
