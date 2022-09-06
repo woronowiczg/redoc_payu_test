@@ -1,9 +1,0 @@
-type: array
-description: Additional data for some Visa Checkout integrations.
-items: 
-  type: object
-  properties:
-    name:
-      type: string
-    value:
-      type: string

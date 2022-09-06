@@ -1,5 +1,0 @@
-type: object
-properties:
-  id:
-    type: string
-    description: submerchant ID when payment is created by Payment Facilitator for Submerchant
