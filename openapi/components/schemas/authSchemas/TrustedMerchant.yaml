@@ -1,0 +1,22 @@
+type: object
+required: [grant_type, client_id, client_secret, email, extCustomerId]
+properties: 
+  grant_type:
+    type: string
+    example: trusted_merchant
+    enum: [trusted_merchant]
+    description: Authorization mode
+  client_id:
+    type: string
+    example: '145227'
+    description: Merchant's POS identifier in PayU's system. Can be found in PayU's merchant panel
+  client_secret:
+    type: string
+    example: '12f071174cb7eb79d4aac5bc2f07563f'
+    description: Merchant's secret key. Can be found in PayU's merchant panel
+  email:
+    type: string
+    description: Customer's email address in merchant's system
+  extCustomerId:
+    type: string
+    description: Customer's identifier in the merchant's system

@@ -1,0 +1,71 @@
+type: object
+description: Informations about cardholders account.
+properties: 
+  createDate:
+    type: string
+    format: '2019-03-27T10:57:59.000+01:00'
+    description: Date when the account has been created for the cardholder.
+  suspiciousActivity:
+    type: boolean
+    description: Indicates whether merchant has experienced suspicious/fraudulent activity for this account.
+  deliveryAddressFirstUsedDate:
+    type: string
+    format: '2019-03-27T10:57:59.000+01:00'
+    description: Date when the shipping address used for this order was first used.
+  deliveryAdressUsageIndicator:
+    type: string
+    enum: [THIS_TRANSACTION, LESS_THAN_30_DAYS, 30_TO_60_DAYS, MORE_THAN_60_DAYS]
+    description: Indicates when this shipping address was first used.
+  pastOrdersYear:
+    type: integer
+    description: Orders created in merchant's system for this account in the past 12 months.
+    minimum: 1
+    maximum: 9999
+  pastOrdersDay:
+    type: integer
+    description: Orders created in merchant's system for this account in the last 24 hours.
+    minimum: 1
+    maximum: 9999
+  purchasesLastSixMonths:
+    type: integer
+    description: Fulfilled (successful) orders created in merchant's system for this account in the past 6 months.
+    minimum: 1
+    maximum: 9999
+  changeDate:
+    type: string
+    format: '2019-03-27T10:57:59.000+01:00'
+    description: Date when account details were last changed.
+  changeIndicator:
+    type: string
+    enum: [THIS_TRANSACTION, LESS_THAN_30_DAYS, 30_TO_60_DAYS, MORE_THAN_60_DAYS]
+    description: Indicates time when account information was last changed.
+  passwordChanged:
+    type: string
+    format: '2019-03-27T10:57:59.000+01:00'
+    description: Date when account password was last changed.
+  passwordChangeIndicator:
+    type: string
+    enum: [NO_CHANGE, THIS_TRANSACTION, LESS_THAN_30_DAYS, 30_TO_60_DAYS, MORE_THAN_60_DAYS]
+    description: Indicates whether and when the password was last changed.
+  nameToRecipientMatch:
+    type: boolean
+    description: Indicates whether cardholder's name matches recipient's name.
+  addCardAttemptsDay:
+    type: string
+    description: Indicates attempts to add a card to cardholder's account in merchant's system within last 24 hours.
+  authMethod:
+    type: string
+    enum: [GUEST, LOGIN, FEDERATED_ID, THIRD_PARTY, ISSUER, FIDO]
+    description: Authentication method used to recognize cardholder.
+  authDateTime:
+    type: string
+    format: '2019-03-27T10:57:59.000+01:00'
+    description: Date and time when authentication was performed.
+  cardAddedDate:
+    type: string
+    format: '2019-03-27T10:57:59.000+01:00'
+    description: Date when card account has been stored with merchant.
+  cardAddedIndicator:
+    type: string
+    enum: [GUEST, THIS_TRANSACTION, LESS_THAN_30_DAYS, 30_TO_60_DAYS, MORE_THAN_60_DAYS]
+    description: Indicates if and when the card was stored with merchant.

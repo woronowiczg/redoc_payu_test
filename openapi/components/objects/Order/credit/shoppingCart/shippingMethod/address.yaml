@@ -1,0 +1,34 @@
+type: object
+description: >-
+  Section containing data about shipping
+  address. Section <shippingMethod.address> is a
+  single object of type address
+properties:
+  pointId:
+    type: string
+    description: >-
+      The full name of the pickup point,
+      including its unique identifier.
+    example: Parcel locker POZ29A
+  street:
+    type: string
+    description: >-
+      Street name, possibly including house and
+      flat number.
+  streetNo:
+    type: string
+    description: Street number
+  flatNo:
+    type: string
+    description: Flat number
+  postalCode:
+    type: string
+    description: Postal Code
+  city:
+    type: string
+    description: City
+  countryCode:
+    type: string
+    description: >-
+      Two-letter country code compliant with
+      ISO-3166.
