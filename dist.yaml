@@ -1,7 +1,10 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: PayU REST
+  title: PayU REST API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
   x-logo:
     url: >-
       https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg
@@ -15,7 +18,7 @@ paths:
   /pl/standard/user/oauth/authorize:
     post:
       tags:
-        - Authorize payment
+        - OAuth authorization
       summary: Create OAuth token
       description: >
         You authenticate with OAuth standard by obtaining a token, which is used
@@ -23,7 +26,7 @@ paths:
         data from the management panel.
 
 
-        Each payment should be authorized in one of two available modes: 
+        Each payment should be authorized in one of three available modes: 
 
         - <code>client_credentials</code> for standard integration,
 
@@ -31,49 +34,22 @@ paths:
         for logged-in shop/application users with fixed
         <code>extCustomerId</code>.
 
-
         Generated access token is valid for 43199 seconds.
       operationId: oauth
-      parameters:
-        - name: grant_type
-          in: query
-          description: Authorization mode.
-          required: true
-          schema:
-            type: string
-            enum:
-              - client_credentials
-              - trusted_merchant
-        - name: client_id
-          in: query
-          description: >-
-            Merchant's POS identifier in PayU's system. Can be found in PayU's
-            merchant panel.
-          required: true
-          schema:
-            type: string
-        - name: client_secret
-          in: query
-          description: Merchant's secret key. Can be found in PayU's merchant panel.
-          required: true
-          schema:
-            type: string
-        - name: email
-          in: query
-          description: >-
-            Customer's email address in merchant's system. __Required and used
-            only in <code>trusted_merchant</code>__.
-          required: true
-          schema:
-            type: string
-        - name: extCustomerId
-          in: query
-          description: >-
-            Customer's identifier in the merchant's system. __Required and used
-            only in <code>trusted_merchant</code>__.
-          required: true
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              discriminator:
+                propertyName: grant_type
+                mapping:
+                  client_credentials: '#/components/schemas/ClientCredentials'
+                  trusted_merchant: '#/components/schemas/TrustedMerchant'
+                  partner: '#/components/schemas/Partner'
+              anyOf:
+                - $ref: '#/components/schemas/ClientCredentials'
+                - $ref: '#/components/schemas/TrustedMerchant'
+                - $ref: '#/components/schemas/Partner'
       responses:
         '200':
           description: OK
@@ -136,13 +112,80 @@ paths:
                   error_description:
                     type: string
                     description: Error description.
+  /api/v2_1/paymethods:
+    get:
+      tags:
+        - Payment Methods
+      summary: Retrieve available Payment Methods
+      description: Retrieve available Payment Methods
+      operationId: PayMethodsRetrieveRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: lang
+          in: query
+          example: pl
+          description: >-
+            Language code, ISO-639-1 compliant, determins language of
+            description in "name" field
+          required: false
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Section containing payment methods available for Buyer
+                properties:
+                  blikTokens:
+                    $ref: '#/components/schemas/blikTokens'
+                  cardTokens:
+                    $ref: '#/components/schemas/cardTokens'
+                  pexTokens:
+                    $ref: '#/components/schemas/pexTokens'
+                  payByLinks:
+                    $ref: '#/components/schemas/payByLinks'
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+                        enum:
+                          - SUCCESS
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
   /api/v2_1/orders:
     post:
       tags:
-        - Payment
-      summary: Creating new order.
-      description: OrderCreateRequest
-      operationId: orderCreateRequest
+        - Order
+      summary: Create order
+      description: Create order
+      operationId: OrderCreateRequest
       security:
         - OAuth token: []
       parameters:
@@ -175,18 +218,16 @@ paths:
                 - totalAmount
                 - products
               properties:
-                extOrderId:
+                continueUrl:
                   type: string
                   description: >-
-                    ID of an order used in merchant system. Order identifier
-                    assigned by the merchant. It enables merchants to find a
-                    specific order in their system. This value must be unique
-                    within a single POS.
+                    Address for redirecting the customer after payment is
+                    commenced.
+                  example: www.example.com/path
                 notifyUrl:
                   type: string
                   description: The address for sending notifications
-                  examples:
-                    - www.notify.com
+                  example: https://your.eshop.com/notify
                 customerIp:
                   type: string
                   description: >-
@@ -199,12 +240,6 @@ paths:
                   description: Point of sale ID.
                   examples:
                     - '140332'
-                validityTime:
-                  type: string
-                  description: >-
-                    Duration for the validity of an order (in seconds), during
-                    which time payment must be made. Default value 86400.
-                  example: '100000'
                 description:
                   type: string
                   description: Description of the order.
@@ -214,7 +249,9 @@ paths:
                 visibleDescription:
                   type: string
                   maxLength: 80
-                  description: ext visible on the PayU payment page.
+                  description: >-
+                    Order/Payment description visible for Buyer on the PayU
+                    payment page.
                 statementDescription:
                   type: string
                   maxLength: 22
@@ -224,6 +261,13 @@ paths:
                     name should be easy to recognize by the cardholder. If field
                     is not provided, static name configured by PayU will be
                     used.
+                extOrderId:
+                  type: string
+                  description: >-
+                    ID of an order used in merchant system. Order identifier
+                    assigned by the merchant. It enables merchants to find a
+                    specific order in their system. This value must be unique
+                    within a single POS.
                 currencyCode:
                   type: string
                   description: Currency code compliant with ISO 4217 (e.g EUR).
@@ -236,337 +280,48 @@ paths:
                     EUR). Applies also to currencies without subunits (e.g. 1000
                     is 10 HUF).
                   example: '1000'
+                validityTime:
+                  type: string
+                  description: >-
+                    Duration for the validity of an order (in seconds), during
+                    which time payment must be made. Default value 86400.
+                  example: '100000'
                 cardOnFile:
                   type: string
-                  description: description cardOnFile
+                  description: >-
+                    Information about party initializing order or a transaction
+                    with Buyer consent to save card token. "cardOnFile"
+                    parameter cannot be used with "recurring" parameter.
                   enum:
                     - FIRST
                     - STANDARD_CARDHOLDER
                     - STANDARD_MERCHANT
                 recurring:
                   type: string
-                  description: description recurring
+                  description: >-
+                    Marks the order as recurring payment - first or subsequent.
+                    "recurring" parameter cannot be used with "cardOnFile"
+                    parameter
                   enum:
                     - FIRST
                     - STANDARD
-                continueUrl:
-                  type: string
-                  description: >-
-                    Address for redirecting the customer after payment is
-                    commenced.
-                  examples:
-                    - www.example.com/path
                 buyer:
                   $ref: '#/components/schemas/Buyer'
                 products:
-                  $ref: '#/components/schemas/Products'
+                  $ref: '#/components/schemas/products'
                 payMethods:
-                  type: object
-                  description: >-
-                    Section containing data of the ordered products. Section
-                    products is an array of objects of type product.
-                  properties:
-                    payMethod:
-                      type: object
-                      required:
-                        - type
-                        - value
-                      properties:
-                        type:
-                          type: string
-                          description: Payment method type.
-                          enum:
-                            - PBL
-                            - CARD_TOKEN
-                            - PAYMENT_WALL
-                        value:
-                          type: string
-                          description: Payment type for PBL, CARD_TOKEN.
-                          example: c
-                        authorizationCode:
-                          type: string
-                          description: >-
-                            Optional, usage differs depending on payment method.
-                            For BLIK integrated transparently: enables to
-                            collect 6-digit BLIK code on your website instead of
-                            redirecting to BLIK.
-                          example: '777123'
-                        specificData:
-                          type: array
-                          items:
-                            type: object
+                  $ref: '#/components/schemas/payMethods'
                 mcpData:
-                  type: object
-                  description: >-
-                    Section allows to pass currency conversion details if you
-                    chose to use Multi-Currency Pricing.
-                  required:
-                    - mcpCurrency
-                    - mcpAmount
-                    - mcpRate
-                    - mcpFxTableId
-                    - mcpPartnerId
-                  properties:
-                    mcpCurrency:
-                      type: string
-                      description: termCurrency from the rate table.
-                    mcpAmount:
-                      type: string
-                      description: baseCurrency amount converted to termCurrency.
-                    mcpRate:
-                      type: string
-                      description: Applied conversion rate.
-                    mcpFxTableId:
-                      type: string
-                      description: Applied FX rate table id.
-                    mcpPartnerId:
-                      type: string
-                      description: Id provided by PayU.
+                  $ref: '#/components/schemas/mcpData'
                 threeDsAuthentication:
-                  type: object
-                  description: >-
-                    Contains optional fields required by 3DS 2 authentication
-                    protocol.
-                  required:
-                    - sdk
-                  properties:
-                    challangeRequested:
-                      type: string
-                      description: >-
-                        Merchant's preference regarding 3DS 2 challenge.
-                        Exclusive with exemption. Maybe overridden by PayU
-                      enum:
-                        - 'YES'
-                        - 'NO'
-                        - MANDATE
-                    exemption:
-                      type: object
-                      required:
-                        - value
-                        - rejectionHandling
-                      description: >-
-                        Merchant's preference regarding SCA exemption to be used
-                        to exempt card payment from 3DS authentication.
-                        Exclusive with challengeRequested. Requires additional
-                        configuration to be enabled
-                      properties:
-                        value:
-                          type: string
-                          description: >-
-                            Either LOW_RISK (also known as TRA - transaction
-                            risk analysis compliant with SCA requirements has
-                            been performed by the merchant) or LOW_VALUE (low
-                            value payment, up to 30 EUR or equivalent in other
-                            currency).
-                          enum:
-                            - LOW_RISK
-                            - LOW_VALUE
-                        rejectionHandling:
-                          type: string
-                          description: >-
-                            Either PERFORM_AUTHENTICATION (PayU will return
-                            response with WARNING_CONTINUE_3DS and redirection
-                            URL code if exemption cannot be applied) or DECLINE
-                            (PayU will decline the payment if exemption cannot
-                            be applied - error message will be returned
-                            synchronously in OrderCreateResponse)
-                          enum:
-                            - PERFORM_AUTHENTICATION
-                            - DECLINE
-                        riskScore:
-                          type: string
-                          maxLength: 128
-                          description: >-
-                            Risk score assigned by merchant's antifraud tool.
-                            For informative purposes only.
+                  $ref: '#/components/schemas/threeDsAuthentication'
                 credit:
-                  type: object
-                  description: >-
-                    Section containing credit data. This information is not
-                    required, but it is strongly recommended to include it.
-                    Otherwise the buyer will be prompted to provide missing data
-                    on provider page when payment by Installments or Pay later.
-                  properties:
-                    shoppingCarts:
-                      type: array
-                      description: >-
-                        Section containing data of the ordered products. Section
-                        <credit.shoppingCarts> is an array of objects of type
-                        shoppingCart.
-                      items:
-                        type: object
-                        properties:
-                          shippingMethod:
-                            type: object
-                            description: >-
-                              Section containing data of shipping method.
-                              Section <shippingMethod> is a single object of
-                              type shippingMethod.
-                            properties:
-                              type:
-                                type: string
-                                description: Type of shipment
-                                enum:
-                                  - COURIER
-                                  - COLLECTION_POINT_PICKUP
-                                  - PARCEL_LOCKER
-                                  - STORE_PICKUP
-                              price:
-                                type: string
-                                description: Shipping cost
-                              address:
-                                type: object
-                                description: >-
-                                  Section containing data about shipping
-                                  address. Section <shippingMethod.address> is a
-                                  single object of type address
-                                properties:
-                                  pointId:
-                                    type: string
-                                    description: >-
-                                      The full name of the pickup point,
-                                      including its unique identifier.
-                                    example: Parcel locker POZ29A
-                                  street:
-                                    type: string
-                                    description: >-
-                                      Street name, possibly including house and
-                                      flat number.
-                                  streetNo:
-                                    type: string
-                                    description: Street number
-                                  flatNo:
-                                    type: string
-                                    description: Flat number
-                                  postalCode:
-                                    type: string
-                                    description: Postal Code
-                                  city:
-                                    type: string
-                                    description: City
-                                  countryCode:
-                                    type: string
-                                    description: >-
-                                      Two-letter country code compliant with
-                                      ISO-3166.
-                          products:
-                            type: array
-                            description: >-
-                              Section containing data about ordered products.
-                              Section <products> is an array of objects of type
-                              product.
-                            required:
-                              - name, unitPrice, quantity
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                  description: Name of the product
-                                unitPrice:
-                                  type: string
-                                  description: Unit price
-                                quantity:
-                                  type: string
-                                  description: Quantity
-                                virtual:
-                                  type: boolean
-                                  enum:
-                                    - true
-                                    - false
-                                  description: >-
-                                    Product type, which can be virtual or
-                                    material.
-                                  example: true
-                          extCustomerId:
-                            type: string
-                            description: >-
-                              Submerchant identifier. This field should be
-                              consistent with field extCustomerId in
-                              shoppingCarts section when order is placed in
-                              marketplace.
-                    applicant:
-                      type: object
-                      description: Section containing data of person applying for a credit.
-                      properties:
-                        email:
-                          type: string
-                          description: Applicant’s email address
-                        phone:
-                          type: string
-                          description: Applicant’s phone number
-                        firstName:
-                          type: string
-                          description: Applicant’s first name
-                        lastName:
-                          type: string
-                          description: Applicant’s last name
-                        language:
-                          type: string
-                          description: >-
-                            Language code, ISO-639-1 compliant. Denotes the
-                            language version of PayU hosted payment page and of
-                            e-mail messages sent from PayU to the payer.
-                        nin:
-                          type: string
-                          description: National Identification Number
-                        address:
-                          type: object
-                          description: Section containing data about applicant’s address.
-                          properties:
-                            street:
-                              type: string
-                              description: >-
-                                Street name, possibly including house and flat
-                                number.
-                            streetNo:
-                              type: string
-                              description: Street number
-                            flatNo:
-                              type: string
-                              description: Flat number
-                            postalCode:
-                              type: string
-                              description: Postal Code
-                            city:
-                              type: string
-                              description: City
-                            countryCode:
-                              type: string
-                              description: Two-letter country code compliant with ISO-3166.
-                        additionalInfo:
-                          type: object
-                          description: >-
-                            Additional information about person applying for
-                            credit.
-                          properties:
-                            hasSuccessfullyFinishedOrderInShop:
-                              type: string
-                              description: >-
-                                nformation whether there were previous,
-                                successfully completed orders for applicant.
+                  $ref: '#/components/schemas/credit'
+                submerchant:
+                  $ref: '#/components/schemas/submerchant'
         description: Parameters for OrderCreateRequest
         required: true
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Response code
-                  redirectUri:
-                    type: string
-                  orderId:
-                    type: string
-                  extOrderId:
-                    type: string
         '201':
           description: Created
           content:
@@ -585,6 +340,17 @@ paths:
                     type: string
                   extOrderId:
                     type: string
+                  challengeParameters:
+                    type: object
+                    properties:
+                      threeDsServerTransactionId:
+                        type: string
+                      acsTransID:
+                        type: string
+                      acsReferenceNumber:
+                        type: string
+                      acsSignedContent:
+                        type: string
         '302':
           description: Found
           content:
@@ -609,103 +375,348 @@ paths:
                   threeDsProtocolVersion:
                     type: string
                     enum:
-                      - 3DS
+                      - 3DS1
                       - 3DS2
                   orderId:
                     type: string
-                    description: Order identifier given by PayU
-                  payMethods:
-                    type: object
-                    properties:
-                      card:
-                        type: object
-                        properties:
-                          number:
-                            type: string
-                            description: Card number.
-                          expirationMonth:
-                            type: integer
-                            description: Card expiration month.
-                          expirationYear:
-                            type: integer
-                            description: Card expiration year.
-                      type:
-                        type: string
-                      value:
-                        type: string
+                    description: Order identifier given by PayU.
                   extOrderId:
                     type: string
                     description: Order identifier given by merchant.
+                  payMethods:
+                    type: object
+                    properties:
+                      payMethod:
+                        type: object
+                        properties:
+                          card:
+                            type: object
+                            properties:
+                              number:
+                                type: string
+                                description: Card number.
+                              expirationMonth:
+                                type: integer
+                                description: Card expiration month.
+                              expirationYear:
+                                type: integer
+                                description: Card expiration year.
+                          type:
+                            type: string
+                          value:
+                            type: string
         '400':
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Error type.
-                      severity:
-                        type: string
-                      code:
-                        type: string
-                        description: Identification code of specific error.
-                      codeLiteral:
-                        type: string
-                        description: Cause of the error.
-                      statusDesc:
-                        type: string
-                        description: Error description.
+                $ref: '#/components/schemas/400'
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Error type.
-                      code:
-                        type: string
-                        description: Identification code of specific error.
-                      codeLiteral:
-                        type: string
-                        description: Cause of the error.
-                      statusDesc:
-                        type: string
-                        description: Error description.
+                $ref: '#/components/schemas/401'
         '403':
           description: Forbidden
           content:
             application/json:
               schema:
+                $ref: '#/components/schemas/403'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
+  /api/v2_1/orders/{orderId}:
+    get:
+      tags:
+        - Order
+      summary: Retrieve order
+      description: Retrieve order
+      operationId: OrderRetrieveRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: orderId
+          in: path
+          example: WZHF5FFDRJ140731GUEST000P01
+          description: Order ID generated by the PayU system
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
+                  orders:
+                    type: array
+                    description: Array of order objects.
+                    items:
+                      type: object
+                      properties:
+                        shippingMethod:
+                          type: object
+                          properties:
+                            country:
+                              type: string
+                              description: Two-letter country code compliant with ISO-3166.
+                        orderId:
+                          type: string
+                          description: Order ID generated by the PayU system.
+                          example: '{orderId}'
+                        extOrderId:
+                          type: string
+                          description: External order ID (assigned by the shop).
+                          example: '343242'
+                        orderCreateDate:
+                          type: string
+                          description: Order creation timestamp.
+                          example: '2014-10-27T14:58:17.443+01:00'
+                        notifyUrl:
+                          type: string
+                          description: Address for sending notifications.
+                          example: http://localhost/OrderNotify/
+                        customerIp:
+                          type: string
+                          description: >-
+                            Customer's IP address. Note: 0.0.0.0 is not
+                            accepted.
+                          example: 127.0.0.1
+                        merchantPosId:
+                          type: string
+                          description: Point of sale ID.
+                          example: '145227'
+                        description:
+                          type: string
+                          description: Description for order.
+                          example: New Order
+                        additionalDescription:
+                          type: string
+                          description: Additional description for order.
+                          example: New Order
+                        validityTime:
+                          type: string
+                          description: >-
+                            Duration for the validity of an order (in seconds),
+                            during which time payment must be made.
+                          default: '86400'
+                        currencyCode:
+                          type: string
+                          description: Currency code compliant with ISO 4217.
+                          example: PLN
+                        totalAmount:
+                          type: string
+                          description: Total price of the order.
+                          example: '3200'
+                        buyer:
+                          $ref: '#/components/schemas/Buyer'
+                        payMethod:
+                          type: object
+                          properties:
+                            amount:
+                              type: string
+                            type:
+                              type: string
+                              enum:
+                                - PBL
+                                - CARD_TOKEN
+                                - PAYMENT_WALL
+                                - BLIK_AUTHORIZATION_CODE
+                                - BLIK_TOKEN
+                        products:
+                          $ref: '#/components/schemas/products'
+                        status:
+                          type: string
+                          description: Order status.
+                          enum:
+                            - NEW
+                            - PENDING
+                            - WAITING_FOR_CONFIRMATION
+                            - COMPLETED
+                            - CANCELED
+                  properties:
+                    $ref: '#/components/schemas/properties'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+    delete:
+      tags:
+        - Order
+      summary: Cancel order
+      description: Cancel order
+      operationId: OrderCancelRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: orderId
+          in: path
+          example: WZHF5FFDRJ140731GUEST000P01
+          description: Order ID generated by the PayU system
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: Order identifier in PayU's system.
+                  extOrderId:
+                    type: string
+                    description: Order identifier in merchant's system.
                   status:
                     type: object
                     properties:
                       statusCode:
                         type: string
-                        description: Error type.
-                      code:
-                        type: string
-                        description: Identification code of specific error.
-                      codeLiteral:
-                        type: string
-                        description: Cause of the error.
-                      statusDesc:
-                        type: string
-                        description: Error description.
+                        description: Status after update.
+                        example: SUCCESS
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/403'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
         '500':
           description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
+  /api/v2_1/orders/{orderId}/status:
+    put:
+      tags:
+        - Order
+      summary: Capture authorized order
+      description: Capture authorized order
+      operationId: OrderCaptureRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: orderId
+          in: path
+          example: WZHF5FFDRJ140731GUEST000P01
+          description: Order ID generated by the PayU system
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+                - orderStatus
+              properties:
+                orderId:
+                  type: string
+                  description: Identifier of the order you want to update.
+                orderStatus:
+                  type: string
+                  description: Status of the order after update.
+                  example: COMPLETED
+      responses:
+        '200':
+          description: OK
           content:
             application/json:
               schema:
@@ -716,19 +727,37 @@ paths:
                     properties:
                       statusCode:
                         type: string
-                        description: Error type.
-                      codeLiteral:
-                        type: string
-                        description: Cause of the error.
+                        description: Status after update.
+                        example: SUCCESS
                       statusDesc:
                         type: string
-                        description: Error description.
-  /api/v2_1/orders/{orderId}:
-    get:
+                        description: Status message.
+                        example: Status was updated
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
+  /api/v2_1/orders/{orderId}/transactions:
+    put:
       tags:
-        - Payment
-      operationId: orderId
-      summary: Retrieve order data
+        - Order
+      summary: Retrieve transaction
+      description: Retrieve transaction
+      operationId: TransactionRetrieveRequest
       security:
         - OAuth token: []
       parameters:
@@ -779,63 +808,95 @@ paths:
                           type: string
                           description: External order ID (assigned by the shop).
                           example: '343242'
-                        orderCreateDate:
-                          type: string
-                          description: Order creation timestamp.
-                          example: '2014-10-27T14:58:17.443+01:00'
-                        notifyUrl:
-                          type: string
-                          description: Address for sending notifications.
-                          example: http://localhost/OrderNotify/
                         customerIp:
                           type: string
                           description: >-
                             Customer's IP address. Note: 0.0.0.0 is not
                             accepted.
                           example: 127.0.0.1
-                        merchantPosId:
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '404':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /api/v2_1/shops/{shopId}:
+    get:
+      tags:
+        - Shop
+      summary: Retrieve Shop balance
+      description: Retrieve Shop balance
+      operationId: ShopBalanceRetrieveRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: shopId
+          in: path
+          example: a1B2C3x
+          description: ShopId value generated by PayU assigned to Shop
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    description: Array of order objects.
+                    items:
+                      type: object
+                      properties:
+                        shopId:
                           type: string
-                          description: Point of sale ID.
-                          example: '145227'
-                        description:
+                          description: ShopId value generated by PayU assigned to Shop.
+                          example: '{shopId}'
+                        name:
                           type: string
-                          description: Description for order.
-                          example: New Order
-                        validityTime:
-                          type: string
-                          description: >-
-                            Duration for the validity of an order (in seconds),
-                            during which time payment must be made.
-                          default: '86400'
+                          description: Shop name assigned by Merchant.
+                          example: Test Shop
                         currencyCode:
                           type: string
-                          description: Currency code compliant with ISO 4217.
+                          description: >-
+                            ISO 4217 currency code of currency in which Shop
+                            balance is kept.
                           example: PLN
-                        totalAmount:
-                          type: string
-                          description: Total price of the order.
-                          example: '3200'
-                        buyer:
-                          $ref: '#/components/schemas/Buyer'
-                        payMethod:
-                          type: object
-                          description: Used payment method.
-                          properties:
-                            amount:
-                              type: string
-                              description: Order amount.
-                            type:
-                              type: string
-                              description: Payment method code.
-                        status:
-                          type: string
-                          description: Order status.
-                        products:
-                          $ref: '#/components/schemas/Products'
-                  status:
-                    $ref: '#/components/schemas/Status'
-                  properties:
-                    $ref: '#/components/schemas/Properties'
+                        balance:
+                          $ref: '#/components/schemas/balance'
         '400':
           description: Error
           content:
@@ -870,200 +931,16 @@ paths:
                       statusDesc:
                         type: string
                         description: Error description.
-    delete:
-      tags:
-        - Payment
-      summary: Cancel waiting order.
-      description: Cancel order
-      operationId: orderCancel
-      security:
-        - OAuth token: []
-      parameters:
-        - name: orderId
-          in: path
-          example: WZHF5FFDRJ140731GUEST000P01
-          description: Order ID generated by the PayU system
-          required: true
-          content:
-            application/json:
-              schema:
-                type: string
-        - name: Content-Type
-          in: header
-          description: Content type
-          required: true
-          schema:
-            type: string
-          style: simple
-          example: application/json
-        - name: Authorization
-          in: header
-          description: Auth token
-          required: true
-          schema:
-            type: string
-          style: simple
-          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-      responses:
-        '200':
-          description: SUCCESS
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  orderId:
-                    type: string
-                    description: Order identifier in PayU's system.
-                  extOrderId:
-                    type: string
-                    description: Order identifier in merchant's system.
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Status after update.
-                        example: SUCCESS
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Error type.
-                      code:
-                        type: string
-                        description: Identification code of specific error.
-                      codeLiteral:
-                        type: string
-                        description: Cause of the error.
-                      statusDesc:
-                        type: string
-                        description: Error description.
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Error type.
-                      severity:
-                        type: string
-                      statusDesc:
-                        type: string
-                        description: Error description.
-  /api/v2_1/orders/{orderId}/status:
-    put:
-      tags:
-        - Payment
-      summary: Complete waiting order.
-      description: Capture order
-      operationId: orderCapture
-      security:
-        - OAuth token: []
-      parameters:
-        - name: orderId
-          in: path
-          example: WZHF5FFDRJ140731GUEST000P01
-          description: Order ID generated by the PayU system
-          required: true
-          content:
-            application/json:
-              schema:
-                type: string
-        - name: Content-Type
-          in: header
-          description: Content type
-          required: true
-          schema:
-            type: string
-          style: simple
-          example: application/json
-        - name: Authorization
-          in: header
-          description: Auth token
-          required: true
-          schema:
-            type: string
-          style: simple
-          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - orderId
-                - orderStatus
-              properties:
-                orderId:
-                  type: string
-                  description: Identifier of the order you want to update.
-                orderStatus:
-                  type: string
-                  description: Status of the order after update.
-                  example: COMPLETED
-      responses:
-        '200':
-          description: SUCCESS
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Status after update.
-                        example: SUCCESS
-                      statusDesc:
-                        type: string
-                        description: Status message.
-                        example: Status was updated
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: object
-                    properties:
-                      statusCode:
-                        type: string
-                        description: Error type.
-                      code:
-                        type: string
-                        description: Identification code of specific error.
-                      codeLiteral:
-                        type: string
-                        description: Cause of the error.
-                      statusDesc:
-                        type: string
-                        description: Error description.
   /api/v2_1/orders/{orderId}/refunds:
     post:
       tags:
         - Refund
-      summary: Creating refund.
-      description: Create a refund
-      operationId: createARefund
+      summary: Create refund
+      description: >-
+        Create new refund - this request is idempotent, so if exactly same data
+        will be provided, response will return data of already previously
+        created refund instead of creating new refund
+      operationId: OrderRefundCreateRequest
       security:
         - OAuth token: []
       parameters:
@@ -1218,8 +1095,9 @@ paths:
     get:
       tags:
         - Refund
-      summary: Retrieve all refunds for the specific orderId
-      operationId: orderRefunds
+      summary: Retrieve all refunds for order
+      description: Retrieve all refunds for order
+      operationId: OrderRefundsRetrieveRequest
       security:
         - OAuth token: []
       parameters:
@@ -1296,7 +1174,7 @@ paths:
                             - CANCELED
                             - FINALIZED
         '404':
-          description: NOT FOUND
+          description: Not Found
           content:
             application/json:
               schema:
@@ -1317,8 +1195,9 @@ paths:
     get:
       tags:
         - Refund
-      summary: Retrieve specific refund data
-      operationId: orderRefund
+      summary: Retrieve specific refund for order
+      description: Retrieve specific refund for order
+      operationId: OrderRefundRetrieveRequest
       security:
         - OAuth token: []
       parameters:
@@ -1374,11 +1253,11 @@ paths:
                     PENDING: '#/components/schemas/refundRetrievePending'
                     CANCELED: '#/components/schemas/refundRetrieveCanceled'
                 anyOf:
-                  - $ref: '#/components/schemas/refundRetrieveFInalized'
+                  - $ref: '#/components/schemas/refundRetrieveFinalized'
                   - $ref: '#/components/schemas/refundRetrievePending'
                   - $ref: '#/components/schemas/refundRetrieveCanceled'
         '404':
-          description: NOT FOUND
+          description: Not Found
           content:
             application/json:
               schema:
@@ -1395,6 +1274,1980 @@ paths:
                       statusDesc:
                         type: string
                         description: Error description.
+  /api/v2_1/payouts:
+    post:
+      tags:
+        - Payout
+      summary: Create payout
+      description: Create payout
+      operationId: PayoutCreateRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      requestBody:
+        description: Parameters for PayoutCreateRequest
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - shopId
+              properties:
+                shopId:
+                  type: string
+                  description: >-
+                    Address for redirecting the customer after payment is
+                    commenced.
+                  example: 1a2B3Cx
+                payout:
+                  $ref: '#/components/schemas/payout'
+                account:
+                  $ref: '#/components/schemas/account'
+                customerAddress:
+                  $ref: '#/components/schemas/customerAddress'
+                bankAddress:
+                  $ref: '#/components/schemas/bankAddress'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payout:
+                    type: object
+                    properties:
+                      payoutId:
+                        type: string
+                      extPayoutId:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                          - PENDING
+                          - WAITING
+                          - CANCELLED
+                          - REALIZED
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '403':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/403'
+        '404':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /api/v2_1/payouts/{payoutId}:
+    get:
+      tags:
+        - Payout
+      summary: Retrieve Payout
+      description: Retrieve Payout
+      operationId: PayoutRetrieveRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: payoutId
+          in: path
+          example: fefa25e021b14970bfac9ebfb20761dc
+          description: Payout ID generated by the PayU system
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payout:
+                    type: object
+                    properties:
+                      payoutId:
+                        type: string
+                      amount:
+                        type: number
+                      description:
+                        type: string
+                      status:
+                        type: string
+                        enum:
+                          - PENDING
+                          - WAITING
+                          - CANCELLED
+                          - REALIZED
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/403'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/404'
+  /api/v2_1/tokens/{token}:
+    delete:
+      tags:
+        - Card token deletion
+      summary: Card token deletion
+      description: Card token deletion
+      operationId: TokenDeleteRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: token
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/fx-providers/ecb/fx-rates:
+    get:
+      tags:
+        - FX reference
+      summary: FX reference
+      description: FX reference
+      operationId: FxReference
+      security:
+        - OAuth token: []
+      parameters:
+        - name: termCurrency
+          in: query
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Currency code compliant with ISO 4217
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/mcp-partners/{mcpPartnerId}/fx-table:
+    get:
+      tags:
+        - Multi-Currency pricing
+      summary: Multi-Currency pricing
+      description: Multi-Currency pricing
+      operationId: MultiCurrencyPricing
+      security:
+        - OAuth token: []
+      parameters:
+        - name: mcpPartnerId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/card-installment-proposals/{proposalId}:
+    get:
+      tags:
+        - Card Installments Proposal
+      summary: Card Installments Proposal
+      description: Card Installments Proposal
+      operationId: CardInstallmentsProposal
+      security:
+        - OAuth token: []
+      parameters:
+        - name: proposalId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/card-installment-proposals/{proposalId}/decisions:
+    post:
+      tags:
+        - Card Installments Proposal
+      summary: Card Installments Proposal Decisions
+      description: Card Installments Proposal Decisions
+      operationId: CardInstallmentsProposalDecisions
+      security:
+        - OAuth token: []
+      parameters:
+        - name: proposalId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/customers/ext/{extCustomerId}/status:
+    get:
+      tags:
+        - Marketplace Seller
+      summary: Marketplace Seller Status
+      description: Marketplace Seller Status
+      operationId: MarketplaceSellerStatus
+      security:
+        - OAuth token: []
+      parameters:
+        - name: extCustomerId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: currencyCode
+          in: query
+          example: loremIpsum
+          required: true
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/customers/ext/{extCustomerId}/balances:
+    get:
+      tags:
+        - Marketplace Seller
+      summary: Marketplace Seller Balance
+      description: Marketplace Seller Balance
+      operationId: MarketplaceSellerBalance
+      security:
+        - OAuth token: []
+      parameters:
+        - name: extCustomerId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: currencyCode
+          in: query
+          example: loremIpsum
+          required: true
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/customers/ext/{extCustomerId}/operations:
+    get:
+      tags:
+        - Marketplace Seller
+      summary: Marketplace Seller Operations History
+      description: Marketplace Seller Operations History
+      operationId: MarketplaceSellerOperationsHistory
+      security:
+        - OAuth token: []
+      parameters:
+        - name: extCustomerId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: currencyCode
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: type
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: dateTo
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: offset
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: +sortBy
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: '-sortBy'
+          in: query
+          example: loremIpsum
+          required: false
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/customers/ext/{extCustomerId}/feeDebitTransfer:
+    get:
+      tags:
+        - Marketplace Seller
+      summary: Marketplace Seller Fee Debit Transfer
+      description: Marketplace Seller Fee Debit Transfer
+      operationId: MarketplaceSellerFeeDebitTransfer
+      security:
+        - OAuth token: []
+      parameters:
+        - name: extCustomerId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/customers/ext/{extCustomerId}/feeCreditTransfer:
+    get:
+      tags:
+        - Marketplace Seller
+      summary: Marketplace Seller Fee Credit Transfer
+      description: Marketplace Seller Fee Credit Transfer
+      operationId: MarketplaceSellerFeeCreditTransfer
+      security:
+        - OAuth token: []
+      parameters:
+        - name: extCustomerId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/verification-advice/{Id}:
+    get:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Advice
+      description: Marketplace Verification Advice
+      operationId: MarketplaceVerificationAdvice
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Id
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/verification:
+    get:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Get
+      description: Marketplace Verification Get
+      operationId: MarketplaceVerificationGet
+      security:
+        - OAuth token: []
+      parameters:
+        - name: id
+          in: query
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Create
+      description: Marketplace Verification Create
+      operationId: MarketplaceVerificationCreate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/seller:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Dataloading Seller
+      description: Marketplace Verification Dataloading Seller
+      operationId: MarketplaceVerificationDataloadingSeller
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/seller/documents:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Dataloading Seller Documents
+      description: Marketplace Verification Dataloading Seller Documents
+      operationId: MarketplaceVerificationDataloadingSellerDocuments
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/associates:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Dataloading Associates
+      description: Marketplace Verification Dataloading Associates
+      operationId: MarketplaceVerificationDataloadingAssociates
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/associates/documents:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Dataloading Associates Documents
+      description: Marketplace Verification Dataloading Associates Documents
+      operationId: MarketplaceVerificationDataloadingAssociatesDocuments
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/files:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Dataloading Files
+      description: Marketplace Verification Dataloading Files
+      operationId: MarketplaceVerificationDataloadingFiles
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/verification-transfers/manual:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification - Verification Transfer
+      description: Marketplace Verification - Verification Transfer
+      operationId: MarketplaceVerificationVerificationTransfer
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/payouts/bankAccountData:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification with Verification Transfer
+      description: Marketplace Verification with Verification Transfer
+      operationId: MarketplaceVerificationWithVerificationTransfer
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/dataloading/payouts/payoneer:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Payoneer
+      description: Marketplace Verification Payoneer
+      operationId: MarketplaceVerificationPayoneer
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/aml-verification/v1/verification/complete:
+    post:
+      tags:
+        - Marketplace Verification
+      summary: Marketplace Verification Complete
+      description: Marketplace Verification Complete
+      operationId: MarketplaceVerificationComplete
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/reports/{reportId}:
+    get:
+      tags:
+        - Statements
+      summary: Stetement retrieval via API
+      description: Stetement retrieval via API
+      operationId: StatementRetrieveRequest
+      security:
+        - OAuth token: []
+      parameters:
+        - name: reportId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/visa-checkout/proxy/payment/data/{callId}:
+    get:
+      tags:
+        - VisaCheckoutProxy
+      summary: VisaCheckoutProxy
+      description: VisaCheckoutProxy
+      operationId: VisaCheckoutProxy
+      security:
+        - OAuth token: []
+      parameters:
+        - name: callId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/firms:
+    post:
+      tags:
+        - Partner Merchant Registration
+      summary: Partner Merchant Registration Firm Create
+      description: Partner Merchant Registration Firm Create
+      operationId: PartnerMerchantRegistrationFirmCreate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: >-
+            Auth token with grant_type=client_credentials with Partner
+            credentials required
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/firms/{publicFirmId}/urls:
+    post:
+      tags:
+        - Partner Merchant Registration
+      summary: Partner Merchant Registration URL Create
+      description: Partner Merchant Registration URL Create
+      operationId: PartnerMerchantRegistrationURLCreate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: publicFirmId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: >-
+            Auth token with grant_type=partner and specific publicFirmId with
+            Partner credentials required
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/firms{publicFirmId}/shops:
+    post:
+      tags:
+        - Partner Merchant Registration
+      summary: Partner Merchant Registration Shop Create
+      description: Partner Merchant Registration Shop Create
+      operationId: PartnerMerchantRegistrationShopCreate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: publicFirmId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: >-
+            Auth token with grant_type=partner and specific publicFirmId with
+            Partner credentials required
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/shops/{publicShopId}/poses:
+    post:
+      tags:
+        - Partner Merchant Registration
+      summary: Partner Merchant Registration POS REST Create
+      description: Partner Merchant Registration POS REST Create
+      operationId: PartnerMerchantRegistrationPOSRESTCreate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: publicShopId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: >-
+            Auth token with grant_type=partner and specific publicFirmId with
+            Partner credentials required
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/poses/{publicPosId}:
+    get:
+      tags:
+        - Partner Merchant Registration
+      summary: Partner Merchant Registration POS Get
+      description: Partner Merchant Registration POS Get
+      operationId: PartnerMerchantRegistrationPOSGet
+      security:
+        - OAuth token: []
+      parameters:
+        - name: publicPosId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: >-
+            Auth token with grant_type=partner and specific publicFirmId with
+            Partner credentials required
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /boarding/#/form:
+    get:
+      tags:
+        - Partner Merchant Registration
+      summary: >-
+        Partner Merchant Registration boarding link for Partners Merchant
+        redirecting to PayU boarding form
+      description: >-
+        Partner Merchant Registration boarding link for Partners Merchant
+        redirecting to PayU boarding form
+      operationId: PartnerMerchantRegistrationBoardingLink
+      security:
+        - OAuth token: []
+      parameters:
+        - name: partnerId
+          in: query
+          example: loremIpsum
+          required: true
+          schema:
+            type: string
+  /api/v2_1/firms/{firmPublicId}/submerchants:
+    post:
+      tags:
+        - Payment Facilitator Submerchant Registration
+      summary: Payment Facilitator Submerchant Create
+      description: Payment Facilitator Submerchant Create
+      operationId: PaymentFacilitatorSubmerchantCreate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: firmPublicId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /api/v2_1/firms/{firmPublicId}/submerchants/{submerchantId}:
+    post:
+      tags:
+        - Payment Facilitator Submerchant Registration
+      summary: Payment Facilitator Submerchant Update
+      description: Payment Facilitator Submerchant Update
+      operationId: PaymentFacilitatorSubmerchantUpdate
+      security:
+        - OAuth token: []
+      parameters:
+        - name: firmPublicId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: submerchantId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+    get:
+      tags:
+        - Payment Facilitator Submerchant Registration
+      summary: Payment Facilitator Submerchant Get
+      description: Payment Facilitator Submerchant Get
+      operationId: PaymentFacilitatorSubmerchantGet
+      security:
+        - OAuth token: []
+      parameters:
+        - name: firmPublicId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: submerchantId
+          in: path
+          example: loremIpsum
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /none:
+    post:
+      tags:
+        - Notifications
+      summary: >-
+        Structure of notification about order status change sent from PayU to
+        URL address provided by Merchant
+      description: Order Status Change Notification
+      operationId: OrderStatusChangeNotification
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          schema:
+            type: string
+          style: simple
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /none1:
+    post:
+      tags:
+        - Notifications
+      summary: >-
+        Structure of notification about order status change sent from PayU to
+        URL address provided by Merchant
+      description: Refund Status Change Notification
+      operationId: RefundStatusChangeNotification
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          schema:
+            type: string
+          style: simple
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /none2:
+    post:
+      tags:
+        - Notifications
+      summary: >-
+        Structure of notification about order status change sent from PayU to
+        URL address provided by Merchant
+      description: Notification about available statement file
+      operationId: StatementFileNotification
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          schema:
+            type: string
+          style: simple
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /none3:
+    post:
+      tags:
+        - Notifications
+      summary: >-
+        Structure of notification about order status change sent from PayU to
+        URL address provided by Merchant
+      description: Payment Facilitator Submerchant Status Change Notification
+      operationId: PaymentFacilitatorSubmerchantStatusChangeNotification
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          schema:
+            type: string
+          style: simple
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+  /none4:
+    post:
+      tags:
+        - Notifications
+      summary: >-
+        Structure of notification about order status change sent from PayU to
+        URL address provided by Merchant
+      description: Marketplace Verification Status Change Notification
+      operationId: MarketplaceVerificationStatusChangeNotification
+      security:
+        - OAuth token: []
+      parameters:
+        - name: Content-Type
+          in: header
+          description: Content type
+          schema:
+            type: string
+          style: simple
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  loremIpsum:
+                    type: string
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
 components:
   securitySchemes:
     OAuth token:
@@ -1405,7 +3258,267 @@ components:
         Authorization token generated using client_secret key from the merchant
         panel.
   schemas:
-    BuyerDelivery:
+    '400':
+      type: object
+      properties:
+        status:
+          type: object
+          properties:
+            statusCode:
+              type: string
+              description: Error type.
+            severity:
+              type: string
+              description: erroer severity type.
+            code:
+              type: string
+              description: Identification code of specific error.
+            codeLiteral:
+              type: string
+              description: Cause of the error.
+            statusDesc:
+              type: string
+              description: Error description.
+    '401':
+      type: object
+      properties:
+        status:
+          type: object
+          properties:
+            statusCode:
+              type: string
+              description: Error type.
+            code:
+              type: string
+              description: Identification code of specific error.
+            codeLiteral:
+              type: string
+              description: Cause of the error.
+            statusDesc:
+              type: string
+              description: Error description.
+    '403':
+      type: object
+      properties:
+        status:
+          type: object
+          properties:
+            error:
+              type: string
+              description: Error type.
+              enum:
+                - access_denied
+            error_description:
+              type: string
+              description: Description of error.
+              enum:
+                - Access is denied
+    '404':
+      type: object
+      properties:
+        status:
+          type: object
+          properties:
+            statusCode:
+              type: string
+              description: Error type.
+            severity:
+              type: string
+              description: erroer severity type.
+            statusDesc:
+              type: string
+              description: Error description.
+    '500':
+      type: object
+      properties:
+        status:
+          type: object
+          properties:
+            statusCode:
+              type: string
+              description: Error type.
+            code:
+              type: string
+              description: Identification code of specific error.
+            codeLiteral:
+              type: string
+              description: Cause of the error.
+            statusDesc:
+              type: string
+              description: Error description.
+    ClientCredentials:
+      type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+      properties:
+        grant_type:
+          type: string
+          example: client_credentials
+          enum:
+            - client_credenitals
+          description: Authorization mode
+        client_id:
+          type: string
+          example: '145227'
+          description: >-
+            Merchant's POS identifier in PayU's system. Can be found in PayU's
+            merchant panel
+        client_secret:
+          type: string
+          example: 12f071174cb7eb79d4aac5bc2f07563f
+          description: Merchant's secret key. Can be found in PayU's merchant panel
+    TrustedMerchant:
+      type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+        - email
+        - extCustomerId
+      properties:
+        grant_type:
+          type: string
+          example: trusted_merchant
+          enum:
+            - trusted_merchant
+          description: Authorization mode
+        client_id:
+          type: string
+          example: '145227'
+          description: >-
+            Merchant's POS identifier in PayU's system. Can be found in PayU's
+            merchant panel
+        client_secret:
+          type: string
+          example: 12f071174cb7eb79d4aac5bc2f07563f
+          description: Merchant's secret key. Can be found in PayU's merchant panel
+        email:
+          type: string
+          description: Customer's email address in merchant's system
+        extCustomerId:
+          type: string
+          description: Customer's identifier in the merchant's system
+    Partner:
+      type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+        - firm_id
+      description: >-
+        only usable with special Technical Partner priviliges that allow
+        management of Firms, URLs, Shops and POSes created and managed by
+        Partner
+      properties:
+        grant_type:
+          type: string
+          example: partner
+          enum:
+            - partner
+          description: Authorization mode
+        client_id:
+          type: string
+          example: '145227'
+          description: Partners client_id
+        client_secret:
+          type: string
+          example: 12f071174cb7eb79d4aac5bc2f07563f
+          description: Partners client_secret
+        firm_id:
+          type: string
+          example: p3BiPgVO
+          description: publicFirmId created by Partner that will be managed
+    blikTokens:
+      type: array
+      description: Section containing saved BLIK tokens
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+          type:
+            type: string
+            enum:
+              - UID
+          brandImageUrl:
+            type: string
+    cardTokens:
+      type: array
+      description: Section containing saved card tokens
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+          brandImageUrl:
+            type: string
+          preferred:
+            type: boolean
+          status:
+            type: string
+            enum:
+              - NEW
+              - ACTIVE
+              - EXPIRED
+          cardExpirationYear:
+            type: integer
+          cardExpirationMonth:
+            type: integer
+          cardNumberMasked:
+            type: string
+          cardScheme:
+            type: string
+          cardBrand:
+            type: string
+    pexTokens:
+      type: array
+      description: Section containing saved PEX tokens
+      items:
+        type: object
+        properties:
+          accountNumber:
+            type: string
+          payType:
+            type: string
+          value:
+            type: string
+          name:
+            type: string
+          brandImageUrl:
+            type: string
+          preferred:
+            type: boolean
+          status:
+            type: string
+            enum:
+              - NEW
+              - ACTIVE
+              - EXPIRED
+    payByLinks:
+      type: array
+      description: Section containing available PayByLink payment methods
+      items:
+        type: object
+        properties:
+          value:
+            type: string
+          brandImageUrl:
+            type: string
+          name:
+            type: string
+          status:
+            type: string
+            enum:
+              - ENABLED
+              - DISABLED
+              - TEMPORARY_DISABLED
+          minAmount:
+            type: number
+          maxAmount:
+            type: number
+    delivery:
       type: object
       description: >-
         Section containing delivery address. For a list of parameters, see
@@ -1480,79 +3593,676 @@ components:
             PayU hosted payment page and of e-mail messages sent from PayU to
             the payer.
           example: pl
-          enum:
-            - pl
-            - en
-            - cs
-            - bg
-            - da
-            - de
-            - el
-            - es
-            - et  fi
-            - fr
-            - hr
-            - hu
-            - it
-            - lt
-            - lv
-            - nl
-            - pt
-            - ro
-            - ru
-            - sk
-            - sl
-            - sr
-            - sv
-            - tr
-            - uk
         delivery:
-          $ref: '#/components/schemas/BuyerDelivery'
-    Products:
+          $ref: '#/components/schemas/delivery'
+    products:
       type: array
       description: >-
-        Section containing data of the ordered products. Section products is an
-        array of objects of type product.
+        Section containing data of the ordered products. Section
+        <code>products</code> is an array of objects of type product.
       required:
-        - name, unitPrice, quantity
+        - name
+        - unitPrice
+        - quantity
       items:
         type: object
         properties:
           name:
             type: string
             description: Name of the product
-            example: Wireless Mouse for Laptop
           unitPrice:
             type: string
             description: Unit price
-            example: '15000'
           quantity:
             type: string
-            description: Quantity
-            example: '1'
+            description: Quantity of
           virtual:
             type: boolean
-            enum:
-              - true
-              - false
             description: Product type, which can be virtual or material.
-            example: true
           listingDate:
             type: string
+            format: '2019-03-27T10:57:59.000+01:00'
             description: >-
               Marketplace date from which the product (or offer) is available,
               ISO format applies.
-            example: '2019-03-27T10:57:59.000+01:00'
-    Status:
+    specificData:
+      type: array
+      description: Additional data for some Visa Checkout integrations.
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          value:
+            type: string
+    blikData:
+      type: object
+      description: Additional data for BLIK payment with T6 or token.
+      properties:
+        aliasLabelProposal:
+          type: string
+          description: >-
+            Alias label proposal associated with given mobile application. This
+            field can be used only during token registration
+        registerTokenValue:
+          type: string
+          description: >-
+            UID token value assigned by the merchant. This field can be used
+            only during token registration
+        register:
+          type: boolean
+          description: >-
+            Set to true specifies that an alias registration request will be
+            sent. Set to false will result in payment with a T6 authorization
+            code without token registration.
+        appKey:
+          type: string
+          description: >-
+            The identifier of the customer's chosen bank mobile application
+            within which the transaction authorization will take place.
+        recommendedAuthLevel:
+          type: string
+          description: >-
+            UID token value assigned by the merchant. This field can be used
+            only during token registration
+          enum:
+            - NO_CONFIRMATION
+            - REQUIRED_CONFIRMATION
+    payMethod:
+      type: object
+      required:
+        - type
+        - value
+      properties:
+        type:
+          type: string
+          description: Payment method type.
+          enum:
+            - PBL
+            - CARD_TOKEN
+            - PAYMENT_WALL
+            - BLIK_AUTHORIZATION_CODE
+            - BLIK_TOKEN
+        value:
+          type: string
+          description: Payment type for PBL, CARD_TOKEN.
+          example: c
+        authorizationCode:
+          type: string
+          description: >-
+            Optional, usage differs depending on payment method. For BLIK
+            integrated transparently: enables to collect 6-digit BLIK code on
+            your website instead of redirecting to BLIK.
+          example: '777123'
+        specificData:
+          $ref: '#/components/schemas/specificData'
+        amount:
+          type: string
+          description: >-
+            Additional information required for Marketplace integration - must
+            be equal to totalAmount as sum of amount parameters objects in
+            ShoppingCards array
+        blikData:
+          $ref: '#/components/schemas/blikData'
+    payMethods:
+      type: object
+      description: >-
+        Section allows to directly invoke payment method. Section
+        <code>payMethods</code> is one object of <code>payMethod</code> type.
+      properties:
+        payMethod:
+          $ref: '#/components/schemas/payMethod'
+    mcpData:
+      type: object
+      description: >-
+        Section allows to pass currency conversion details if you chose to use
+        Multi-Currency Pricing.
+      required:
+        - mcpCurrency
+        - mcpAmount
+        - mcpRate
+        - mcpFxTableId
+        - mcpPartnerId
+      properties:
+        mcpCurrency:
+          type: string
+          description: termCurrency from the rate table.
+        mcpAmount:
+          type: string
+          description: baseCurrency amount converted to termCurrency.
+        mcpRate:
+          type: string
+          description: Applied conversion rate.
+        mcpFxTableId:
+          type: string
+          description: Applied FX rate table id.
+        mcpPartnerId:
+          type: string
+          description: Id provided by PayU.
+    exemption:
+      type: object
+      required:
+        - value
+        - rejectionHandling
+      description: >-
+        Merchant's preference regarding SCA exemption to be used to exempt card
+        payment from 3DS authentication. Exclusive with challengeRequested.
+        Requires additional configuration to be enabled.
+      properties:
+        value:
+          type: string
+          description: >-
+            Either LOW_RISK (also known as TRA - transaction risk analysis
+            compliant with SCA requirements has been performed by the merchant)
+            or LOW_VALUE (low value payment, up to 30 EUR or equivalent in other
+            currency).
+          enum:
+            - LOW_RISK
+            - LOW_VALUE
+        rejectionHandling:
+          type: string
+          description: >-
+            Either PERFORM_AUTHENTICATION (PayU will return response with
+            WARNING_CONTINUE_3DS and redirection URL code if exemption cannot be
+            applied) or DECLINE (PayU will decline the payment if exemption
+            cannot be applied - error message will be returned synchronously in
+            OrderCreateResponse).
+          enum:
+            - PERFORM_AUTHENTICATION
+            - DECLINE
+        riskScore:
+          type: string
+          maxLength: 128
+          description: >-
+            Risk score assigned by merchant's antifraud tool. For informative
+            purposes only.
+    browser:
+      type: object
+      description: >-
+        Browser data required for 3DS 2 browser flow. If not provided, these
+        data will be collected by PayU. It is strongly recommended to include it
+        when charging a stored card (multi-use token), because in some cases it
+        will spare you redirection to PayU's authentication page.
+      required:
+        - acceptHeaders
+        - requestIP
+        - screenWidth
+        - javaEnabled
+        - timezoneOffset
+        - screenHeight
+        - userAgent
+        - colorDepth
+        - language
+      properties:
+        acceptHeaders:
+          type: string
+          description: >-
+            Exact content of the HTTP accept headers as sent from the payer's
+            browser.
+        requestIP:
+          type: string
+          description: IP address of the browser as returned by the HTTP headers.
+        screenWidth:
+          type: string
+          description: >-
+            Total width of the payer's screen in pixels. Obtained from the
+            screen.width HTML DOM property.
+        javaEnabled:
+          type: boolean
+          description: Obtained from the navigator HTML DOM object.
+        timezoneOffset:
+          type: string
+          description: Obtained from the getTimezoneOffset() method applied to Date object.
+        screenHeight:
+          type: string
+          description: Obtained from the navigator HTML DOM object.
+        userAgent:
+          type: string
+          description: Exact content of the HTTP user-agent header.
+        colorDepth:
+          type: string
+          description: >-
+            Obtained from payer's browser using the screen.colorDepth HTML DOM
+            property.
+        language:
+          type: string
+          description: >-
+            Obtained from payer's browser using the navigator.language HTML DOM
+            property. Max. 8 chars.
+    sdkEphemPubKey:
+      type: object
+      description: >-
+        Public key component of the ephemeral key pair generated by the 3DS SDK
+        and used to establish session keys between the 3DS SDK and the issuer.
+      properties:
+        'y':
+          type: string
+        x:
+          type: string
+        kty:
+          type: string
+        crv:
+          type: string
+    sdk:
+      type: object
+      description: >-
+        Required if 3DS 2 is to be natively supported in your mobile app.
+        Content needs to be generated by a certified 3DS 2 SDK. This information
+        is not required, but it is strongly recommended to include it when
+        charging a stored card (multi-use token).
+      required:
+        - sdkReferenceNumber
+        - sdkMaxTimeout
+        - sdkAppID
+        - sdkEncData
+        - sdkTransID
+        - sdkEphemPubKey
+      properties:
+        sdkReferenceNumber:
+          type: string
+          example: DS_LOA_SDK_ADBV_739485_94783
+        sdkMaxTimeout:
+          type: string
+          description: >-
+            Indicates the maximum amount of time (in minutes) for all exchanges.
+            The field shall have value greater or equal to 05.
+        sdkAppID:
+          type: string
+          example: 9063b12c-fcde-43c7-b28e-8d0af5520e8a
+        sdkEncData:
+          type: string
+          description: Data encrypted by the 3DS SDK.
+        sdkTransID:
+          type: string
+          example: b60c9879-ac77-4918-a317-7b01c4317053/8Q==.
+        sdkEphemPubKey:
+          $ref: '#/components/schemas/sdkEphemPubKey'
+    merchantFunds:
+      type: object
+      description: >-
+        Indicates whether merchant's own funding (e.g. a gift card) has been
+        used to partially pay for the order. Sum of amounts provided here and of
+        <totalAmount> field denote the real value of order in merchant's system.
+      required:
+        - amount
+        - currencyCode
+      properties:
+        amount:
+          type: string
+          description: In pennies.
+        currencyCode:
+          type: string
+          description: Currency code compliant with ISO 4217.
+    merchantRiskIndicator:
+      type: object
+      description: >-
+        Set of fields helping to assess risk connected with the order itself
+        (type of goods purchased, shipping method etc.).
+      properties:
+        orderType:
+          type: string
+          enum:
+            - PURCHASE
+            - ACC_FUNDING
+            - LOAN
+        shipIndicator:
+          type: string
+          enum:
+            - BILLING_ADDRESS
+            - VERIFIED_ADDRESS
+            - OTHER_ADDRESS
+            - SHIP_TO_STORE
+            - DIGITAL_GOODS
+            - TICKETS
+            - NOT_SHIPPED
+          description: Indicates shipping method chosen for the order.
+        preOrdered:
+          type: boolean
+          description: >-
+            Indicates order for merchandise with a future availability or
+            release date.
+        preOrderedDate:
+          type: string
+          example: '2019-03-27T10:57:59.000+01:00'
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: ISO format applies.
+        deliveryTimeFrame:
+          type: string
+          enum:
+            - ELECTRONIC
+            - SAME_DAY
+            - OVERNIGHT
+            - TWO_OR_MORE_DAYS
+        reordered:
+          type: boolean
+          description: Indicates if the same purchase has been ordered again.
+        merchantFunds:
+          $ref: '#/components/schemas/merchantFunds'
+    recurring:
+      type: object
+      description: Additional information in case of a recurring payment.
+      properties:
+        frequency:
+          type: string
+          description: Minimum number of days between payments.
+        expiry:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date after no further recurring payments will be performed.
+    accountInformation:
+      type: object
+      description: Informations about cardholders account.
+      properties:
+        createDate:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date when the account has been created for the cardholder.
+        suspiciousActivity:
+          type: boolean
+          description: >-
+            Indicates whether merchant has experienced suspicious/fraudulent
+            activity for this account.
+        deliveryAddressFirstUsedDate:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date when the shipping address used for this order was first used.
+        deliveryAdressUsageIndicator:
+          type: string
+          enum:
+            - THIS_TRANSACTION
+            - LESS_THAN_30_DAYS
+            - 30_TO_60_DAYS
+            - MORE_THAN_60_DAYS
+          description: Indicates when this shipping address was first used.
+        pastOrdersYear:
+          type: integer
+          description: >-
+            Orders created in merchant's system for this account in the past 12
+            months.
+          minimum: 1
+          maximum: 9999
+        pastOrdersDay:
+          type: integer
+          description: >-
+            Orders created in merchant's system for this account in the last 24
+            hours.
+          minimum: 1
+          maximum: 9999
+        purchasesLastSixMonths:
+          type: integer
+          description: >-
+            Fulfilled (successful) orders created in merchant's system for this
+            account in the past 6 months.
+          minimum: 1
+          maximum: 9999
+        changeDate:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date when account details were last changed.
+        changeIndicator:
+          type: string
+          enum:
+            - THIS_TRANSACTION
+            - LESS_THAN_30_DAYS
+            - 30_TO_60_DAYS
+            - MORE_THAN_60_DAYS
+          description: Indicates time when account information was last changed.
+        passwordChanged:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date when account password was last changed.
+        passwordChangeIndicator:
+          type: string
+          enum:
+            - NO_CHANGE
+            - THIS_TRANSACTION
+            - LESS_THAN_30_DAYS
+            - 30_TO_60_DAYS
+            - MORE_THAN_60_DAYS
+          description: Indicates whether and when the password was last changed.
+        nameToRecipientMatch:
+          type: boolean
+          description: Indicates whether cardholder's name matches recipient's name.
+        addCardAttemptsDay:
+          type: string
+          description: >-
+            Indicates attempts to add a card to cardholder's account in
+            merchant's system within last 24 hours.
+        authMethod:
+          type: string
+          enum:
+            - GUEST
+            - LOGIN
+            - FEDERATED_ID
+            - THIRD_PARTY
+            - ISSUER
+            - FIDO
+          description: Authentication method used to recognize cardholder.
+        authDateTime:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date and time when authentication was performed.
+        cardAddedDate:
+          type: string
+          format: '2019-03-27T10:57:59.000+01:00'
+          description: Date when card account has been stored with merchant.
+        cardAddedIndicator:
+          type: string
+          enum:
+            - GUEST
+            - THIS_TRANSACTION
+            - LESS_THAN_30_DAYS
+            - 30_TO_60_DAYS
+            - MORE_THAN_60_DAYS
+          description: Indicates if and when the card was stored with merchant.
+    billingAddress:
       type: object
       properties:
-        statusCode:
+        street:
           type: string
-          description: Response code
-        statusDesc:
+          minLength: 1
+          maxLength: 50
+          description: Full street address, incl. apartment number.
+        postalCode:
           type: string
-          description: Response status description
-    Properties:
+          minLength: 1
+          maxLength: 16
+          description: Postal/ZIP code.
+        city:
+          type: string
+          minLength: 1
+          maxLength: 50
+          description: City name.
+        state:
+          type: string
+          minLength: 1
+          maxLength: 3
+          description: >-
+            Country principal subdivision like "state" or "province". If
+            provided, must be a two-letter country code compliant with ISO-3166.
+        countryCode:
+          type: string
+          minLength: 1
+          maxLength: 2
+          description: Two-letter country code compliant with ISO-3166.
+    cardholder:
+      type: object
+      description: >-
+        Describes cardholder's account data in merchant's possession, including
+        details of account run for the cardholder in merchant's system.
+      properties:
+        name:
+          type: string
+          description: Cardholder name and surname.
+        accountInformation:
+          $ref: '#/components/schemas/accountInformation'
+        billingAddress:
+          $ref: '#/components/schemas/billingAddress'
+    threeDsAuthentication:
+      type: object
+      description: Contains optional fields required by 3DS 2 authentication protocol.
+      properties:
+        challangeRequested:
+          type: string
+          description: >-
+            Merchant's preference regarding 3DS 2 challenge. Exclusive with
+            exemption. Maybe overridden by PayU.
+          enum:
+            - 'YES'
+            - 'NO'
+            - MANDATE
+        exemption:
+          $ref: '#/components/schemas/exemption'
+        browser:
+          $ref: '#/components/schemas/browser'
+        sdk:
+          $ref: '#/components/schemas/sdk'
+        merchantRiskIndicator:
+          $ref: '#/components/schemas/merchantRiskIndicator'
+        recurring:
+          $ref: '#/components/schemas/recurring'
+        cardholder:
+          $ref: '#/components/schemas/cardholder'
+    address:
+      type: object
+      description: >-
+        Section containing data about shipping address. Section
+        <shippingMethod.address> is a single object of type address
+      properties:
+        pointId:
+          type: string
+          description: The full name of the pickup point, including its unique identifier.
+          example: Parcel locker POZ29A
+        street:
+          type: string
+          description: Street name, possibly including house and flat number.
+        streetNo:
+          type: string
+          description: Street number
+        flatNo:
+          type: string
+          description: Flat number
+        postalCode:
+          type: string
+          description: Postal Code
+        city:
+          type: string
+          description: City
+        countryCode:
+          type: string
+          description: Two-letter country code compliant with ISO-3166.
+    shippingMethod:
+      type: object
+      description: >-
+        Section containing data of shipping method. Section <shippingMethod> is
+        a single object of type shippingMethod.
+      properties:
+        type:
+          type: string
+          description: Type of shipment
+          enum:
+            - COURIER
+            - COLLECTION_POINT_PICKUP
+            - PARCEL_LOCKER
+            - STORE_PICKUP
+        price:
+          type: string
+          description: Shipping cost
+        address:
+          $ref: '#/components/schemas/address'
+    shoppingCart:
+      type: array
+      description: >-
+        Section containing data of the ordered products. Section
+        <credit.shoppingCarts> is an array of objects of type shoppingCart.
+      items:
+        type: object
+        properties:
+          shippingMethod:
+            $ref: '#/components/schemas/shippingMethod'
+          products:
+            $ref: '#/components/schemas/products'
+          extCustomerId:
+            type: string
+            description: >-
+              Submerchant identifier. This field should be consistent with field
+              extCustomerId in shoppingCarts section when order is placed in
+              marketplace.
+    credit:
+      type: object
+      description: >-
+        Section containing credit data. This information is not required, but it
+        is strongly recommended to include it. Otherwise the buyer will be
+        prompted to provide missing data on provider page when payment by
+        Installments or Pay later.
+      properties:
+        shoppingCarts:
+          $ref: '#/components/schemas/shoppingCart'
+        applicant:
+          type: object
+          description: Section containing data of person applying for a credit.
+          properties:
+            email:
+              type: string
+              description: Applicant’s email address
+            phone:
+              type: string
+              description: Applicant’s phone number
+            firstName:
+              type: string
+              description: Applicant’s first name
+            lastName:
+              type: string
+              description: Applicant’s last name
+            language:
+              type: string
+              description: >-
+                Language code, ISO-639-1 compliant. Denotes the language version
+                of PayU hosted payment page and of e-mail messages sent from
+                PayU to the payer.
+            nin:
+              type: string
+              description: National Identification Number
+            address:
+              type: object
+              description: Section containing data about applicant’s address.
+              properties:
+                street:
+                  type: string
+                  description: Street name, possibly including house and flat number.
+                streetNo:
+                  type: string
+                  description: Street number
+                flatNo:
+                  type: string
+                  description: Flat number
+                postalCode:
+                  type: string
+                  description: Postal Code
+                city:
+                  type: string
+                  description: City
+                countryCode:
+                  type: string
+                  description: Two-letter country code compliant with ISO-3166.
+            additionalInfo:
+              type: object
+              description: Additional information about person applying for credit.
+              properties:
+                hasSuccessfullyFinishedOrderInShop:
+                  type: string
+                  description: >-
+                    Information whether there were previous, successfully
+                    completed orders for applicant.
+    submerchant:
+      type: object
+      properties:
+        id:
+          type: string
+          description: >-
+            submerchant ID when payment is created by Payment Facilitator for
+            Submerchant
+    properties:
       type: array
       description: Array of objects related to transaction identification.
       items:
@@ -1569,6 +4279,23 @@ components:
             type: string
             description: Transaction ID in PayU system.
             example: '1234567890'
+    balance:
+      type: object
+      description: Section containing Shop balance information.
+      properties:
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code of currency in which Shop balance is kept.
+        total:
+          type: number
+          description: total balance of funds on Shop
+          example: 1234567890
+        available:
+          type: number
+          description: >-
+            value of available funds that are under Merchant disposition,
+            excluding funds locked by PayU system
+          example: 987654321
     refundRetrieveFinalized:
       type: object
       properties:
@@ -1600,7 +4327,7 @@ components:
         statusDatetime:
           type: string
           description: Timestamp of the status.
-          example: '2020-07-02T09:19:04.013+02:00'
+          example: '2020-07-02T09:19:04.016+02:00'
         status:
           type: string
           description: Refund status code.
@@ -1636,7 +4363,7 @@ components:
         statusDatetime:
           type: string
           description: Timestamp of the status.
-          example: '2020-07-02T09:19:04.013+02:00'
+          example: '2020-07-02T09:19:04.016+02:00'
         status:
           type: string
           description: Refund status code.
@@ -1672,7 +4399,7 @@ components:
         statusDatetime:
           type: string
           description: Timestamp of the status.
-          example: '2020-07-02T09:19:04.013+02:00'
+          example: '2020-07-02T09:19:04.016+02:00'
         status:
           type: string
           description: Refund status code.
@@ -1689,39 +4416,82 @@ components:
               type: string
               description: Error information.
               example: Temporary problem on Provider Side.
-    refundRetrieveFInalized:
+    payout:
       type: object
+      description: Payout information.
       properties:
-        refundId:
-          type: string
-          description: ID of the refund
-          example: '5000000142'
-        extRefundId:
-          type: string
-          description: External refund ID.
-          example: hdjJduUEEH2
-        amount:
-          type: string
-          description: >-
-            Amount of the refund. If this is left blank, all funds will be
-            returned to the buyer.
-          example: 10000
         description:
           type: string
-          description: Refund description
-          example: Refund for order <orderId>
-        creationDateTime:
+          description: Payout description.
+        extPayoutId:
           type: string
-          description: Date of refund creation.
-          example: '2020-07-02T09:19:03.896+02:00'
-        currencyCode:
+          description: external identificator of Payout assigned by Merchant.
+        amount:
+          type: number
+          description: amount for which Payout should be created
+          example: 987654321
+        postalOrder:
           type: string
-          description: Currency code compliant with ISO 4217.
-        statusDatetime:
+          description: >-
+            Flag indicating whether the payout was in the form of a postal
+            transfer order. Setting this flag forces the completion of address
+            fields and removes the requirement for the account number field.
+        foreign:
           type: string
-          description: Timestamp of the status.
-          example: '2020-07-02T09:19:04.013+02:00'
-        status:
+          description: Flag indicating whether payout was was made to a foreign account.
+    account:
+      type: object
+      description: Information about account to which Payout should be sent.
+      properties:
+        accountNumber:
           type: string
-          description: Refund status code.
-          example: FINALIZED
+          description: >-
+            Bank account number. Required account formats for foreign transfers:
+            Polish account: NRB, IBAN. Czech account: IBAN, internal in
+            ([0-9]{1,6}[ -])?[0-9]{2,10}[ /][0-9]{4}) format. As for now, there
+            is no format restrictions for national bank transfers.
+        bankName:
+          type: string
+          description: Name of the bank.
+        swiftCode:
+          type: string
+          description: Bank's SWIFT code.
+    customerAddress:
+      type: object
+      description: Payout recipient's name.
+      properties:
+        name:
+          type: string
+          description: Payout recipient's name.
+        countryCode:
+          type: string
+          description: >-
+            Payout recipient's address details. Two-letter country code
+            compliant with ISO-3166.
+        city:
+          type: string
+          description: Payout recipient's address details.
+        postalCode:
+          type: string
+          description: Payout recipient's address details.
+        street:
+          type: string
+          description: Payout recipient's address details.
+    bankAddress:
+      type: object
+      description: Bank address information.
+      properties:
+        street:
+          type: string
+          description: Bank address information.
+        postalCode:
+          type: string
+          description: Bank address information.
+        city:
+          type: string
+          description: Bank address information.
+        countryCode:
+          type: string
+          description: >-
+            Bank address information. Two-letter country code compliant with
+            ISO-3166.

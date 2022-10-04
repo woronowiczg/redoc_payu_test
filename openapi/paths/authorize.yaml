@@ -4,7 +4,7 @@ summary: Create OAuth token
 description: |
     You authenticate with OAuth standard by obtaining a token, which is used for further communication with PayU servers. You can view authorization data from the management panel.
     
-    Each payment should be authorized in one of two available modes: 
+    Each payment should be authorized in one of three available modes: 
     - <code>client_credentials</code> for standard integration,
     - <code>trusted_merchant</code> used for authentication of requests made for logged-in shop/application users with fixed <code>extCustomerId</code>.
     Generated access token is valid for 43199 seconds.
