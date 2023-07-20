@@ -1,48 +1,259 @@
-tags: 
-  - Partner Merchant Registration
-summary: Partner Merchant Registration Firm Create
+tags:
+    - Partner-Merchant-Registration
+summary: Create a Firm
 description: Partner Merchant Registration Firm Create
-operationId: PartnerMerchantRegistrationFirmCreate
-security: 
-  -  OAuth token: []
+operationId: create-a-firm
+security:
+    - Bearer:
+          - partner
 parameters:
-  #- name: loremIpsum
-  #  in: path
-  #  example: loremIpsum
-  #  required: false
-  #  content: 
-  #    application/json: 
-  #      schema: 
-  #        type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token with grant_type=client_credentials with Partner credentials required
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token with <code>grant_type=partner</code>.
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                required:
+                    [
+                        name,
+                        type,
+                        taxId,
+                        taxIdType,
+                        cin,
+                        bankAccount,
+                        partnerId,
+                        businessArea,
+                        users,
+                        representatives,
+                        contactData,
+                        address,
+                    ]
+                properties:
+                    name:
+                        type: string
+                        description: Full legal name.
+                        example: 'Test sp. z o.o.'
+                    type:
+                        type: string
+                        description: 'Dictionary value - legal entity type. Dictionaries for specific origin are available here. For a firm which <code>address.country</code> code is not equal to <code>businessArea.origin</code> please use <b>FZ</b> type. <b>Providing accurate type speeds up merchant verification.</b>'
+                        example: SO
+                    taxId:
+                        type: string
+                        description: Tax identification.
+                        example: '3771910486'
+                    taxIdType:
+                        type: string
+                        description: Type of tax identification.
+                        enum: [NIP, VAT_EU, TAX_ID]
+                        example: NIP
+                    cin:
+                        type: string
+                        description: Business identification. IČ (CZ) or REGON (PL).
+                        example: '138237420'
+                    bankAccount:
+                        type: string
+                        description: 'Primary bank account to receive payouts for payments. Will be inherited by all <b>shops</b> created for this firm. Must be a valid IBAN number in case of firms with <b>PL</b> origin. <b>Different bank account maybe defined at shop level manually, via PayU merchant panel.</b>'
+                        format: IBAN
+                        example: 'PL92906300080597567560803897'
+                    partnerId:
+                        type: string
+                        description: Your partner id.
+                        example: egmcvdo5
+                    businessArea:
+                        type: object
+                        required: [origin]
+                        description: Business area of the registered firm.
+                        properties:
+                            origin:
+                                type: string
+                                description: 'Denotes firm origin and applies validation and requirements for this origin. Currently only two values are available: <b>CZ</b> and <b>PL</b>. <b>It is still possible to register a firm which is incorporated outside of Czechia or Poland</b>.'
+                                example: PL
+                    users:
+                        type: array
+                        description: Array of PayU panel users. At least 1 must be provided.
+                        items:
+                            type: object
+                            required: [name, surname, email, role]
+                            properties:
+                                name:
+                                    type: string
+                                    description: User's first name.
+                                    example: Jan
+                                surname:
+                                    type: string
+                                    description: User's last name.
+                                    example: Nowak
+                                email:
+                                    type: string
+                                    description: User's email.
+                                    example: jan.nowak@testowa.pl
+                                phone:
+                                    type: string
+                                    description: User's phone number.
+                                    example: 123123123
+                                role:
+                                    type: string
+                                    description: User's role.
+                                    enum: [MANAGER, USER]
+                                    example: MANAGER
+                    representatives:
+                        type: array
+                        description: Array of firm legal representatives. At least 1 must be provided.
+                        items:
+                            type: object
+                            required: [name, surname, countryCode]
+                            properties:
+                                name:
+                                    type: string
+                                    description: Representative's first name.
+                                    example: Jan
+                                surname:
+                                    type: string
+                                    description: Representative's last name.
+                                    example: Nowak
+                                nin:
+                                    type: string
+                                    description: Representative's national identity number (PESEL). <b>Required only for Polish citizens</b>
+                                    example: 80010104578
+                                countryCode:
+                                    type: string
+                                    description: Representative's citizenship. Must be a valid ISO 3166-1 two-letter code.
+                                    example: PL
+                                birthDate:
+                                    type: string
+                                    description: Representative's date of birth. <b>Required only for non-Polish citizens</b>
+                                    example:
+                    contactData:
+                        type: object
+                        description: Object containing firm's contact details.
+                        required: [phone, email]
+                        properties:
+                            phone:
+                                type: string
+                                description: Firm's contact phone number.
+                                example: 123123123
+                            email:
+                                type: string
+                                description: Firm's contact email address.
+                                example: biuro@testowa.pl
+                    technicalContactData:
+                        type: object
+                        description: Object containing firm's technical contact details (e.g. to the developer responsible for integration with PayU).
+                        required: []
+                    address:
+                        type: object
+                        description: Firm's registration address.
+                        required:
+                            [
+                                street,
+                                houseNo,
+                                apartmentNo,
+                                postalCode,
+                                city,
+                                countryCode,
+                            ]
+                        properties:
+                            street:
+                                type: string
+                                description: Firm's registration address street.
+                                example: Grunwaldzka
+                            houseNo:
+                                type: string
+                                description: Firm's registration address house number.
+                                example: 186
+                            apartmentNo:
+                                type: string
+                                description: Firm's registration address apartment number.
+                                example: 1
+                            postalCode:
+                                type: string
+                                description: Firm's registration address postal code.
+                                example: 61-166
+                            city:
+                                type: string
+                                description: Firm's registration address city.
+                                example: Poznań
+                            countryCode:
+                                type: string
+                                description: Firm's registration address country code. Must be a valid ISO 3166-1 two-letter code.
+                                example: PL
+                    correspondenceAddress:
+                        type: object
+                        description: Firm's correspondence address (<b>if other than registration address</b>). This object the same fields as address.
+                        required:
+                            [
+                                street,
+                                houseNo,
+                                apartmentNo,
+                                postalCode,
+                                city,
+                                countryCode,
+                            ]
+                        properties:
+                            street:
+                                type: string
+                                description: Firm's registration address street.
+                                example: Grunwaldzka
+                            houseNo:
+                                type: string
+                                description: Firm's registration address house number.
+                                example: 186
+                            apartmentNo:
+                                type: string
+                                description: Firm's registration address apartment number.
+                                example: 1
+                            postalCode:
+                                type: string
+                                description: Firm's registration address postal code.
+                                example: 61-166
+                            city:
+                                type: string
+                                description: Firm's registration address city.
+                                example: Poznań
+                            countryCode:
+                                type: string
+                                description: Firm's registration address country code. Must be a valid ISO 3166-1 two-letter code.
+                                example: PL
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        firmId:
+                            type: string
+                            description: Identifier that needs to be stored in your system and is used to create further entities for that firm.
+                            example: KzXy4ZzD
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

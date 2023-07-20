@@ -1,0 +1,74 @@
+tags:
+    - Marketplace-Verification
+summary: Cancel Verification
+description: Cancel verification on every step of verification providing the reason.
+operationId: cancel-marketplace-verification
+parameters:
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
+    content:
+        application/json:
+            schema:
+                type: object
+                description: ''
+                properties:
+                    verificationId:
+                        type: string
+                        description: 'Unique id of the verification provided by PayU.'
+                        maxLength: 18
+                        example: hfs6sfa
+                    rejectionReasonComment:
+                        type: string
+                        description: 'Reason for cancelling verification.'
+
+responses:
+    204:
+        x-summary: 'No Content'
+        description: SUCCESS
+        content:
+            application/json:
+                schema:
+                    type: object
+    404:
+        x-summary: Not found
+        description: Verification not found.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    409:
+        x-summary: 'Conflict'
+        description: Verification state does not allow cancel.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

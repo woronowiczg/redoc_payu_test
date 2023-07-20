@@ -1,78 +1,74 @@
 tags:
-  - Payout
-summary: Create payout
-description: Create payout
-operationId: PayoutCreateRequest
-security:
-  - OAuth token: []
+    - Payout
+summary: Create a Payout
+description: Create a payout with the selected destination of funds.
+operationId: create-a-payout
 parameters:
-  $ref: ../../components/headers/ReqHeaders.yaml
+    $ref: ../../components/headers/ReqHeaders.yaml
 requestBody:
-  description: Parameters for PayoutCreateRequest
-  #required: true
-  content:
-    application/json:
-      schema:
-        type: object
-        required:
-          [shopId]
-        properties:
-          shopId:
-            type: string
-            description: Address for redirecting the customer after payment is commenced.
-            example: 1a2B3Cx
-          payout:
-            $ref: ../../components/objects/Payout/payout.yaml
-          account:
-            $ref: ../../components/objects/Payout/account.yaml
-          customerAddress:
-            $ref: ../../components/objects/Payout/customerAddress.yaml
-          bankAddress:
-            $ref: ../../components/objects/Payout/bankAddress.yaml
+    description: Parameters for creating payouts.
+    content:
+        application/json:
+            schema:
+                oneOf:
+                    - $ref: ../../components/bodies/Payout/Create/Request/StandardPayout.yaml
+                    - $ref: ../../components/bodies/Payout/Create/Request/BankAccountPayout.yaml
+                    - $ref: ../../components/bodies/Payout/Create/Request/CardPayout.yaml
 responses:
-  201:
-    description: Created
-    content:
-      application/json:
-        schema:
-          type: object
-          properties: 
-            payout:
-              type: object
-              properties: 
-                payoutId:
-                  type: string
-                extPayoutId:
-                  type: string
-                status:
-                  type: string
-                  enum: [PENDING, WAITING, CANCELLED, REALIZED]  
-            status:
-              type: object
-              properties:
-                statusCode:
-                  type: string
-  400:
-    description: Bad Request
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/responses/400.yaml
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
-  403:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/403.yaml
-  404:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/404.yaml
+    201:
+        x-summary: Created
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        payout:
+                            type: object
+                            properties:
+                                payoutId:
+                                    type: string
+                                extPayoutId:
+                                    type: string
+                                status:
+                                    type: string
+                                    enum:
+                                        [PENDING, WAITING, CANCELLED, REALIZED]
+                        status:
+                            type: object
+                            properties:
+                                statusCode:
+                                    type: string
+    400:
+        x-summary: Bad Request
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/400.yaml
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                        error_description:
+                            type: string
+    403:
+        x-summary: Forbidden
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/403.yaml
+    404:
+        x-summary: Not found
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/404.yaml

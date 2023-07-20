@@ -1,0 +1,17 @@
+type: object
+required: [shopId, payout, customerAddress]
+properties:
+    shopId:
+        type: string
+        description: Address for redirecting the customer after payment is commenced.
+        example: 1a2B3Cx
+    payout:
+        $ref: ..\..\..\..\objects\Payout\payout.yaml
+    customerAddress:
+        $ref: ..\..\..\..\objects\Payout\customerAddress.yaml
+    cardToken:
+        type: string
+        description: Card token representing card to which payout will be made. <b>Required in case of a payout to the card token</b>.
+        example: 'TOKC_2IHRST6HKSST3H62K2GS8pElI862'
+    card:
+        $ref: ..\..\..\..\objects\Payout\cardForPayout.yaml

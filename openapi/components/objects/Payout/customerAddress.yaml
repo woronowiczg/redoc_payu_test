@@ -1,18 +1,19 @@
 type: object
+required: [name]
 description: Payout recipient's name.
 properties:
-  name:
-    type: string
-    description: Payout recipient's name.
-  countryCode:
-    type: string
-    description: Payout recipient's address details. Two-letter country code compliant with ISO-3166.
-  city:
-    type: string
-    description: Payout recipient's address details.
-  postalCode:
-    type: string
-    description: Payout recipient's address details.
-  street:
-    type: string
-    description: Payout recipient's address details.
+    name:
+        type: string
+        description: Payout recipient's name.
+    countryCode:
+        type: string
+        description: Payout recipient's address details. Two-letter country code compliant with ISO-3166. <b>Required for <code>foreign</code> flag set to true</b>.
+    city:
+        type: string
+        description: Payout recipient's address details - city. <b>Required for <code>foreign</code> or <code>postalOrder</code> flag set to true</b>.
+    postalCode:
+        type: string
+        description: Payout recipient's address details - postal code. <b>Required for <code>postalOrder</code> flag set to true</b>.
+    street:
+        type: string
+        description: Payout recipient's address details - street. <b>Required for <code>foreign</code> or <code>postalOrder</code> flag set to true</b>.

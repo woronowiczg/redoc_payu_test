@@ -1,0 +1,87 @@
+tags:
+    - Authorize
+summary: Create OAuth Token
+security: []
+description: |
+    Each payment should be authorized in one of three available modes: 
+    - <code>client_credentials</code> - used for standard integration,
+    - <code>trusted_merchant</code> - used for authentication of requests made for logged-in shop/application users with fixed <code>extCustomerId</code>,
+    - <code>partner</code> - special type of a token meant for creating entities (e.g. Shop, POS, URL) within partner firm.
+
+    Generated access token is valid for 43199 seconds.
+operationId: oauth
+requestBody:
+    content:
+        application/x-www-form-urlencoded:
+            schema:
+                discriminator:
+                    propertyName: grant_type
+                    mapping:
+                        client_credentials: ../components/schemas/authSchemas/ClientCredentials.yaml
+                        trusted_merchant: ../components/schemas/authSchemas/TrustedMerchant.yaml
+                        partner: ../components/schemas/authSchemas/Partner.yaml
+                anyOf:
+                    - $ref: ../components/schemas/authSchemas/ClientCredentials.yaml
+                    - $ref: ../components/schemas/authSchemas/TrustedMerchant.yaml
+                    - $ref: ../components/schemas/authSchemas/Partner.yaml
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        access_token:
+                            type: string
+                            description: Token used for authentication of API calls.
+                            format: uuid
+                        token_type:
+                            type: string
+                            enum: [bearer]
+                        refresh_token:
+                            type: string
+                            format: uuid
+                        expires_in:
+                            type: integer
+                            description: Token expiration time (in seconds).
+                            enum: [43199]
+                        grant_type:
+                            type: string
+                            description: Token authentication mode.
+                            enum: [client_credentials, trusted_merchant]
+    400:
+        x-summary: Bad Request
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    required:
+                        - error
+                        - error_description
+                    properties:
+                        error:
+                            type: string
+                            description: Cause of the error.
+                        error_description:
+                            type: string
+                            description: Error description.
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    required:
+                        - error
+                        - error_description
+                    properties:
+                        error:
+                            type: string
+                            description: Cause of the error.
+                        error_description:
+                            type: string
+                            description: Error description.

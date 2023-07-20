@@ -1,0 +1,72 @@
+type: object
+properties:
+    operations:
+        type: array
+        description: List of operations.
+        items:
+            type: object
+            properties:
+                type:
+                    type: string
+                    description: Operation type.
+                    example: CHARGEBACK
+                    enum:
+                        [
+                            PAYMENT_SENT,
+                            PAYMENT_RECEIVED,
+                            PAYOUT,
+                            REFUND_SENT,
+                            REFUND_RECEIVED,
+                            RETURN,
+                            ADMIN_TRANSFER_SENT,
+                            ADMIN_TRANSFER_RECEIVED,
+                            FEE_TRANSFER_SENT,
+                            FEE_TRANSFER_RECEIVED,
+                            CHARGEBACK,
+                            ADMIN_CORRECTION,
+                        ]
+                amount:
+                    type: string
+                    description: Amount (of order, refund, payout).
+                currencyCode:
+                    type: string
+                    description: Currency code according to ISO-4217.
+                    example: PLN
+                description:
+                    type: string
+                    description: Operation description.
+                status:
+                    type: string
+                    description: Operation status.
+                    example: COMPLETED
+                creationDate:
+                    type: string
+                    description: Operation request moment.
+                    format: '2019-11-30T20:33:44+02:00'
+                eventDate:
+                    type: string
+                    description: Operation ending moment.
+                    format: '2019-11-30T22:33:44+02:00'
+                details:
+                    type: object
+                    properties:
+                        correctionId:
+                            type: string
+                            description: Correction identifier
+
+                        funds:
+                            type: array
+                            items:
+                                type: object
+    pageResponse:
+        type: object
+        properties:
+            records:
+                type: string
+                description: Total number of records found.
+            size:
+                type: string
+                description: Number of returned operations.
+            pageCount:
+                type: string
+                description: Page count.

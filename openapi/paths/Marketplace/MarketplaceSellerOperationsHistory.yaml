@@ -1,96 +1,131 @@
-tags: 
-  - Marketplace Seller
-summary: Marketplace Seller Operations History
-description: Marketplace Seller Operations History
-operationId: MarketplaceSellerOperationsHistory
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Seller
+summary: Retrieve Seller Operation History
+description: ''
+operationId: retrieve-seller-operation-history
 parameters:
-  - name: extCustomerId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: extCustomerId
+      in: path
+      description: Submerchant identifier.
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: currencyCode
+      in: query
+      description: Currency code according to ISO-4217. <b>You can enter multiple values. Subsequent entries should be separated by a comma</b>.
+      required: false
+      schema:
           type: string
-  - name: currencyCode
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: type
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: dateFrom
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: dateTo
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: limit
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: offset
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: +sortBy
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: -sortBy
-    in: query
-    example: loremIpsum
-    required: false
-    schema:
-      type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+    - name: type
+      in: query
+      description: Operation type. <b>You can enter multiple values. Subsequent entries should be separated by a comma.</b>
+      required: false
+      schema:
+          type: string
+          enum:
+              [
+                  PAYMENT_SENT,
+                  PAYMENT_RECEIVED,
+                  PAYOUT,
+                  REFUND_SENT,
+                  REFUND_RECEIVED,
+                  RETURN,
+                  ADMIN_TRANSFER_SENT,
+                  ADMIN_TRANSFER_RECEIVED,
+                  FEE_TRANSFER_SENT,
+                  FEE_TRANSFER_RECEIVED,
+              ]
+    - name: eventDateFrom
+      in: query
+      description: Start of the search range for "eventDate". <b>Date must be url encoded.</b>
+      required: true
+      schema:
+          type: string
+          format: 2019-01-30T20%3A59%3A00%2B02%3A00
+    - name: eventDateTo
+      in: query
+      description: End of the search range for "eventDate". <b>Date must be url encoded.</b>
+      required: true
+      schema:
+          type: string
+          format: 2019-04-30T20%3A59%3A00%2B02%3A00
+    - name: creationDateFrom
+      in: query
+      description: Start of the search range for "creationDate". <b>Date must be url encoded.</b>
+      required: false
+      schema:
+          type: string
+          format: 2019-04-30T20%3A59%3A00%2B02%3A00
+    - name: creationDateTo
+      in: query
+      description: End of the search range for "creationDate". <b>Date must be url encoded.</b>
+      required: false
+      schema:
+          type: string
+          format: 2019-04-30T20%3A59%3A00%2B02%3A00
+    - name: limit
+      in: query
+      description: Number of records per page.
+      required: false
+      schema:
+          type: string
+    - name: offset
+      in: query
+      description: Page number (indexing from 0).
+      required: false
+      schema:
+          type: string
+    - name: sortBy
+      in: query
+      description: Sorting field. Additional sign "<b>+</b>" or "<b>-</b>" before field name defines sorting order. <b>Default is ascending</b>.
+      required: false
+      schema:
+          type: string
+          enum: [eventDate, creationDate, type, currencyCode]
+      examples:
+          ascending:
+              value: +eventDate
+              summary: sorting ascending by eventDate.
+          descending:
+              value: -eventDate
+              summary: sorting descending by eventDate.
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    anyOf:
+                        - $ref: ..\..\components\objects\Marketplace\SellerOperationHistory\details\PAYMENT_RECEIVED.yaml
+                        - $ref: ..\..\components\objects\Marketplace\SellerOperationHistory\details\REFUND_SENT.yaml
+                        - $ref: ..\..\components\objects\Marketplace\SellerOperationHistory\details\PAYOUT.yaml
+                        - $ref: ..\..\components\objects\Marketplace\SellerOperationHistory\details\RETURN.yaml
+                        - $ref: ..\..\components\objects\Marketplace\SellerOperationHistory\details\CHARGEBACK.yaml
+                        - $ref: ..\..\components\objects\Marketplace\SellerOperationHistory\details\ADMIN_CORRECTION.yaml
+
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

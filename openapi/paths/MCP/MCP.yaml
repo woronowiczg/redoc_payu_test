@@ -1,48 +1,83 @@
-tags: 
-  - Multi-Currency pricing  
-summary: Multi-Currency pricing
-description: Multi-Currency pricing
-operationId: MultiCurrencyPricing
-security: 
-  -  OAuth token: []
+tags:
+    - MCP
+summary: Retrieve Rate Table
+description: Retrieve current table with the conversion rates for the currencies.
+operationId: retrieve-rate-table
 parameters:
-  - name: mcpPartnerId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: mcpPartnerId
+      in: path
+      example: 6283a549-8b1a-430d-8a62-eea64327440e
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
           type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            example: 802438
+                            description: rate table id (corresponds with mcpFxTableId in OrderCreateRequest)
+                        validTo:
+                            type: string
+                            format: '2017-06-27T20:20:00Z'
+                            example: '2023-01-02T20:18:00Z'
+                            description: table validity time (always in UTC). New table should be retrieved right after the validity ends.
+                        currencyPairs:
+                            type: array
+                            description: Section containing pairs of chosen term currency and base currencies
+                            items:
+                                type: object
+                                properties:
+                                    baseCurrency:
+                                        type: string
+                                        example: PLN
+                                        description: initial currency code - this is the currency in which the payer will be charged (card settlement currency) compliant with ISO 4217
+                                    exchangeRate:
+                                        type: number
+                                        example: 0.23753
+                                        description: exchange rate from base currency to term currency
+                                    termCurrency:
+                                        type: string
+                                        example: USD
+                                        description: final currency code - this is the currnecy of the shop at which the payment will be processed (currency set for the shop in the PayU system) compliant with ISO 4217
+    400:
+        x-summary: Bad request
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/400.yaml
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml
+    404:
+        x-summary: Not found
+        description: ''

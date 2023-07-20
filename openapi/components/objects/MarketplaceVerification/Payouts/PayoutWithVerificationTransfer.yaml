@@ -1,0 +1,75 @@
+type: object
+required: [
+    bankIdData,
+    VerificationId,
+    accountNumberRequested,
+    swiftCode,
+    payoutDataVerificationType,
+    foreign,
+    verified,
+    verificationTransferId
+]
+properties:
+    bankDataId:
+        type: string
+        description: Id of the bank account details assigned by marketplace.
+        maxLength: 100
+        example: '01102020'
+    verificationId:
+        type: string
+        description: Id of verification in context of which data are provided.
+        maxLength: 18
+        example: verification-123
+    accountNumberRequested:
+        type: string
+        description: Bank account number declared for withdrawals by submerchant.
+        format: IBAN
+        maxLength: 255
+        example: PL1122334455667788991010111223345
+    hasDocument:
+        type: string
+        enum: [true, false]
+        description: >
+            Flag informing that this bank account for payouts should be verified on base of bank document. **It must be set to true when the method used is "BANK_STATEMENT"**.
+        example: 'true'
+    payoutDataVerificationType:
+        type: string
+        enum:
+            [
+                LIAN_LIAN,
+                PINGPONG,
+                OFX,
+                BANK_STATEMENT,
+                BANK_TRANSFER,
+                NO_VERIFICATION_NEEDED,
+            ]
+        description: >
+            Type of verification used for the provided payout details verification. Different for each verification type:
+
+            * **LIAN_LIAN** - special type for Chinese submerchants,
+
+            * **PINGPONG** - special type for Chinese submerchants,
+
+            * **OFX** - special type for Chinese submerchants,
+
+            * **BANK_STATEMENT** - used if all data are present on the document (**`hasDocument` must be true**),
+
+            * **BANK_TRANSFER**,
+
+            * **NO_VERIFICATION_NEEDED** - used if the provided bank account number was not yet verified by 3rd party but it doesn't have to be verified at the time of providing the bank details. It is used for the occasional transaction process when the bank account number is provided at the beginning of the process.
+        example: BANK_STATEMENT
+    foreign:
+        type: string
+        enum: [true, false]
+        description: Indicator for the foreign transfer, **if it's domestic parameter must be set to false**.
+        example: 'false'
+    verificationTransferId:
+        type: string
+        description: 'Have to be indicated in request with declared payouts data. Payouts data need to be
+        declared in 72 hours from above request/response.'
+        maxLength: 255
+        example: 5f7007da-8e05-4f0f-9503-05c053034bde
+    verified:
+        type: string
+        description: parameter indicating whether the bank account number was already verified e.g. by another provider. If set to **false** and the verification type is other than "NO_VERIFICATION_NEEDED" PayU must verify the bank account details.
+        example: 'false'

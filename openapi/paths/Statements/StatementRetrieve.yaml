@@ -1,0 +1,50 @@
+tags:
+    - Statements
+summary: Retrieve Statement
+description: Stetement retrieval via API
+operationId: retrieve-statement
+security:
+    - Basic:
+parameters:
+    - name: reportId
+      in: path
+      example: 4a3534fb-85b5-4f29-9da8-a6d73b34d528
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

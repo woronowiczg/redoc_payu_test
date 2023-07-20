@@ -1,0 +1,40 @@
+type: object
+description: Set of fields helping to assess risk connected with the order itself (type of goods purchased, shipping method etc.).
+properties:
+    orderType:
+        type: string
+        enum: [PURCHASE, ACC_FUNDING, LOAN]
+        example: LOAN
+    shipIndicator:
+        type: string
+        enum:
+            [
+                BILLING_ADDRESS,
+                VERIFIED_ADDRESS,
+                OTHER_ADDRESS,
+                SHIP_TO_STORE,
+                DIGITAL_GOODS,
+                TICKETS,
+                NOT_SHIPPED,
+            ]
+        description: Indicates shipping method chosen for the order.
+        example: TICKETS
+    preOrdered:
+        type: boolean
+        description: Indicates order for merchandise with a future availability or release date.
+        example: false
+    preOrderedDate:
+        type: string
+        example: '2019-03-27T10:57:59.000+01:00'
+        format: '2019-03-27T10:57:59.000+01:00'
+        description: ISO format applies.
+    deliveryTimeFrame:
+        type: string
+        enum: [ELECTRONIC, SAME_DAY, OVERNIGHT, TWO_OR_MORE_DAYS]
+        example: OVERNIGHT
+    reordered:
+        type: boolean
+        description: Indicates if the same purchase has been ordered again.
+        example: false
+    merchantFunds:
+        $ref: merchantFunds.yaml

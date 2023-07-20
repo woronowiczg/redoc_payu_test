@@ -1,0 +1,38 @@
+type: object
+properties:
+    transactions:
+        type: array
+        description: Array of order objects.
+        items:
+            type: object
+            properties:
+                payMethod:
+                    type: object
+                    properties:
+                        value:
+                            type: string
+                            description: Payment method code.
+                            example: blik
+                paymentFlow:
+                    type: string
+                    description: Defines how payments are handled.
+                    enum:
+                        [
+                            BLIK_PBL,
+                            BLIK_AUTHORIZATION_CODE,
+                            BLIK_AUTHORIZATION_CODE_WITH_UID_TOKEN_REGISTERING,
+                            BLIK_UID_TOKEN,
+                        ]
+                resultCode:
+                    type: string
+                    description: Transaction handling result code.
+                blik:
+                    type: object
+                    description: ''
+                    properties:
+                        txRef:
+                            type: string
+                            description: The transaction identifier assigned by the BLIK system.
+                        extTxRef:
+                            type: string
+                            description: Transaction identifier assigned by PayU.

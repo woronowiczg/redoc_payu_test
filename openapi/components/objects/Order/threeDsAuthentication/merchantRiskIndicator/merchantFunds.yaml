@@ -1,10 +1,12 @@
 type: object
 description: Indicates whether merchant's own funding (e.g. a gift card) has been used to partially pay for the order. Sum of amounts provided here and of <totalAmount> field denote the real value of order in merchant's system.
 required: [amount, currencyCode]
-properties: 
-  amount:
-    type: string
-    description: In pennies.
-  currencyCode:
-    type: string
-    description: Currency code compliant with ISO 4217.
+properties:
+    amount:
+        type: string
+        description: In pennies.
+        example: 100
+    currencyCode:
+        type: string
+        description: Currency code compliant with ISO 4217.
+        example: PLN

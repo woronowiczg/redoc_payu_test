@@ -1,48 +1,79 @@
-tags: 
-  - Marketplace Verification
-summary: Marketplace Verification Dataloading Seller
-description: Marketplace Verification Dataloading Seller
-operationId: MarketplaceVerificationDataloadingSeller
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Verification
+summary: Add Seller's Data
+description: This method allows to send data of the seller (submerchant).
+operationId: add-sellers-data
 parameters:
-  #- name: loremIpsum
-  #  in: path
-  #  example: loremIpsum
-  #  required: false
-  #  content: 
-  #    application/json: 
-  #      schema: 
-  #        type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../../../components/responses/401.yaml
+        application/json:
+            schema:
+                oneOf:
+                    - $ref: ..\..\..\..\components\objects\MarketplaceVerification\Dataloading\CompanyData.yaml
+                    - $ref: ..\..\..\..\components\objects\MarketplaceVerification\Dataloading\PrivatePerson.yaml
+responses:
+    204:
+        x-summary: 'No Content'
+        description: Data accepted for further verification.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    400:
+        x-summary: Bad Request
+        description: Invalid input. Reason specified in content.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    404:
+        x-summary: Not found
+        description: Verification not found.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    409:
+        x-summary: 'Conflict'
+        description: Verification state does not allow operation.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

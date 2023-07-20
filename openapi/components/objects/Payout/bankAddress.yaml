@@ -1,15 +1,15 @@
 type: object
 description: Bank address information.
 properties:
-  street:
-    type: string
-    description: Bank address information.
-  postalCode:
-    type: string
-    description: Bank address information.
-  city:
-    type: string
-    description: Bank address information.
-  countryCode:
-    type: string
-    description: Bank address information. Two-letter country code compliant with ISO-3166.
+    street:
+        type: string
+        description: Bank address information - street. <b>Required for <code>foreign</code> flag set to true</b>.
+    postalCode:
+        type: string
+        description: Bank address information - postal code. <b>Required for <code>foreign</code> flag set to true</b>.
+    city:
+        type: string
+        description: Bank address information - city. <b>Required for <code>foreign</code> flag set to true</b>.
+    countryCode:
+        type: string
+        description: Bank address information. Two-letter country code compliant with ISO-3166. <b>Required for <code>foreign</code> flag set to true</b>.

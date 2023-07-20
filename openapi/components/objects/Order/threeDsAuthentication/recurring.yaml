@@ -1,10 +1,12 @@
 type: object
 description: Additional information in case of a recurring payment.
-properties: 
-  frequency:
-    type: string
-    description: Minimum number of days between payments.
-  expiry:
-    type: string
-    format: '2019-03-27T10:57:59.000+01:00'
-    description: Date after no further recurring payments will be performed.
+properties:
+    frequency:
+        type: string
+        description: Minimum number of days between payments.
+        example: 30
+    expiry:
+        type: string
+        format: '2019-03-27T10:57:59.000+01:00'
+        description: Date after no further recurring payments will be performed.
+        example: '2019-03-27T10:57:59.000+01:00'

@@ -1,48 +1,134 @@
-tags: 
-  - Marketplace Verification
-summary: Marketplace Verification Dataloading Associates
-description: Marketplace Verification Dataloading Associates
-operationId: MarketplaceVerificationDataloadingAssociates
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Verification
+summary: Add Associates Data
+description: Send the data of the associates (representatives and beneficiaries according to the relevant instructions from PayU).
+operationId: add-associates-data
 parameters:
-  #- name: loremIpsum
-  #  in: path
-  #  example: loremIpsum
-  #  required: false
-  #  content: 
-  #    application/json: 
-  #      schema: 
-  #        type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                required:
+                    [
+                        verificationId,
+                        associateId,
+                        associateType,
+                        associateName,
+                        associateSurname,
+                        associateCitizenship,
+                    ]
+                properties:
+                    verificationId:
+                        type: string
+                        description: Unique id of the verification provided by PayU.
+                        maxLength: 18
+                        example: aZx65uY
+                    associateId:
+                        type: string
+                        description: Associate id. Unique on seller level.
+                        maxLength: 100
+                        example: dsada65
+                    associateType:
+                        type: string
+                        description: Type of the associate.
+                        enum: [BENEFICIARY, REPRESENTATIVE]
+                    associateName:
+                        type: string
+                        description: Associate first name.
+                        maxLength: 200
+                        example: Jan
+                    associateSurname:
+                        type: string
+                        description: Associate last name.
+                        maxLength: 200
+                        example: Kowalski
+                    associateBirthDate:
+                        type: string
+                        description: Associate date of birth. <b>Required for non-polish associates</b>.
+                        format: YYYY-MM-DD
+                        example: '1980-01-27'
+                    associateIdentityNumber:
+                        type: string
+                        description: Unique associate identification number. PESEL in Poland. <b>Required for polish associates</b>.
+                        maxLength: 150
+                        example: '90120789112'
+                    associateCitizenship:
+                        type: string
+                        description: Two letter ISO country code.
+                        format: ISO Country Code
+                        maxLength: 255
+                        example: 'PL'
+                    associateCountryOfBirth:
+                        type: string
+                        description: Two letter ISO country code.
+                        maxLength: 255
+                        example: 'PL'
+                    pepStatement:
+                        type: string
+                        enum: [true, false]
+                        description: ''
+                        example: 'true'
+
+responses:
+    204:
+        x-summary: 'No Content'
+        description: SUCCESS
+        content:
+            application/json:
+                schema:
+                    type: object
+    400:
+        x-summary: Bad request
+        description: Invalid input. Reason specified in content.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    404:
+        x-summary: Not found
+        description: Verification not found.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    409:
+        x-summary: 'Conflict'
+        description: Verification state does not allow operation.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

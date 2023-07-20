@@ -1,48 +1,94 @@
-tags: 
-  - Partner Merchant Registration
-summary: Partner Merchant Registration URL Create
-description: Partner Merchant Registration URL Create
-operationId: PartnerMerchantRegistrationURLCreate
-security: 
-  -  OAuth token: []
+tags:
+    - Partner-Merchant-Registration
+summary: Create a URL for the Partner's Firm
+description: Create a URL for the specified `firmId`.
+operationId: create-a-url-for-the-partners-firm
+security:
+    - Bearer:
+          - partner
 parameters:
-  - name: publicFirmId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: firmId
+      in: path
+      example: KzXy4ZzD
+      description: Firm identifier retrieved after firm creation.
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
           type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token with grant_type=partner and specific publicFirmId with Partner credentials required
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token with <code>grant_type=partner</code>.
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                required: [value, services]
+                properties:
+                    value:
+                        type: string
+                        description: URL address.
+                        example: http://www.test-url.com
+                    mcc:
+                        type: string
+                        description: Merchant Category Code (value is validated). Data type
+                        example: '0742'
+                    services:
+                        type: array
+                        description: Array of service types.
+                        items:
+                            type: object
+                            required: [type]
+                            properties:
+                                type:
+                                    type: string
+                                    description: >
+                                        Dictionary value:<ul>
+                                        <li><b>TRANSFERS</b> - online transfers ("pay-by-links" and standard bank transfers, incl. Blik),</li>
+                                        <li><b>CARDS</b> - cards (Visa, Mastercard) and digital wallets (Apple Pay, Google Pay, Masterpass, Visa Checkout),</li>
+                                        <li><b>INSTALLMENTS</b> - online installments,</li>
+                                        <li><b>DELAYED_PAYMENTS</b> - "pay later" methods.</li></ul>
+                                    enum:
+                                        [
+                                            TRANSFERS - online transfers ("pay-by-links" and standard bank transfers,
+                                            incl. Blik),
+                                            CARDS,
+                                            INSTALLMENTS,
+                                            DELAYED_PAYMENTS,
+                                        ]
+                                    example: TRANSFERS
+
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        urlId:
+                            type: string
+                            description: urlId that needs to be stored in your system can be used to create shop.
+                            example: PItR5x0v
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

@@ -1,29 +1,29 @@
 type: object
-properties: 
-  status:
-    type: object
-    properties: 
-      statusCode:
-        type: string
-        description: Error type.
-      severity:
-        type: string
-        description: erroer severity type.
-      code:
-        type: string
-        description: Identification code of specific error.
-      codeLiteral:
-        type: string
-        description: Cause of the error.
-      statusDesc:
-        type: string
-        description: Error description.
-   # examples: 
-   #   error_syntax:
-   #     summary: ERROR_SYNTAX
-   #     value: 
-   #       status: ERROR_SYNTAX
-   #   error_value_invalid:
-   #     summary: ERROR_VALUE_INVALID
-   #     value: 
-   #       status: ERROR_VALUE_INVALID
+properties:
+    status:
+        type: object
+        properties:
+            statusCode:
+                type: string
+                description: Error type.
+            severity:
+                type: string
+                description: error severity type.
+            code:
+                type: string
+                description: Identification code of specific error.
+            codeLiteral:
+                type: string
+                description: Cause of the error.
+            statusDesc:
+                type: string
+                description: Error description.
+        # examples:
+        #   error_syntax:
+        #     summary: ERROR_SYNTAX
+        #     value:
+        #       status: ERROR_SYNTAX
+        #   error_value_invalid:
+        #     summary: ERROR_VALUE_INVALID
+        #     value:
+        #       status: ERROR_VALUE_INVALID

@@ -1,5 +1,0 @@
-type: object
-description: Section allows to directly invoke payment method. Section <code>payMethods</code> is one object of <code>payMethod</code> type.
-properties: 
-  payMethod:
-    $ref: payMethods/payMethod.yaml

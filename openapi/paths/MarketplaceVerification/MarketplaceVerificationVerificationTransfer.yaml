@@ -1,48 +1,136 @@
-tags: 
-  - Marketplace Verification
-summary: Marketplace Verification - Verification Transfer
-description: Marketplace Verification - Verification Transfer
-operationId: MarketplaceVerificationVerificationTransfer
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Verification
+summary: Create Order for Verification Transfer
+description: Create an order for the verification transfer service. In response you will be provided with the bank account details to make the transfer.
+operationId: create-order-for-verification-transfer
 parameters:
-  #- name: loremIpsum
-  #  in: path
-  #  example: loremIpsum
-  #  required: false
-  #  content: 
-  #    application/json: 
-  #      schema: 
-  #        type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                properties:
+                    verificationId:
+                        type: string
+                        description: Unique id of the verification provided by PayU.
+                        maxLength: 18
+                        example: verification-123
+                    transferCurrency:
+                        type: string
+                        description: ''
+                        example: PLN
+                    email:
+                        type: string
+                        description: ''
+                        example: user@example.com
+                    language:
+                        type: string
+                        description: Changes the language of the sent email message. Possible values you can find in <b><a href="/get-started/introduction/index.mdx#languages" target="_blank">languages</a></b> table.
+responses:
+    201:
+        x-summary: Created
+        description: Details for bank transfer.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        verificationTransferId:
+                            type: string
+                            description: ''
+                            example: 5f7007da-8e05-4f0f-9503-05c053034bde
+                        expirationTime:
+                            type: string
+                            description: ''
+                            example: '2020-08-20T14:03:44.473Z'
+                        transferData:
+                            type: object
+                            description: ''
+                            properties:
+                                bankName:
+                                    type: string
+                                    description: ''
+                                    example: mBank S.A.
+                                accountNumber:
+                                    type: string
+                                    description: ''
+                                    example: PL12114011243630011718031748
+                                swiftCode:
+                                    type: string
+                                    description: ''
+                                    example: BREXPLPW
+                                recipientName:
+                                    type: string
+                                    description: ''
+                                    example: PayU S.A.
+                                recipientAddress:
+                                    type: string
+                                    description: ''
+                                    example: ul. Grunwaldzka 186, 60-166 Poznań
+                                transferTitle:
+                                    type: string
+                                    description: ''
+                                    example: Verification transfer XX1718031748XX
+                                transferAmount:
+                                    type: integer
+                                    description: ''
+                                    example: 101
+                                transferCurrency:
+                                    type: string
+                                    description: ''
+                                    example: PLN
+
+    400:
+        x-summary: Bad request
+        description: Error encountered during posting the data for verification.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    403:
+        x-summary: Forbidden
+        description: Error encountered during posting the data for verification.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    404:
+        x-summary: Not found
+        description: Error encountered during posting the data for verification.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

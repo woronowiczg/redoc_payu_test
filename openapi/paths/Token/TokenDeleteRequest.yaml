@@ -1,0 +1,56 @@
+tags:
+    - Token
+summary: Delete a Token
+security:
+    - Bearer:
+          - trusted_merchant
+description: In case the cusstomer terminates the user account in your shop or chooses to remove the stored card from the user account, you need to delete the token.
+operationId: delete-a-token
+parameters:
+    - name: token
+      in: path
+      example: TOKC_XATB7DF8ACXYTVQIPLWTVPFRKQE
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token with <code>grant_type=trusted_merchant</code>.
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                        error_description:
+                            type: string

@@ -1,48 +1,125 @@
-tags: 
-  - Marketplace Verification
-summary: Marketplace Verification Create
-description: Marketplace Verification Create
-operationId: MarketplaceVerificationCreate
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Verification
+summary: Create Marketplace Verification
+description: Initialize the verification process of the seller.
+operationId: create-marketplace-verification
 parameters:
-  #- name: loremIpsum
-  #  in: path
-  #  example: loremIpsum
-  #  required: false
-  #  content: 
-  #    application/json: 
-  #      schema: 
-  #        type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                properties:
+                    sellerId:
+                        type: string
+                        description: Unique id of seller (submerchant) given by marketplace side. This id must be constant for every verification concerning the same seller (submerchant).
+                        maxLength: 50
+                    type:
+                        type: string
+                        description:
+                            'Verification type. Possible values descriptions:
+                            <ul>
+                            <li><b>PAYOUT_ACCOUNT_DATA</b>- initialized by marketplace side. The verification with
+                            this type should contain the data of payout account and seller (submerchant). If this
+                            verification initializes seller in PayU then seller data are required. If it is just account
+                            update, then only account data are required.</li>
+                            <li><b>FULL</b> - verification which requires providing by seller all data for AML4 and payouts,
+                            typically initialized by marketplace side.</li>
+                            <li><b>UPDATE</b> - verification which requires providing by seller all data for AML4 and payouts,
+                            typically initialized by marketplace side.</li>
+                            <li><b>REVERIFICATION</b> - verification which requires providing by seller all data for AML4 and payouts,
+                            typically initialized by marketplace side.</li>
+                            <li><b>PERSONAL_ID_TAX_ID_CHANGE</b>- initialized by marketplace side. This allows to
+                            change PERSONAL_ID for private person or TAX_IDs for legal entity. Once the KYC
+                            verification process begins, the current account and payouts are blocked until
+                            verification is completed. If the process is interrupted (e.g. the company is unable to
+                            verify itself), PayU restores the old merchant account, thus unlocking the payouts on it.</li>
+                            <li><b>CONVERSION</b>- initialized by marketplace side. This allows to
+                            change PERSONAL_ID for private person or TAX_IDs for legal entity. Once the KYC
+                            verification process begins, the current account and payouts are blocked until
+                            verification is completed. If the process is interrupted (e.g. the company is unable to
+                            verify itself), PayU restores the old merchant account, thus unlocking the payouts on it.</li>
+                            </ul> '
+                        enum:
+                            [
+                                PAYOUT_ACCOUNT_DATA,
+                                FULL,
+                                UPDATE,
+                                REVERIFICATION,
+                                PERSONAL_ID_TAX_ID_CHANGE,
+                                CONVERSION,
+                            ]
+                    overridePayouts:
+                        type: boolean
+                        description: ''
+
+responses:
+    200:
+        x-summary: OK
+        description: SUCCESS
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        verificationId:
+                            type: string
+                            description: Unique id of the verification provided by PayU.
+                            example: aZl6Ja
+                        status:
+                            type: string
+                            description: >
+                                Current status of the verification: 
+
+                                * **WAITING_FOR_DATA** - status after initialization of the verification, when PayU is waiting for data or after exceeding transaction limits for the occasional transaction flow.
+
+                                * **WAITING_FOR_VERIFICATION** - set when all the data were send to PayU (after complete).
+
+                                * **REJECTED** - set when there are some errors in the provided data. These status is send with error codes.
+
+                                * **POSITIVE** - final status for approved verification.
+
+                                * **NEGATIVE** - final rejection status.
+
+                            example: WAITING_FOR_DATA
+                        sellerId:
+                            type: string
+                            example: seller_27
+    400:
+        x-summary: Bad request
+        description: Invalid input data.
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml
+    409:
+        x-summary: 'Conflict'
+        description: Verification may be already in progress.
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

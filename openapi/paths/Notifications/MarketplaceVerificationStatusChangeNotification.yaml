@@ -1,31 +1,31 @@
-tags: 
-  - Notifications
+tags:
+    - Notifications
 summary: Structure of notification about order status change sent from PayU to URL address provided by Merchant
 description: Marketplace Verification Status Change Notification
 operationId: MarketplaceVerificationStatusChangeNotification
-security: 
-  -  OAuth token: []
 parameters:
-  - name: Content-Type
-    in: header
-    description: Content type
-    schema:
-      type: string
-    style: simple
-    example: application/json
+    - name: Content-Type
+      in: header
+      description: Content type
+      schema:
+          type: string
+      style: simple
+      example: application/json
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

@@ -1,14 +1,15 @@
 type: object
 description: Section containing Shop balance information.
 properties:
-  currencyCode:
-    type: string
-    description: ISO 4217 currency code of currency in which Shop balance is kept.
-  total:
-    type: number
-    description: total balance of funds on Shop
-    example: 1234567890
-  available:
-    type: number
-    description: value of available funds that are under Merchant disposition, excluding funds locked by PayU system
-    example: 987654321
+    currencyCode:
+        type: string
+        description: ISO 4217 currency code of currency in which Shop balance is kept.
+        example: PLN
+    total:
+        type: number
+        description: total balance of funds on Shop
+        example: 1234567890
+    available:
+        type: number
+        description: value of available funds that are under Merchant disposition, excluding funds locked by PayU system
+        example: 987654321

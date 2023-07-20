@@ -1,48 +1,69 @@
-tags: 
-  - Partner Merchant Registration
-summary: Partner Merchant Registration POS REST Create
-description: Partner Merchant Registration POS REST Create
-operationId: PartnerMerchantRegistrationPOSRESTCreate
-security: 
-  -  OAuth token: []
+tags:
+    - Partner-Merchant-Registration
+summary: Create POS for Partner
+description: Create a POS, for your partner, for the specified `shopId`.
+operationId: create-pos-for-partner
+security:
+    - Bearer:
+          - partner
 parameters:
-  - name: publicShopId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: shopId
+      in: path
+      example: Shop identifier retrieved after shop creation.
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
           type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token with grant_type=partner and specific publicFirmId with Partner credentials required
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token with <code>grant_type=partner</code>.
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                required: [name, type]
+                properties:
+                    name:
+                        type: string
+                        description: Name of the created POS.
+                        example: Test POS
+                    type:
+                        type: string
+                        description: Type of the created POS.
+                        example: REST
+
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        posId:
+                            type: string
+                            description: Identifier of the created POS.
+                            example: JyoMIVTY
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

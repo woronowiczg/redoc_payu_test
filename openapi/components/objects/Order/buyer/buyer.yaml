@@ -1,0 +1,33 @@
+type: object
+description: Section containing buyer data.
+properties:
+    extCustomerId:
+        type: string
+        description: ID of the customer used in merchant system
+    email:
+        type: string
+        description: Buyer's email address. **Required for Installments (PL), Pay Later (PL), Pay Later with Twisto (CZ), 3DS 2 authentication.**
+        example: email@email.com
+    phone:
+        type: string
+        description: Buyer's telephone number. Please use +[country code] [number] format. **Required for Pay Later with Twisto (CZ), 3DS 2 authentication.**
+        example: +48 225108001
+    firstName:
+        type: string
+        description: Buyer's first name. **Required for Pay Later with Twisto (CZ).**
+        example: John
+    lastName:
+        type: string
+        description: Buyer's last name. **Required for Pay Later with Twisto (CZ).**
+        example: Doe
+    nin:
+        type: string
+        description: National Identification Number
+        example: 123456789
+    language:
+        type: string
+        description: Language code, ISO-639-1 compliant. Denotes the language version of PayU hosted payment page and of e-mail messages sent from PayU to the payer.
+        example: pl
+    delivery:
+        description: '**Section recommended for the 3DS 2 authentication.**'
+        $ref: ./delivery.yaml

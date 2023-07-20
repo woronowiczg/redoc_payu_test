@@ -1,12 +1,28 @@
 type: array
 description: Section containing saved BLIK tokens
 items:
-  type: object
-  properties: 
-    value:
-      type: string
-    type:
-      type: string
-      enum: [UID]
-    brandImageUrl:
-      type: string
+    type: object
+    properties:
+        value:
+            type: string
+            example: SIMULATE_ALIAS_AMBIGUITY-5690871207003
+        type:
+            type: string
+            enum: [UID]
+        brandImageUrl:
+            type: string
+            example: https://static.payu.com/images/mobile/logos/pbl_blik.png
+        bankApplicationReferences:
+            type: array
+            description: Array containing objects about available installments options.
+            items:
+                type: object
+                properties:
+                    key:
+                        type: string
+                        description: Unique key for assignment of particular banking application to a token. The value of this field is inserted in the order in payMethod.blikData.appKey field.
+                        example: 11111
+                    label:
+                        type: string
+                        description: The value of the label for assigning a particular banking application to a token. A list of values for these fields is presented to the customer for selection when paying with the UID token.
+                        example: BLIK label

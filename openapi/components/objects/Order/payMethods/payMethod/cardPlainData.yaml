@@ -1,0 +1,24 @@
+type: object
+description:
+required: []
+properties:
+    number:
+        type: string
+        description: ''
+        example: '5100052384536818'
+    expirationMonth:
+        type: string
+        description: ''
+        example: '02'
+    expirationYear:
+        type: pstring
+        description: ''
+        example: '29'
+    cvv:
+        type: string
+        description: ''
+        example: '123'
+    firstTransactionId:
+        type: string
+        description: ''
+        example: MCC0111LL1121

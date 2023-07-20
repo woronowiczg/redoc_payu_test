@@ -1,0 +1,91 @@
+type: object
+description: ''
+properties:
+    verificationId:
+        type: string
+        description: ''
+        example: 5002500000BVmycAAD
+    verificationType:
+        type: string
+        description: ''
+        example: FULL
+    verificationTransferStatus:
+        type: string
+        description: "Indicates status of the verification transfer.
+        <ul>
+        <li><b>Success</b> - transfer was received by PayU.</li>
+        <li><b>Failure</b> - PayU did not received funds</li>
+        <li><b>Matched</b> - transfer has been matched properly.</li>
+        <li><b>null</b> - did not have enough information about the transfer.</li>
+        </ul>" 
+        enum: [Success, Failure, Matched, 'null']
+        example: 'null'
+    processType:
+        type: string
+        description: Type of the process.
+        enum: [OCCASIONAL, REGULAR]
+        example: OCCASIONAL
+    status:
+        type: string
+        description: "Possible statuses:
+            <ul>
+            <li><b>POSITIVE</b> - indicates that the seller is accepted and can process transactions with PayU.</li>
+            <li><b>NEGATIVE</b> - indicates that the seller is rejected and can't process transactions with PayU. There is an error code always send for negative scenario.</li>
+            <li><b>REJECTED</b> -  indicates that provided data must be corrected.</li>
+            <li><b>WAITING_FOR_DATA</b> - waiting for data is sent in the notification when the verification was initialized but the request to start verification was not yet received. Provide the necessary data and documents according to the type of submerchant and send POST request on <code complete</code> endpoint.</li>
+            <li><b>WAITING_FOR_VERIFICATION</b> - waiting for verification indicates that data and documents submitted to PayU will be verified by PayU or  currently being verified. Wait for notification about status change.</li>
+            <li><b>CANCELED</b> - canceled. Initiate new verification when it is necessary. Marketplace can not cancel verification intialized by PayU or after sending complete information.</li>
+            </ul>"
+        example: REJECTED
+    sellerId:
+        type: string
+        description: ''
+        example: 123456test12
+    note:
+        type: string
+        description: ''
+        example: null
+    errors:
+        type: array
+        description: ''
+        items:
+            type: object
+            properties:
+                content:
+                    type: object
+                    description: Group of fields that indicate which data/document the error code applies to.
+                    properties:
+                        itemType:
+                            type: string
+                            description: ''
+                            enum: [SELLER, SELLER_DOCUMENT, ASSOCIATE, ASSOCIATE_DOCUMENT, PAYOUT_ACCOUNT]
+                            example: SELLER_DOCUMENT
+                        itemProperties:
+                            type: object
+                            description: ''
+                            properties:
+                                documentType:
+                                    type: string
+                                    description: ''
+                                    enum: [ID_CARD, PASSPORT, DRIVING_LICENCE, RESIDENCE_PERMIT, OTHER]
+                                    example: PEP_STATEMENT
+                                documentId:
+                                    type: string
+                                    description: ''
+                                    example: '2'
+                                associateId:
+                                    type: string
+                                    description: ''
+                                    example: null
+                code:
+                    type: string
+                    description: Error Code.
+                    example: '006'
+    updateDate:
+        type: string
+        description: ''
+        example: '2020-04-03T09:14:06.000Z'
+    createDate:
+        type: string
+        description: ''
+        example: '2020-04-03T06:36:15.000Z'

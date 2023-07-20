@@ -1,0 +1,52 @@
+type: object
+properties:
+    transactions:
+        type: array
+        description: Array of order objects.
+        items:
+            type: object
+            properties:
+                payMethod:
+                    type: object
+                    properties:
+                        value:
+                            type: string
+                            description: Payment method code
+                            example: m
+                bankAccount:
+                    type: object
+                    properties:
+                        number:
+                            type: string
+                            description: Bank account number from which payment was made.
+                            example: '80607787095718703296721164'
+                        name:
+                            type: string
+                            description: Name of the account holder from which payment was made (or full data – name, surname and address).
+                            example: 'JAN KOWALSKI'
+                        city:
+                            type: string
+                            description: City included in account holder address.
+                            example: 'WARSZAWA'
+                        postalCode:
+                            type: string
+                            description: Postal code included in account holder address.
+                            example: '02-638'
+                        street:
+                            type: string
+                            description: Street name and house number included in account holder address.
+                            example: 'UL.NOWOWIEJSKIEGO 8'
+                        address:
+                            type: string
+                            description: Account holder address.
+                            example: 'Warszawa Nowowiejskiego 8'
+                resultCode:
+                    type: string
+                    enum: [AUT_ERROR_NO_AUTHORIZATION, AUT_ERROR_ANTIFRAUD_DECLINED, REG_ERROR_ANTIFRAUD_DECLINED]
+                    description: "Optional informaction about transaction result code: 
+                        <ul>
+                            <li><b>AUT_ERROR_NO_AUTHORIZATION</b> - authorization was not received, transaction cancelled.</li>
+                            <li><b>AUT_ERROR_ANTIFRAUD_DECLINED</b> - transaction rejected at the authoriztion stage by the antifraud system.</li>
+                            <li><b>REG_ERROR_ANTIFRAUD_DECLINED</b> - transaction rejected at registration stage by antifraud system.</li>
+                        </ul>"
+                    example: AUT_ERROR_NO_AUTHORIZATION

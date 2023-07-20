@@ -3,23 +3,23 @@ description: Section containing delivery address. For a list of parameters, see 
 properties:
   street:
     type: string
-    description: Full street address, incl. apartment number.
+    description: Full street address, incl. apartment number. <b>Section recommended for the 3DS 2 authentication</b>.
   postalBox:
     type: string
     description: Postal box
   postalCode:
     type: string
-    description: Postal code
+    description: Postal code. <b>Section recommended for the 3DS 2 authentication</b>.
   city:
     type: string
-    description: city
+    description: City, <b>section recommended for the 3DS 2 authentication</b>.
   state:
     type: string
-    description: Country principal subdivision like "state" or "province". If provided, must be a valid ISO 3166-2 code (e.g. "UT" for Utah in the USA or "30" for "Wielkopolskie" in Poland).
+    description: Country principal subdivision like "state" or "province". If provided, must be a valid ISO 3166-2 code (e.g. "UT" for Utah in the USA or "30" for "Wielkopolskie" in Poland). <b>Section recommended for the 3DS 2 authentication</b>.
     example: "30"
   countryCode:
     type: string
-    description: Two-letter country code compliant with ISO-3166.
+    description: Two-letter country code compliant with <b><a href="https://www.iso.org/iso-3166-country-codes.html">ISO-3166</a></b>. <b>Section recommended for the 3DS 2 authentication</b>.
   name: 
     type: string
     description: Address description

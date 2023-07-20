@@ -1,211 +1,243 @@
 tags:
-  - Order
-summary: Create order
-description: Create order
-operationId: OrderCreateRequest
+    - Order
+summary: Create an Order
 security:
-  - OAuth token: []
+    - Bearer: [client_credentials, trusted_merchant]
+description: Create a new order request.
+operationId: create-an-order
 parameters:
-  $ref: ../../components/headers/ReqHeaders.yaml
+    $ref: ../../components/headers/ReqHeaders.yaml
 requestBody:
-  content:
-    application/json:
-      schema:
-        type: object
-        required:
-          [customerIp, merchantPosId, description, currencyCode, totalAmount, products]
-        properties:
-          continueUrl:
-            type: string
-            description: Address for redirecting the customer after payment is commenced.
-            example: www.example.com/path
-          notifyUrl:
-            type: string
-            description: The address for sending notifications
-            example: https://your.eshop.com/notify
-          customerIp:
-            type: string
-            description: "Payer’s IP address, e.g. 123.123.123.123. Note: 0.0.0.0 is not accepted."
-            examples:
-              - "127.0.0.1"
-          merchantPosId:
-            type: string
-            description: Point of sale ID.
-            examples: 
-              - "140332"
-          description:
-            type: string
-            description: 	Description of the order.
-          additionalDescription:
-            type: string
-            description: Additional description of the order.
-          visibleDescription:
-            type: string
-            maxLength: 80
-            description: Order/Payment description visible for Buyer on the PayU payment page.
-          statementDescription:
-            type: string
-            maxLength: 22
-            description: Payment recipient name followed by payment description (order ID, ticket number etc) visible on card statement. The name should be easy to recognize by the cardholder. If field is not provided, static name configured by PayU will be used.
-          extOrderId:
-            type: string
-            description: ID of an order used in merchant system. Order identifier assigned by the merchant. It enables merchants to find a specific order in their system. This value must be unique within a single POS.
-          currencyCode:
-            type: string
-            description: Currency code compliant with ISO 4217 (e.g EUR).
-            examples: 
-              - EUR
-          totalAmount:
-            type: string
-            description: Total price of the order in pennies (e.g. 1000 is 10.00 EUR). Applies also to currencies without subunits (e.g. 1000 is 10 HUF).
-            example: "1000"
-          validityTime:
-            type: string
-            description: Duration for the validity of an order (in seconds), during which time payment must be made. Default value 86400.
-            example: "100000"
-          cardOnFile:
-            type: string
-            description: 	Information about party initializing order or a transaction with Buyer consent to save card token. "cardOnFile" parameter cannot be used with "recurring" parameter.
-            enum: [FIRST, STANDARD_CARDHOLDER, STANDARD_MERCHANT]
-          recurring:
-            type: string
-            description: Marks the order as recurring payment - first or subsequent. "recurring" parameter cannot be used with "cardOnFile" parameter
-            enum: [FIRST, STANDARD] 
-          buyer:
-            $ref: ../../components/objects/Order/Buyer.yaml
-          products:
-            $ref: ../../components/objects/Order/products.yaml
-          payMethods:
-            $ref: ../../components/objects/Order/payMethods.yaml
-          mcpData:
-            $ref: ../../components/objects/Order/mcpData.yaml
-          threeDsAuthentication:
-            $ref: ../../components/objects/Order/threeDsAuthentication.yaml
-          credit:
-            $ref: ../../components/objects/Order/credit.yaml
-          submerchant:
-            $ref: ../../components/objects/Order/submerchant.yaml
-  description: Parameters for OrderCreateRequest
-  required: true
+    content:
+        application/json:
+            schema:
+                type: object
+                description: Parameters for OrderCreateRequest
+                required:
+                    [
+                        customerIp,
+                        merchantPosId,
+                        description,
+                        currencyCode,
+                        totalAmount,
+                        products,
+                    ]
+                properties:
+                    continueUrl:
+                        type: string
+                        description: Address for redirecting the customer after payment is commenced.
+                        example: www.example.com/path
+                    notifyUrl:
+                        type: string
+                        description: The address for sending notifications
+                        example: https://your.eshop.com/notify
+                    customerIp:
+                        type: string
+                        description: 'Payer’s IP address, e.g. 123.123.123.123. Note: 0.0.0.0 is not accepted.'
+                        examples:
+                            - '127.0.0.1'
+                            - '127.0.0.2'
+                            - '8d33:56b2:24aa:b822:9b2f:1db7:c21d:04e1'
+                    merchantPosId:
+                        type: string
+                        description: Point of sale ID.
+                        examples:
+                            - '140332'
+                            - '145227'
+                    description:
+                        type: string
+                        description: Description of the order.
+                    additionalDescription:
+                        type: string
+                        description: Additional description of the order.
+                    visibleDescription:
+                        type: string
+                        maxLength: 80
+                        description: Order/Payment description visible for Buyer on the PayU payment page.
+                    statementDescription:
+                        type: string
+                        maxLength: 22
+                        description: Payment recipient name followed by payment description (order ID, ticket number etc) visible on card statement. The name should be easy to recognize by the cardholder. If field is not provided, static name configured by PayU will be used.
+                    extOrderId:
+                        type: string
+                        description: ID of an order used in merchant system. Order identifier assigned by the merchant. It enables merchants to find a specific order in their system. This value must be unique within a single POS.
+                    currencyCode:
+                        type: string
+                        description: Currency code compliant with ISO 4217 (e.g EUR).
+                        examples:
+                            - EUR
+                            - PLN
+                            - USD
+                    totalAmount:
+                        type: string
+                        description: Total price of the order in pennies (e.g. 1000 is 10.00 EUR). Applies also to currencies without subunits (e.g. 1000 is 10 HUF).
+                        example: '1000'
+                    validityTime:
+                        type: string
+                        description: Duration for the validity of an order (in seconds), during which time payment must be made. Default value 86400.
+                        example: '100000'
+                    cardOnFile:
+                        type: string
+                        description: Information about party initializing order or a transaction with Buyer consent to save card token. "cardOnFile" parameter cannot be used with "recurring" parameter.
+                        enum: [FIRST, STANDARD_CARDHOLDER, STANDARD_MERCHANT]
+                        example: FIRST
+                    recurring:
+                        type: string
+                        description: Marks the order as recurring payment - first or subsequent. "recurring" parameter cannot be used with "cardOnFile" parameter
+                        enum: [FIRST, STANDARD]
+                        example: FIRST
+                    buyer:
+                        $ref: ..\..\components\objects\Order\buyer\buyer.yaml
+                    shoppingCarts:
+                        $ref: ..\..\components\objects\Order\shoppingCarts\shoppingCarts.yaml
+                    products:
+                        $ref: ../../components/objects/Order/products.yaml
+                    payMethods:
+                        $ref: ../../components/objects/Order/payMethods/payMethods.yaml
+                    mcpData:
+                        $ref: ../../components/objects/Order/mcpData.yaml
+                    threeDsAuthentication:
+                        $ref: ../../components/objects/Order/threeDsAuthentication/threeDsAuthentication.yaml
+                    credit:
+                        $ref: ../../components/objects/Order/credit/credit.yaml
+                    submerchant:
+                        $ref: ../../components/objects/Order/submerchant.yaml
+                    deviceFingerprint:
+                        type: string
+                        description: 'Hashed identifier of the user or its device.'
+                        example: 3e9fae0b3e6003a4093358167bc1079e
+
 responses:
-  201:
-    description: Created
-    content:
-      application/json:
-        schema:
-          type: object
-          properties: 
-            status:
-              type: object
-              properties: 
-                statusCode:
-                  type: string
-            redirectUri:
-              type: string
-            orderId:
-              type: string
-            extOrderId:
-              type: string
-            challengeParameters:
-              type: object
-              properties:
-                threeDsServerTransactionId:
-                  type: string
-                acsTransID:
-                  type: string
-                acsReferenceNumber:
-                  type: string
-                acsSignedContent:
-                  type: string
-  302:
-    description: Found
-    content:
-      application/json:
-        schema:
-          type: object
-          properties: 
-            status:
-              type: object
-              properties: 
-                statusCode:
-                  type: string
-                  description: Payment status.
-                severity:
-                  type: string
-            redirectUri:
-              type: string
-              description: Url redirection address with payment summary.
-            iframeAllowed:
-              type: boolean
-              example: true
-            threeDsProtocolVersion:
-              type: string
-              enum: [3DS1, 3DS2]
-            orderId:
-              type: string
-              description: Order identifier given by PayU.
-            extOrderId:
-              type: string
-              description: Order identifier given by merchant.
-            payMethods:
-              type: object
-              properties: 
-                payMethod:
-                  type: object
-                  properties:
-                    card:
-                      type: object
-                      properties: 
-                        number:
-                          type: string
-                          description: Card number.
-                        expirationMonth:
-                          type: integer
-                          description: Card expiration month.
-                        expirationYear:
-                          type: integer
-                          description: Card expiration year.
-                    type:
-                      type: string
-                    value:
-                      type: string
-        # examples: 
-        #   success:
-        #     summary: SUCCESS
-        #     value: 
-        #       status: SUCCESS
-        #       redirectUri: "{payment_summary_redirection_url}"
-        #       orderId: WZHF5FFDRJ140731GUEST000P01
-        #       extOrderId: "{YOUR_EXT_ORDER_ID}"
-        #   warning_continue_redirect:
-        #     summary: WARNING_CONTINUE_REDIRECT
-        #     value:
-        #       status: WARNING_CONTINUE_REDIRECT
-        #       redirectUri: "{payment_summary_redirection_url}"
-        #       orderId: WZHF5FFDRJ140731GUEST000P01
-        #       extOrderId: "{YOUR_EXT_ORDER_ID}"
-          
-  400:
-    description: Bad Request
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/responses/400.yaml
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
-  403:
-    description: Forbidden
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/403.yaml
-  500:
-    description: Internal server error
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/500.yaml
+    201:
+        x-summary: Created
+        description: 'SUCCESS'
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        status:
+                            type: object
+                            properties:
+                                statusCode:
+                                    type: string
+                                redirectUri:
+                                    type: string
+                                orderId:
+                                    type: string
+                                    example: WZHF5FFDRJ140731GUEST000P01
+                                iframeAllowed:
+                                    type: boolean
+                                    example: true
+                                threeDsProtocolVersion:
+                                    type: string
+                                    enum: [3DS2]
+                                    example: 3DS2
+                                extOrderId:
+                                    type: string
+                                challengeParameters:
+                                    type: object
+                                    properties:
+                                        threeDsServerTransactionId:
+                                            type: string
+                                            example: 0016f22b-f988-4358-b2c6-8917bba22037
+                                        acsTransID:
+                                            type: string
+                                            example: d7c1ee99-9478-44a6-b1f2-391e29c6b340
+                                        acsReferenceNumber:
+                                            type: string
+                                            example: 3DS_LOA_ACS_201_13579
+                                        acsSignedContent:
+                                            type: string
+                                            example: c29tZUJhc2U2NGVuY29kZWRTdHJpbmc=
+
+    302:
+        x-summary: Found
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        status:
+                            type: object
+                            properties:
+                                statusCode:
+                                    type: string
+                                    description: Response code
+                                    example: SUCCESS
+                                severity:
+                                    type: string
+                        redirectUri:
+                            type: string
+                            description: Url redirection address with payment summary.
+                            example: https://merch-prod.snd.payu.com/pay/?orderId=WZHF5FFDRJ140731GUEST000P01&token=eyJhbGciOiJIUzI1NiJ9.eyJvcmRlcklkIjoiV1pIRjVGRkRSSjE0MDczMUdVRVNUMDAwUDAxIiwicG9zSWQiOiJhYmMxMjM0IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DTElFTlQiXSwicGF5ZXJFbWFpbCI6InRlc3RAdGVzdC5jb20iLCJleHAiOjE2NzI3NjE4NjEsImlzcyI6IlBBWVUiLCJhdWQiOiJhcGktZ2F0ZXdheSIsInN1YiI6IlBheVUgc3ViamVjdCIsImp0aSI6IjYzMTA3M2Y0LThmMzgtNDNlZS1iOTc1LWVlNWIwZGI0ZWFiZSJ9.tBThoQDVgo9mpmh2AUDC5hkfecwtqO0L9LSCdXRYruk
+                        iframeAllowed:
+                            type: boolean
+                            example: true
+                        threeDsProtocolVersion:
+                            type: string
+                            enum: [3DS2]
+                        orderId:
+                            type: string
+                            description: Order identifier given by PayU.
+                            example: WZHF5FFDRJ140731GUEST000P01
+                        extOrderId:
+                            type: string
+                            description: Order identifier given by merchant.
+                            example: my_ext_order_id
+                        payMethods:
+                            type: object
+                            properties:
+                                payMethod:
+                                    type: object
+                                    properties:
+                                        card:
+                                            type: object
+                                            properties:
+                                                number:
+                                                    type: string
+                                                    description: Card number.
+                                                    example: 4444333322221111
+                                                expirationMonth:
+                                                    type: integer
+                                                    description: Card expiration month.
+                                                    example: 09
+                                                expirationYear:
+                                                    type: integer
+                                                    description: Card expiration year.
+                                                    example: 2026
+                                        type:
+                                            type: string
+                                            enum: [CARD_TOKEN]
+                                        value:
+                                            type: string
+                                            example: TOKC_XATB7DF8ACXYTVQIPLWTVPFRKQE
+    400:
+        x-summary: Bad Request
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/400.yaml
+    401:
+        x-summary: Unauthorized
+        description: 'Incorrect authentication. Check signature parameters and implementation of the signature algorithm.'
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml
+    403:
+        x-summary: Forbidden
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/403.yaml
+    500:
+        x-summary: Internal server error
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/500.yaml

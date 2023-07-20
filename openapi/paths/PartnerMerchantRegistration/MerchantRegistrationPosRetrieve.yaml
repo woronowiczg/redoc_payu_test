@@ -1,0 +1,89 @@
+tags:
+    - Partner-Merchant-Registration
+summary: Retrieve Partner's POS Data
+description: Retrieve data of the POS with specified `posId`.
+operationId: retrieve-partners-pos-data
+security:
+    - Bearer:
+          - partner
+parameters:
+    - name: posId
+      in: path
+      example: POS identifier retrieved after POS creation.
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token with <code>grant_type=partner</code>.
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        posId:
+                            type: string
+                            description: Public POS ID.
+                            example: JyoMIVTY
+                        type:
+                            type: string
+                            description: POS type (determines API that can be used).
+                            example: REST
+                        name:
+                            type: string
+                            description: POS name.
+                            example: Test POS
+                        encoding:
+                            type: string
+                            description: Determines encoding used by PayU system to read API requests. Always <b>UTF-8</b> for <b>REST</b> type.
+                            example: UTF-8
+                        authorization:
+                            type: object
+                            description: Object with authorization details.
+                            properties:
+                                standard:
+                                    type: object
+                                    properties:
+                                        merchantPosId:
+                                            type: string
+                                            description: POS identifier used for API calls.
+                                            example: '385234'
+                                        key:
+                                            type: string
+                                            description: First API key (<code>client_id</code>) used to obtain OAuth access tokens for REST API calls.
+                                            example: 9c0041e05fdee99749de4c2d2ce4c66e
+                                        secondKey:
+                                            type: string
+                                            description: Second API key (<code>client_id</code>) used to sign REST API forms and to validate notifications.
+                                            example: f096a39d78fbe03b8d23dde43b728cfd
+                                        authKey:
+                                            type: string
+                                            description: Not required for REST API.
+                                            example: uHcZ9Ly
+
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

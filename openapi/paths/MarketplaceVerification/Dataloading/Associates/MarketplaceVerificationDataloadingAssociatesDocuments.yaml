@@ -1,48 +1,136 @@
-tags: 
-  - Marketplace Verification
-summary: Marketplace Verification Dataloading Associates Documents
-description: Marketplace Verification Dataloading Associates Documents
-operationId: MarketplaceVerificationDataloadingAssociatesDocuments
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Verification
+summary: Add Associates Documents
+description: Upload required documents for associates (representatives or beneficiaries).
+operationId: add-associates-documents
 parameters:
-  #- name: loremIpsum
-  #  in: path
-  #  example: loremIpsum
-  #  required: false
-  #  content: 
-  #    application/json: 
-  #      schema: 
-  #        type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                required:
+                    [
+                        verificationId,
+                        associateId,
+                        type,
+                        files,
+                        documentId,
+                        expireDate,
+                    ]
+                properties:
+                    verificationId:
+                        type: string
+                        description: Unique id of the verification provided by PayU.
+                        maxLength: 18
+                    associateId:
+                        type: string
+                        description: Unique id of an associate assigned by the Marketplace.
+                        maxLength: 100
+                    type:
+                        type: string
+                        description: Document type.
+                        enum:
+                            [
+                                ID_CARD,
+                                PASSPORT,
+                                DRIVING_LICENCE,
+                                RESIDENCE_PERMIT,
+                                OTHER_DOCUMENT,
+                                PEP_STATEMENT,
+                            ]
+                    files:
+                        type: array
+                        description: List of file ids given in a response to the dataloading/files request. Can be many IDs in this field when one document contains many files.
+                        format: String[]
+                        items:
+                            type: string
+                    documentId:
+                        type: string
+                        description: Unique document ID assigned by the Marketplace.
+                        maxLength: 100
+                    documentNumber:
+                        type: string
+                        description: Serial number of the provided document.
+                        maxLength: 100
+                    issueDate:
+                        type: string
+                        description: Issue date of the document.
+                        format: YYYY-MM-DD
+                    expireDate:
+                        type: string
+                        description: Expiry date of the document.
+                        format: YYYY-MM-DD
+                    note:
+                        type: string
+                        description: ''
+                        maxLength: 255
+                    translationFiles:
+                        type: array
+                        description: '`fileId` of translation of documents (Polish or English documents do not need to be translated)'
+                        format: String[]
+                        items:
+                            type: string
+
+responses:
+    204:
+        x-summary: 'No Content'
+        description: SUCCESS
+        content:
+            application/json:
+                schema:
+                    type: object
+    400:
+        x-summary: Bad request
+        description: Invalid input. Reason specified in content.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    404:
+        x-summary: Not found
+        description: Verification not found.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    409:
+        x-summary: 'Conflict'
+        description: Verification state does not allow operation.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

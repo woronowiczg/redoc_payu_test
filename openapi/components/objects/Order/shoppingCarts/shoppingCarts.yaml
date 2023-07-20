@@ -1,0 +1,22 @@
+type: array
+description: Array of objects related to transaction identification.
+items:
+    type: object
+    required: [extCustomerId, amount, products]
+    properties:
+        extCustomerId:
+            type: string
+            description: Submerchant identifier
+            example: ext-customer-1
+        amount:
+            type: number
+            description: Total amount for given submerchant
+            example: 24950
+        fee:
+            type: string
+            description: Marketplace fee. Value should be in range <0, amount>
+            example: 250
+        shippingMethods:
+            $ref: shippingMethods.yaml
+        products:
+            $ref: ../products.yaml

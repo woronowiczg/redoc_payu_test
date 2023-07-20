@@ -1,48 +1,79 @@
-tags: 
-  - Marketplace Verification
-summary: Marketplace Verification Advice
-description: Marketplace Verification Advice
-operationId: MarketplaceVerificationAdvice
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Verification
+summary: Retrieve Verification Advice
+description: Verify, on the basis of a Personal Identification Number or NIP number, whether a given individual/company has already been registered in the PayU system.
+operationId: retrieve-marketplace-verification-advice
 parameters:
-  - name: Id
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: companyTaxId
+      in: query
+      required: true
+      description: Company tax id of a entity. <b>Required if you want to check a status of a company.</b>
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: pesonalIdentificationNumber
+      in: query
+      required: true
+      description: Personal identification number of individual. <b>Required if you want to check a status of a private person.</b>
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
           type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: Advised verify action.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+                            enum:
+                                [
+                                    FULL_ONBOARDING_REQUIRED,
+                                    BANK_ACCOUNT_VERIFICATION_REQUIRED,
+                                ]
+                            description: >
+                                * **FULL_ONBOARDING_REQUIRED** - full boarding process required,
+
+                                * **BANK_ACCOUNT_VERIFICATION_REQUIRED** -  only a
+                                verification transfer is required for verification purposes.
+    400:
+        x-summary: Bad request
+        description: Invalid input query values.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    404:
+        x-summary: Not found
+        description: Marketplace not found.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

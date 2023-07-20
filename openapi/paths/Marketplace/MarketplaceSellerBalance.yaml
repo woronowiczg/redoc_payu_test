@@ -1,54 +1,68 @@
-tags: 
-  - Marketplace Seller
-summary: Marketplace Seller Balance
-description: Marketplace Seller Balance
-operationId: MarketplaceSellerBalance
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Seller
+summary: Retrieve Seller Balance
+description: ''
+operationId: retrieve-seller-balance
 parameters:
-  - name: extCustomerId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: extCustomerId
+      description: Submerchant identifier.
+      in: path
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: currencyCode
+      in: query
+      example: PLN
+      required: true
+      description: Currency code according to ISO-4217.
+      schema:
           type: string
-  - name: currencyCode
-    in: query
-    example: loremIpsum
-    required: true
-    schema:
-      type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        balance:
+                            type: object
+                            properties:
+                                availableAmount:
+                                    type: string
+                                    description: Available funds.
+                                totalAmount:
+                                    type: string
+                                    description: Total submerchant funds (including blocked funds)
+                        status:
+                            type: object
+                            properties:
+                                statusCode:
+                                    type: string
+                                    description: Response Status
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

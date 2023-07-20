@@ -1,0 +1,35 @@
+type: object
+description: Object containing result data from 3DS process.
+required: [status3Ds, dsTransactionId]
+properties:
+    status3Ds:
+        type: enum
+        description: 3DS status. Following values are allowed to be used:<ul><li><b>Y</b> - successful 3DS2 authentication,</li><li><b>A</b> - 3DS2 authentication attempt.</li></ul>
+        enum: ['Y', 'A']
+        example: 'Y'
+    status3DsDescription:
+        type: string
+        minLength: 1
+        maxLength: 1024
+        description: Description related to 3DS result. Passing this parameter as a additional description with the MPI will allow better potential customer support from BOK.
+        example: Authentication successful
+    xid:
+        type: string
+        description: Unique identifier of 3DS transaction given by the shop. Field required within 3DS version 1 section. This field <b>should not</b> be sent when attempting 3DS2.x authentication. <ul><li><b>[1 .. 20] characters</b> - for value in plain text,</li><li><b>{28} characters</b> - for Base64encoded value,</li><li><b>{40} characters</b> - for HEXencoded value.</li></ul>
+    dsTransactionId:
+        type: string
+        description: Field required within 3DS2.x section. This field should not be sent when attempting 3DS version 1 authentication.
+        minLength: 1
+        maxLength: 36
+        example: 3b31b19d-1c06-4ea4-a85a-00af10c66588
+    eciCode:
+        type: enum
+        description: E-commerce Indicator / UCAF. Values can be passed with "0", e.g. "04", "05", etc. It should be passed always if the MPI provided this information.
+        enum: [5, 6, 7, 2, 1, 0]
+        example: 05
+    cavv:
+        type: string
+        description: 3DS cryptogram. It should be passed always if the MPI provided this information.
+        minLength: 1
+        maxLength: 200
+        example: AAABBBEAUAAAABgICABQAAAAAAA=

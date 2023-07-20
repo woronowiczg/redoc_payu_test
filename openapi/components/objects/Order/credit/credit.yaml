@@ -1,0 +1,82 @@
+type: object
+description: >-
+    Section containing credit data. This information is not
+    required, but it is strongly recommended to include it.
+    Otherwise the buyer will be prompted to provide missing data
+    on provider page when payment by Installments or Pay later.
+properties:
+    shoppingCarts:
+        $ref: shoppingCart/shoppingCart.yaml
+    applicant:
+        type: object
+        description: Section containing data of person applying for a credit.
+        properties:
+            email:
+                type: string
+                description: Applicant's email address
+                example: test@test.com
+            phone:
+                type: string
+                description: Applicant's phone number
+                example: 123456789
+            firstName:
+                type: string
+                description: Applicant's first name
+                example: Joe
+            lastName:
+                type: string
+                description: Applicant's last name
+                example: Doe
+            language:
+                type: string
+                description: >-
+                    Language code, ISO-639-1 compliant. Denotes the
+                    language version of PayU hosted payment page and of
+                    e-mail messages sent from PayU to the payer.
+                example: pl
+            nin:
+                type: string
+                description: National Identification Number
+                example: 123456789
+            address:
+                type: object
+                description: Section containing data about applican's address.
+                properties:
+                    street:
+                        type: string
+                        description: >-
+                            Street name, possibly including house and flat
+                            number.
+                        example: Test Street
+                    streetNo:
+                        type: string
+                        description: Street number
+                        example: 123
+                    flatNo:
+                        type: string
+                        description: Flat number
+                        example: 987
+                    postalCode:
+                        type: string
+                        description: Postal Code
+                        example: 01-000
+                    city:
+                        type: string
+                        description: City
+                        example: Test City
+                    countryCode:
+                        type: string
+                        description: Two-letter country code compliant with ISO-3166.
+                        example: PL
+            additionalInfo:
+                type: object
+                description: >-
+                    Additional information about person applying for
+                    credit.
+                properties:
+                    hasSuccessfullyFinishedOrderInShop:
+                        type: string
+                        description: >-
+                            Information whether there were previous,
+                            successfully completed orders for applicant.
+                        example: YES

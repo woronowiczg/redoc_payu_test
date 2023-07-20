@@ -1,48 +1,78 @@
-tags: 
-  - Marketplace Seller
-summary: Marketplace Seller Fee Credit Transfer
-description: Marketplace Seller Fee Credit Transfer
-operationId: MarketplaceSellerFeeCreditTransfer
-security: 
-  -  OAuth token: []
+tags:
+    - Marketplace-Seller
+summary: Transfer Funds from Marketplace to Seller Balance
+description: ''
+operationId: transfer-funds-from-marketplace-to-seller-balance
 parameters:
-  - name: extCustomerId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: extCustomerId
+      in: path
+      description: Unique submerchant identifier.
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
           type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-  200:
-    description: OK
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
     content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+        application/json:
+            schema:
+                type: object
+                properties:
+                    amount:
+                        type: number
+                        description: Transfer amount.
+                    currencyCode:
+                        type: string
+                        description: Currency code according to ISO-4217.
+                        example: PLN
+                    description:
+                        type: string
+                        description: Description of the operation.
+                    extTransferId:
+                        type: string
+                        description: Unique transfer identifier for given marketplace.
+responses:
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        extCustomerId:
+                            type: string
+                            description: Unique submerchant identifier.
+                        extTransferId:
+                            type: string
+                            description: Unique transfer identifier for given marketpalce.
+                        status:
+                            type: object
+                            properties:
+                                statusCode:
+                                    type: string
+                                    description: Response status.
+                                    example: SUCCESS
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

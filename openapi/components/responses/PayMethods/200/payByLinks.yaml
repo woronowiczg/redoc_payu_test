@@ -1,18 +1,27 @@
 type: array
 description: Section containing available PayByLink payment methods
 items:
-  type: object
-  properties: 
-    value:
-      type: string
-    brandImageUrl:
-      type: string
-    name:
-      type: string
-    status:
-      type: string
-      enum: [ENABLED, DISABLED, TEMPORARY_DISABLED]
-    minAmount:
-      type: number
-    maxAmount:
-      type: number
+    type: object
+    properties:
+        value:
+            type: string
+            example: sgb
+            description: <code>payType</code> value. You can find available values <b><a href="/docs/get-started/introduction/index.mdx#payment-methods" target="_blank">here</a></b>.
+        brandImageUrl:
+            type: string
+            example: https://static.payu.com/images/mobile/logos/pbl_sgb_off.png
+            description: Link to <code><payType</code> logo graphic on PayU server.
+        name:
+            type: string
+            example: SGB Bank
+            description: Name of <code>payType</code> set by PayU
+        status:
+            type: string
+            enum: [ENABLED, DISABLED, TEMPORARY_DISABLED]
+            example: DISABLED
+        minAmount:
+            type: number
+            example: 50
+        maxAmount:
+            type: number
+            example: 99999999

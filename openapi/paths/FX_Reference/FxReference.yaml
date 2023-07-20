@@ -1,49 +1,68 @@
-tags: 
-  - FX reference
-summary: FX reference
+tags:
+    - FX-Reference
+summary: Retrieve Reference Rates
 description: FX reference
-operationId: FxReference
-security: 
-  -  OAuth token: []
+operationId: retrieve-reference-rates
 parameters:
-  - name: termCurrency
-    in: query
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: termCurrency
+      in: query
+      example: { 'termCurrency': 'PLN' }
+      required: true
+      schema:
           type: string
-          description: Currency code compliant with ISO 4217
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      examples:
+          termCurrency:
+              summary: Currency code compliant with ISO 4217
+              value: { 'termCurrency': 'PLN' }
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        effectiveDate:
+                            type: string
+                            example: 2023-01-03
+                            description: reference rate table validity. You need to refresh the table daily
+                        fxRates:
+                            type: array
+                            description: Section containing pairs of chosen term currency and base currencies
+                            items:
+                                type: object
+                                properties:
+                                    baseCurrency:
+                                        type: string
+                                        description: initial currency - this is the currency in which the payer will be charged (card settlement currency)
+                                    termCurrency:
+                                        type: string
+                                        description: final currency - this is the currnecy of the shop at which the payment will be processed (currency set for the shop in the PayU system)
+                                    midRate:
+                                        type: number
+                                        example: 3.141
+                                        description: midrate to be used to calculate the percentage mark-up
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml

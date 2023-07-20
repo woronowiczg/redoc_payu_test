@@ -1,0 +1,106 @@
+type: object
+properties:
+    operations:
+        type: array
+        description: List of operations.
+        items:
+            type: object
+            properties:
+                type:
+                    type: string
+                    description: Operation type.
+                    example: PAYMENT_RECEIVED
+                    enum:
+                        [
+                            PAYMENT_SENT,
+                            PAYMENT_RECEIVED,
+                            PAYOUT,
+                            REFUND_SENT,
+                            REFUND_RECEIVED,
+                            RETURN,
+                            ADMIN_TRANSFER_SENT,
+                            ADMIN_TRANSFER_RECEIVED,
+                            FEE_TRANSFER_SENT,
+                            FEE_TRANSFER_RECEIVED,
+                            CHARGEBACK,
+                            ADMIN_CORRECTION,
+                        ]
+                amount:
+                    type: string
+                    description: Amount (of order, refund, payout).
+                currencyCode:
+                    type: string
+                    description: Currency code according to ISO-4217.
+                    example: PLN
+                description:
+                    type: string
+                    description: Operation description.
+                status:
+                    type: string
+                    description: Operation status.
+                    example: COMPLETED
+                creationDate:
+                    type: string
+                    description: Operation request moment.
+                    format: '2019-11-30T20:33:44+02:00'
+                eventDate:
+                    type: string
+                    description: Operation ending moment.
+                    format: '2019-11-30T22:33:44+02:00'
+                details:
+                    type: object
+                    properties:
+                        orderId:
+                            type: string
+                            description: Order identifier.
+                        extOrderId:
+                            type: string
+                            description: External order identifier.
+                        feeAmount:
+                            type: string
+                            description: Marketplace fee amount.
+                        counterparties:
+                            type: object
+                            description: Order elements.
+                            properties:
+                                extCustomerId:
+                                    type: string
+                                    description: Buyer identifier.
+                                name:
+                                    type: string
+                                    description: Buyer name.
+                                email:
+                                    type: string
+                                    description: Buyer email.
+                                products:
+                                    type: array
+                                    description: List of products in order.
+                                    items:
+                                        type: object
+                                        properties:
+                                            name:
+                                                type: string
+                                                description: Product name.
+                                            unitPrice:
+                                                type: string
+                                                description: Unit price of product
+                                            quantity:
+                                                type: string
+                                                description: Quantity
+
+                funds:
+                    type: array
+                    items:
+                        type: object
+    pageResponse:
+        type: object
+        properties:
+            records:
+                type: string
+                description: Total number of records found.
+            size:
+                type: string
+                description: Number of returned operations.
+            pageCount:
+                type: string
+                description: Page count.

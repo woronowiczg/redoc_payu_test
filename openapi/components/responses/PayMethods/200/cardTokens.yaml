@@ -1,24 +1,33 @@
 type: array
 description: Section containing saved card tokens
 items:
-  type: object
-  properties: 
-    value:
-      type: string
-    brandImageUrl:
-      type: string
-    preferred:
-      type: boolean
-    status:
-      type: string
-      enum: [NEW, ACTIVE, EXPIRED]
-    cardExpirationYear:
-      type: integer
-    cardExpirationMonth:
-      type: integer
-    cardNumberMasked:
-      type: string
-    cardScheme:
-      type: string
-    cardBrand:
-      type: string
+    type: object
+    properties:
+        value:
+            type: string
+            example: TOKC_XATB7DF8ACXYTVQIPLWTVPFRKQE
+        brandImageUrl:
+            type: string
+            example: https://static.payu.com/images/mobile/visa.png
+        preferred:
+            type: boolean
+            example: true
+        status:
+            type: string
+            enum: [NEW, ACTIVE, EXPIRED]
+            example: ACTIVE
+        cardExpirationYear:
+            type: integer
+            example: 2026
+        cardExpirationMonth:
+            type: integer
+            example: 07
+        cardNumberMasked:
+            type: string
+            example: 411111******1111
+        cardScheme:
+            type: string
+            example: VS
+        cardBrand:
+            type: string
+            example: VISA

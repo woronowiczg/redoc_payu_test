@@ -1,19 +1,25 @@
 type: object
 description: Payout information.
+required: [amount]
 properties:
-  description:
-    type: string
-    description: Payout description.
-  extPayoutId:
-    type: string
-    description: external identificator of Payout assigned by Merchant.
-  amount:
-    type: number
-    description: amount for which Payout should be created
-    example: 987654321
-  postalOrder:
-    type: string
-    description: Flag indicating whether the payout was in the form of a postal transfer order. Setting this flag forces the completion of address fields and removes the requirement for the account number field.
-  foreign:
-    type: string
-    description: Flag indicating whether payout was was made to a foreign account.
+    description:
+        type: string
+        description: Payout description.
+    extPayoutId:
+        type: string
+        description: external identificator of Payout assigned by Merchant.
+    amount:
+        type: number
+        description: amount for which Payout should be created
+        example: 987654321
+    additionalVariables:
+        type: string
+        format: 'VS=888111'
+        description: Allows sending additional information to the system (Variable Symbol). Data from this field is send only to the supporting banks. <b>This solution is dedicated only for Czech market.</b>
+        example: VS=888111
+    postalOrder:
+        type: string
+        description: Flag indicating whether the payout was in the form of a postal transfer order. Setting this flag forces the completion of address fields and removes the requirement for the account number field. <b>Used in the payouts to designated bank accounts</b>
+    foreign:
+        type: string
+        description: Flag indicating whether payout was was made to a foreign account. <b>Used in the payouts to designated bank accounts</b>

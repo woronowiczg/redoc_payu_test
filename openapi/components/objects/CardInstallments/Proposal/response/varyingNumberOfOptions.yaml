@@ -1,0 +1,45 @@
+type: object
+properties:
+    id:
+        type: string
+        description: Unique identifier of installment proposal.
+    cardScheme:
+        type: string
+        description: Card Scheme (MC - Mastercard)
+    installmentOptionFormat:
+        type: string
+        description: Installment option format
+        enum: [VARYING_NUMBER_OF_OPTIONS, VARYING_NUMBER_OF_INSTALLMENTS]
+        example: VARYING_NUMBER_OF_OPTIONS
+    currencyCode:
+        type: string
+        description: 3-letter currency code.
+    installmentsOptions:
+        type: array
+        items:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Identifier of installment option.
+                interestRate:
+                    type: number
+                    description: Interest rate.
+                installmentFeeAmount:
+                    type: number
+                    description: Installment fee amount in pennies.
+                annualPercentageRate:
+                    type: number
+                    description: Annual percentge rate (ARR).
+                totalAmountDue:
+                    type: number
+                    description: Total amount due in pennies.
+                firstInstallmentAmount:
+                    type: number
+                    description: First installment amount in pennies.
+                installmentAmount:
+                    type: number
+                    description: Subsequent installment amounts in pennies.
+                numberOfInstallments:
+                    type: number
+                    description: Number of installments.

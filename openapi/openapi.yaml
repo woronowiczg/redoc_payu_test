@@ -1,179 +1,230 @@
 openapi: 3.1.0
 info:
-  version: 1.0.0
-  title: PayU REST API
-  license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-  x-logo:
-    url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
-  description:
-    $ref: ./info-description.md
+    version: 1.0.0
+    title: PayU REST API
+    license:
+        name: Apache 2.0
+        url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    x-logo:
+        url: 'https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg'
+    description:
+        $ref: ./info-description.md
 servers:
-  - url: 'https://secure.payu.com'
-    description: Production Server
-  - url: 'https://secure.snd.payu.com'
-    description: Sandbox Test Server
+    - url: 'https://secure.payu.com'
+      description: Production Server
+    - url: 'https://secure.snd.payu.com'
+      description: Sandbox Test Server
+tags:
+    - name: Authorize
+      description: Authentication involves generating an OAuth token, which is used for further communication with PayU servers. To create a standard OAuth token, you will need <code>client_id</code> and <code>client_secret</code> keys, which can be found in your merchant panel, in the POS.
+    - name: Payment-Methods
+      x-displayName: Payment Methods
+      description: Retrieving payment methods allows you to remove the threat of presenting a disabled payment method with white-label integration. It also gives you the ability to retrieve stored tokens and customer card data.
+    - name: Order
+      x-displayName: Order
+      description: Order is the basic payment request for the standard integration with PayU.
+    - name: Shop
+      description: Shop is the main entity in the management panel. It is the place where you can manage incoming transactions processed by PayU.
+    - name: Refund
+      description: The PayU system fully supports refunds for the processed payments, the balance of which is transferred directly to the buyer's account.
+    - name: Payout
+      description: To widthraw funds from the PayU account you need to create a payout.
+    - name: Token
+      description: With tokenization, we are confident that your customers' card data is protected from third parties.
+    - name: MCP
+      x-displayName: Multi-Currency Pricing
+      description: We can convert your customers' payments to the currency of your shop set up with PayU.
+    - name: FX-Reference
+      x-displayName: FX Reference
+      description: According to regulations in the European Union countries, payment service providers and parties providing currency conversion services at the point of sale are obliged to express the total currency conversion charges as a percentage mark-up over the latest available euro foreign exchange reference rates issued by the European Central Bank (ECB).
+    - name: Card-Installments-Proposal
+      x-displayName: Card Installments Proposal
+      description: ''
+    - name: Marketplace-Seller
+      x-displayName: Marketplace Seller
+      description: ''
+    - name: Marketplace-Verification
+      x-displayName: Marketplace Verification
+      description: 'PayU is required by the Anti-Money Laundering Act to verify customers in this context. For this purpose, we provide a collection of endpoints to make it easier for you to verify sellers.'
+    - name: Statements
+      x-displayName: Statements
+      description: ''
+    # - name: Visa-Checkout-Proxy
+    #   x-displayName: Visa Checkout Proxy
+    #   description: ''
+    - name: Partner-Merchant-Registration
+      x-displayName: Partner Merchant Registration
+      description: ''
+    - name: PF-Submerchant-Registration
+      x-displayName: Payment Facilitator Submerchant Registration
+      description: ''
 paths:
-  /pl/standard/user/oauth/authorize:
-    post:
-      $ref: paths/authorize.yaml
-  /api/v2_1/paymethods:
-    get:
-      $ref: paths/PayMethods/PayMethodsRetrieve.yaml
-  /api/v2_1/orders:
-    post:
-      $ref: paths/Order/orderCreateRequest.yaml
-  /api/v2_1/orders/{orderId}:
-    get:
-      $ref: paths/Order/orderRetrieveRequest.yaml
-    delete:
-      $ref: paths/Order/OrderCancelRequest.yaml
-  /api/v2_1/orders/{orderId}/status:
-    put: 
-      $ref: paths/Order/OrderCaptureRequest.yaml
-  /api/v2_1/orders/{orderId}/transactions:
-    put: 
-      $ref: paths/Order/TransactionRetrieveRequest.yaml
-  /api/v2_1/shops/{shopId}:
-    get:
-      $ref: paths/Shop/RetrieveShopBalanceRequest.yaml
-  /api/v2_1/orders/{orderId}/refunds:
-    post:
-      $ref: paths/Refund/CreateOrderRefundRequest.yaml
-    get: 
-      $ref: paths/Refund/RetrieveOrderRefundsRequest.yaml
-  /api/v2_1/orders/{orderId}/refunds/{refundId}:
-    get: 
-      $ref: paths/Refund/RetrieveOrderRefundRequest.yaml
-  /api/v2_1/payouts:
-    post:
-      $ref: paths/Payout/PayoutCreateRequest.yaml
-  /api/v2_1/payouts/{payoutId}:
-    get:
-      $ref: paths/Payout/PayoutRetrieveRequest.yaml
-  /api/v2_1/tokens/{token}:
-    delete:
-      $ref: paths/Token/Token.yaml
-  /api/v2_1/fx-providers/ecb/fx-rates:
-    get:
-      $ref: paths/FX_Reference/FxReference.yaml
-  /api/v2_1/mcp-partners/{mcpPartnerId}/fx-table:
-    get:
-      $ref: paths/MCP/MCP.yaml
-  /api/v2_1/card-installment-proposals/{proposalId}:
-    get:
-      $ref: paths/CardInstallmentsProposals/CardInstallmentsProposal.yaml
-  /api/v2_1/card-installment-proposals/{proposalId}/decisions:
-    post:
-      $ref: paths/CardInstallmentsProposals/CardInstallmentsProposalDecisions.yaml
-  /api/v2_1/customers/ext/{extCustomerId}/status:
-    get:
-      $ref: paths/Marketplace/MarketplaceSellerStatus.yaml
-  /api/v2_1/customers/ext/{extCustomerId}/balances:
-    get:
-      $ref: paths/Marketplace/MarketplaceSellerBalance.yaml
-  /api/v2_1/customers/ext/{extCustomerId}/operations:
-    get:
-      $ref: paths/Marketplace/MarketplaceSellerOperationsHistory.yaml
-  /api/v2_1/customers/ext/{extCustomerId}/feeDebitTransfer:
-    get:
-      $ref: paths/Marketplace/MarketplaceSellerFeeDebitTransfer.yaml
-  /api/v2_1/customers/ext/{extCustomerId}/feeCreditTransfer:
-    get:
-      $ref: paths/Marketplace/MarketplaceSellerFeeCreditTransfer.yaml
-  /api/aml-verification/v1/verification-advice/{Id}:
-    get:
-      $ref: paths/MarketplaceVerification/MarketplaceVerificationAdvice.yaml
-  /api/aml-verification/v1/verification:
-    get:
-      $ref: paths/MarketplaceVerification/MarketplaceVerificationGet.yaml
-    post:
-      $ref: paths/MarketplaceVerification/MarketplaceVerificationCreate.yaml
-  /api/aml-verification/v1/dataloading/seller:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Seller/MarketplaceVerificationDataloadingSeller.yaml
-  /api/aml-verification/v1/dataloading/seller/documents:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Seller/MarketplaceVerificationDataloadingSellerDocuments.yaml
-  /api/aml-verification/v1/dataloading/associates:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Associates/MarketplaceVerificationDataloadingAssociates.yaml
-  /api/aml-verification/v1/dataloading/associates/documents:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Associates/MarketplaceVerificationDataloadingAssociatesDocuments.yaml
-  /api/aml-verification/v1/dataloading/files:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Files/MarketplaceVerificationDataloadingFiles.yaml
-  /api/aml-verification/v1/verification-transfers/manual:
-    post:
-      $ref: paths/MarketplaceVerification/MarketplaceVerificationVerificationTransfer.yaml
-  /api/aml-verification/v1/dataloading/payouts/bankAccountData:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsBankAccountDataWithVerificationTransfer.yaml
-  #/api/aml-verification/v1/dataloading/payouts/bankAccountData:
-  #  post:
-  #    $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsBankAccountDataWithoutVerificationTransfer.yaml
-  #/api/aml-verification/v1/dataloading/payouts/bankAccountData:
-  #  post:
-  #    $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsBankAccountDataBankStatementDataComparison.yaml
-  /api/aml-verification/v1/dataloading/payouts/payoneer:
-    post:
-      $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsPayoneer.yaml
-  /api/aml-verification/v1/verification/complete:
-    post:
-      $ref: paths/MarketplaceVerification/MarketplaceVerificationComplete.yaml
-  /api/v2_1/reports/{reportId}:
-    get:
-      $ref: paths/Statements/Statements.yaml
-  /api/visa-checkout/proxy/payment/data/{callId}:
-    get:
-      $ref: paths/VisaCheckoutProxy/VisaCheckoutProxy.yaml
-  /api/v2_1/firms:
-    post:
-      $ref: paths/PartnerMerchantRegistration/MerchantRegistrationFirmCreate.yaml
-  /api/v2_1/firms/{publicFirmId}/urls:
-    post:
-      $ref: paths/PartnerMerchantRegistration/MerchantRegistrationUrlCreate.yaml
-  /api/v2_1/firms{publicFirmId}/shops:
-    post:
-      $ref: paths/PartnerMerchantRegistration/MerchantRegistrationShopCreate.yaml
-  /api/v2_1/shops/{publicShopId}/poses:
-    post:
-      $ref: paths/PartnerMerchantRegistration/MerchantRegistrationPosRestCreate.yaml
-  #/api/v2_1/shops/{publicShopId}/poses:
-  #  post:
-  #    $ref: paths/PartnerMerchantRegistration/MerchantRegistrationPosClassicCreate.yaml
-  /api/v2_1/poses/{publicPosId}:
-    get:
-      $ref: paths/PartnerMerchantRegistration/MerchantRegistrationPosGet.yaml
-  /boarding/#/form:
-    get:
-      $ref: paths/PartnerMerchantRegistration/MerchantRegistrationFirmRegistrationLink.yaml
-  /api/v2_1/firms/{firmPublicId}/submerchants:
-    post:
-      $ref: paths/PaymentFacilitatorSubmerchantRegistration/PaymentFacilitatorSubmerchantCreate.yaml
-  /api/v2_1/firms/{firmPublicId}/submerchants/{submerchantId}:
-    post:
-      $ref: paths/PaymentFacilitatorSubmerchantRegistration/PaymentFacilitatorSubmerchantUpdate.yaml
-    get:
-      $ref: paths/PaymentFacilitatorSubmerchantRegistration/PaymentFacilitatorSubmerchantGet.yaml
-  /none:
-    post:
-      $ref: paths/Notifications/OrderNotification.yaml
-  /none1:
-    post:
-      $ref: paths/Notifications/RefundNotification.yaml
-  /none2:
-    post:
-      $ref: paths/Notifications/StatementNotification.yaml
-  /none3:
-    post:
-      $ref: paths/Notifications/PaymentFacilitatorSubmerchantStatusChangeNotification.yaml
-  /none4:
-    post:
-      $ref: paths/Notifications/MarketplaceVerificationStatusChangeNotification.yaml
+    /pl/standard/user/oauth/authorize:
+        post:
+            $ref: paths/authorization.yaml
+    /api/v2_1/paymethods:
+        get:
+            $ref: paths/PayMethods/PayMethodsRetrieve.yaml
+    /api/v2_1/orders:
+        post:
+            $ref: paths/Order/OrderCreateRequest.yaml
+    /api/v2_1/orders/{orderId}:
+        get:
+            $ref: paths/Order/OrderRetrieveRequest.yaml
+        delete:
+            $ref: paths/Order/OrderCancelRequest.yaml
+    /api/v2_1/orders/{orderId}/status:
+        put:
+            $ref: paths/Order/OrderCaptureRequest.yaml
+    /api/v2_1/orders/{orderId}/transactions:
+        get:
+            $ref: paths/Order/TransactionRetrieveRequest.yaml
+    /api/v2_1/shops/{shopId}:
+        get:
+            $ref: paths/Shop/ShopBalanceRetrieve.yaml
+    /api/v2_1/orders/{orderId}/refunds:
+        post:
+            $ref: paths/Refund/CreateOrderRefundRequest.yaml
+        get:
+            $ref: paths/Refund/RetrieveOrderRefundsRequest.yaml
+    /api/v2_1/orders/{orderId}/refunds/{refundId}:
+        get:
+            $ref: paths/Refund/RetrieveOrderRefundRequest.yaml
+    /api/v2_1/payouts:
+        post:
+            $ref: paths/Payout/PayoutCreateRequest.yaml
+    /api/v2_1/payouts/{payoutId}:
+        get:
+            $ref: paths/Payout/PayoutRetrieveRequest.yaml
+    /api/v2_1/tokens/{token}:
+        delete:
+            $ref: paths/Token/TokenDeleteRequest.yaml
+    /api/v2_1/mcp-partners/{mcpPartnerId}/fx-table:
+        get:
+            $ref: paths/MCP/MCP.yaml
+    /api/v2_1/fx-providers/ecb/fx-rates:
+        get:
+            $ref: paths/FX_Reference/FxReference.yaml
+    /api/v2_1/card-installment-proposals/{proposalId}:
+        get:
+            $ref: paths/CardInstallmentsProposals/CardInstallmentsProposal.yaml
+    /api/v2_1/card-installment-proposals/{proposalId}/decisions:
+        post:
+            $ref: paths/CardInstallmentsProposals/CardInstallmentsProposalDecisions.yaml
+    /api/v2_1/customers/ext/{extCustomerId}/status:
+        get:
+            $ref: paths/Marketplace/MarketplaceSellerStatus.yaml
+    /api/v2_1/customers/ext/{extCustomerId}/balances:
+        get:
+            $ref: paths/Marketplace/MarketplaceSellerBalance.yaml
+    /api/v2_1/customers/ext/{extCustomerId}/operations:
+        get:
+            $ref: paths/Marketplace/MarketplaceSellerOperationsHistory.yaml
+    /api/v2_1/customers/ext/{extCustomerId}/feeDebitTransfer:
+        get:
+            $ref: paths/Marketplace/MarketplaceSellerFeeDebitTransfer.yaml
+    /api/v2_1/customers/ext/{extCustomerId}/feeCreditTransfer:
+        get:
+            $ref: paths/Marketplace/MarketplaceSellerFeeCreditTransfer.yaml
+    /api/aml-verification/v1/verification-advice:
+        get:
+            $ref: paths/MarketplaceVerification/MarketplaceVerificationAdvice.yaml
+    /api/aml-verification/v1/verification:
+        get:
+            $ref: paths/MarketplaceVerification/MarketplaceVerificationGet.yaml
+        post:
+            $ref: paths/MarketplaceVerification/MarketplaceVerificationCreate.yaml
+    # /api/aml-verification/v1/verification/regulations-acceptance:
+    #     post:
+    #         $ref: paths/MarketplaceVerification/MarketplaceVerificationRegulationsAcceptance.yaml
+    /api/aml-verification/v1/dataloading/seller:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Seller/MarketplaceVerificationDataloadingSeller.yaml
+    /api/aml-verification/v1/dataloading/seller/documents:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Seller/MarketplaceVerificationDataloadingSellerDocuments.yaml
+    /api/aml-verification/v1/dataloading/associates:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Associates/MarketplaceVerificationDataloadingAssociates.yaml
+    /api/aml-verification/v1/dataloading/associates/documents:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Associates/MarketplaceVerificationDataloadingAssociatesDocuments.yaml
+    /api/aml-verification/v1/dataloading/files:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Files/MarketplaceVerificationDataloadingFiles.yaml
+    /api/aml-verification/v1/verification-transfers/manual:
+        post:
+            $ref: paths/MarketplaceVerification/MarketplaceVerificationVerificationTransfer.yaml
+    /api/aml-verification/v1/dataloading/payouts/bankAccountData:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsBankAccountDataWithVerificationTransfer.yaml
+    /api/aml-verification/v1/dataloading/payouts/payoneer:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsPayoneer.yaml
+    /api/aml-verification/v1/dataloading/payouts/worldfirst:
+        post:
+            $ref: paths/MarketplaceVerification/Dataloading/Payouts/MarketplaceVerificationDataloadingPayoutsWorldfirst.yaml
+    /api/aml-verification/v1/verification/complete:
+        post:
+            $ref: paths/MarketplaceVerification/MarketplaceVerificationComplete.yaml
+    /api/aml-verification/v1/verification/cancel:
+        post:
+            $ref: paths/MarketplaceVerification/MarketplaceVerificationCancel.yaml
+    /api/v2_1/reports/{reportId}:
+        get:
+            $ref: paths/Statements/StatementRetrieve.yaml
+    # /api/visa-checkout/proxy/payment/data/{callId}:
+    #     get:
+    #         $ref: paths/VisaCheckoutProxy/VisaCheckoutProxy.yaml
+    /api/v2_1/firms:
+        post:
+            $ref: paths/PartnerMerchantRegistration/MerchantRegistrationFirmCreate.yaml
+    /api/v2_1/firms/{firmId}/urls:
+        post:
+            $ref: paths/PartnerMerchantRegistration/MerchantRegistrationUrlCreate.yaml
+    /api/v2_1/firms{firmId}/shops:
+        post:
+            $ref: paths/PartnerMerchantRegistration/MerchantRegistrationShopCreate.yaml
+    /api/v2_1/shops/{shopId}/poses:
+        post:
+            $ref: paths/PartnerMerchantRegistration/MerchantRegistrationPosRestCreate.yaml
+    #/api/v2_1/shops/{publicShopId}/poses:
+    #  post:
+    #    $ref: paths/PartnerMerchantRegistration/MerchantRegistrationPosClassicCreate.yaml
+    /api/v2_1/poses/{posId}:
+        get:
+            $ref: paths/PartnerMerchantRegistration/MerchantRegistrationPosRetrieve.yaml
+    # /boarding/#/form:
+    #     get:
+    #         $ref: paths/PartnerMerchantRegistration/MerchantRegistrationFirmRegistrationLink.yaml
+    /api/v2_1/firms/{firmPublicId}/submerchants:
+        post:
+            $ref: paths/PFSubmerchantRegistration/PFSubmerchantCreate.yaml
+    /api/v2_1/firms/{firmPublicId}/submerchants/{submerchantId}:
+        put:
+            $ref: paths/PFSubmerchantRegistration/PFSubmerchantUpdate.yaml
+        get:
+            $ref: paths/PFSubmerchantRegistration/PFSubmerchantGet.yaml
+    # /none:
+    #     post:
+    #         $ref: paths/Notifications/OrderNotification.yaml
+    # /none1:
+    #     post:
+    #         $ref: paths/Notifications/RefundNotification.yaml
+    # /none2:
+    #     post:
+    #         $ref: paths/Notifications/StatementNotification.yaml
+    # /none3:
+    #     post:
+    #         $ref: paths/Notifications/PFSubmerchantStatusChangeNotification.yaml
+    # /none4:
+    #     post:
+    #         $ref: paths/Notifications/MarketplaceVerificationStatusChangeNotification.yaml
 components:
-  securitySchemes: 
-    OAuth token:
-      $ref: ./components/securitySchemes/oauth.yaml
+    securitySchemes:
+        Bearer:
+            $ref: ./components/securitySchemes/bearer.yaml
+        Basic:
+            $ref: ./components/securitySchemes/basic.yaml
+security:
+    - Bearer: [client_credentials]

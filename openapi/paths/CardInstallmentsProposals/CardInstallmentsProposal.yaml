@@ -1,48 +1,133 @@
-tags: 
-  - Card Installments Proposal
-summary: Card Installments Proposal
-description: Card Installments Proposal
-operationId: CardInstallmentsProposal
-security: 
-  -  OAuth token: []
+tags:
+    - Card-Installments-Proposal
+summary: Retrieve Card Installments Proposal
+description: ''
+operationId: proposal-retrieve-card-installments-proposal
 parameters:
-  - name: proposalId
-    in: path
-    example: loremIpsum
-    required: true
-    content: 
-      application/json: 
-        schema: 
+    - name: proposalId
+      in: path
+      example: 5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed
+      required: true
+      content:
+          application/json:
+              schema:
+                  type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
           type: string
-  - name: Content-Type
-    in: header
-    description: Content type
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: application/json
-  - name: Authorization
-    in:  header
-    description: Auth token
-    required: true
-    schema:
-      type: string
-    style: simple
-    example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-  200:
-    description: OK
-    content:
-      application/json:
-        schema:
-          type: object
-          properties:
-            loremIpsum:
-              type: string
-  401:
-    description: Unauthorized
-    content: 
-      application/json: 
-        schema: 
-          $ref: ../../components/responses/401.yaml
+    200:
+        x-summary: OK
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                            example: 5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed
+                            description: Unique identifier of installment proposal
+                        cardScheme:
+                            type: string
+                            example: MC
+                            description: Card scheme (MC – Mastercard)
+                        installmentOptionFormat:
+                            type: string
+                            example: VARYING_NUMBER_OF_OPTIONS
+                            enum:
+                                [
+                                    VARYING_NUMBER_OF_OPTIONS,
+                                    VARYING_NUMBER_OF_INSTALLMENTS,
+                                ]
+                            description: Installment option format
+                        currencyCode:
+                            type: string
+                            example: PLN
+                            description: Currency code compliant with ISO 4217
+                        minNumberOfInstallments:
+                            type: number
+                            example: 6
+                            description: Minimum number of installments allowed, values from 2 to 99 (only for VARYING_NUMBER_OF_INSTALLMENTS)
+                        maxNumberOfInstallments:
+                            type: string
+                            example: 12
+                            description: Maximum number of installments allowed, values from 2 to 99 (only for VARYING_NUMBER_OF_INSTALLMENTS)
+                        installmentOptions:
+                            type: array
+                            description: Array containing objects about available installments options
+                            items:
+                                type: object
+                                properties:
+                                    id:
+                                        type: string
+                                        description: Identifier of installment option
+                                    interestRate:
+                                        type: number
+                                        description: Interest rate
+                                    installmentFeeAmount:
+                                        type: number
+                                        description: Installment fee amount in pennies
+                                    annualPercentageRate:
+                                        type: number
+                                        description: Annual percentage rate (APR)
+                                    totalAmountDue:
+                                        type: number
+                                        description: Total amount due in pennies
+                                    firstInstallmentAmount:
+                                        type: number
+                                        description: First installment amount in pennies
+                                    installmentAmount:
+                                        type: number
+                                        description: Subsequent installment amounts in pennies
+                                    numberOfInstallments:
+                                        type: number
+                                        description: Number of installments
+                        installmentDecision:
+                            type: object
+                            description: Section containing object about chosen installments option
+                            items:
+                                type: object
+                                properties:
+                                    optionId:
+                                        type: string
+                                        description: Identifier of chosen installment option
+                                    interestRate:
+                                        type: number
+                                        description: Interest rate for chosen installment option
+                                    installmentFeeAmount:
+                                        type: number
+                                        description: Installment fee amount in pennies for chosen installment option
+                                    annualPercentageRate:
+                                        type: number
+                                        description: Annual percentage rate (APR) for chosen installment option
+                                    totalAmountDue:
+                                        type: number
+                                        description: Total amount due in pennies for chosen installment option
+    401:
+        x-summary: Unauthorized
+        description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/401.yaml
+    404:
+        x-summary: Not found
+        description: ''
+        content:
+            application/json:
+                schema:
+                    type: string

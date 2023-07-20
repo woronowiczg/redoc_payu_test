@@ -1,0 +1,89 @@
+tags:
+    - Marketplace-Verification
+summary: Add Worldfirst Account for Payouts
+description: Send bank account data for the payouts. Method is reserved for the users who have verified Worldfirst account.
+operationId: add-worldfirst-account-for-payouts
+parameters:
+    #- name: loremIpsum
+    #  in: path
+    #  example: loremIpsum
+    #  required: false
+    #  content:
+    #    application/json:
+    #      schema:
+    #        type: string
+    - name: Content-Type
+      in: header
+      description: Content type
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: application/json
+    - name: Authorization
+      in: header
+      description: Auth token
+      required: true
+      schema:
+          type: string
+      style: simple
+      example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+requestBody:
+    content:
+        application/json:
+            schema:
+                type: object
+                required: [bankDataId, verificationId, referenceCustomerId]
+                properties:
+                    bankDataId:
+                        type: string
+                        description: Id of the bank account details assigned by marketplace.
+                        maxLength: 100
+                        example: acc1sd
+                    verificationId:
+                        type: string
+                        description: Unique id of the verification provided by PayU.
+                        maxLength: 18
+                        example: hfs6sfa
+                    referenceCustomerId:
+                        type: string
+                        description: Id of the account binding between the marketplace and the WorldFirst.
+
+responses:
+    204:
+        x-summary: 'No Content'
+        description: SUCCESS
+        content:
+            application/json:
+                schema:
+                    type: object
+    400:
+        x-summary: Bad request
+        description: Invalid input. Reason specified in content.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    404:
+        x-summary: Forbidden
+        description: Verification not found.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string
+    409:
+        x-summary: 'Conflict'
+        description: Verification state does not allow operation.
+        content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        loremIpsum:
+                            type: string

@@ -1,0 +1,15 @@
+type: object
+description: Data of the card that the payout will be made to. <b>Required in case of a payout to the card number</b>.
+properties:
+    number:
+        type: string
+        description: Card number. <b>Required in case of a payout to the card number</b>.
+        example: '4444333322221111'
+    expirationMonth:
+        type: string
+        description: "Card's expiration date - month. <b>Required in case of a payout to the card number</b>."
+        example: '11'
+    expirationYear:
+        type: string
+        description: "Card's expiration date - year. <b>Required in case of a payout to the card number</b>."
+        example: '2029'

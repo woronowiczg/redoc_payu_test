@@ -1,0 +1,104 @@
+type: object
+properties:
+    transactions:
+        type: array
+        description: Array of order objects.
+        items:
+            type: object
+            properties:
+                payMethod:
+                    type: object
+                    properties:
+                        value:
+                            type: string
+                            description: Payment method code
+                            example: c
+                paymentFlow:
+                    type: string
+                    description: Payment flow of of payment (for card and card based instruments payments)
+                    enum:
+                        [
+                            CARD,
+                            MASTERPASS,
+                            VISA_CHECKOUT,
+                            APPLE_PAY,
+                            GOOGLE_PAY,
+                            GOOGLE_PAY_TOKENIZED,
+                            FIRST_ONE_CLICK_CARD,
+                            ONE_CLICK_CARD,
+                            ONE_CLICK_CARD_RECURRING,
+                        ]
+                    example: CARD
+                card:
+                    type: object
+                    description: Chosen payment method
+                    properties:
+                        cardData:
+                            type: object
+                            properties:
+                                cardNumberMasked:
+                                    type: string
+                                    description: Masked card number (real number or token - in case of Apple Pay and Google Pay Tokenized).
+                                    example: '543402******4014'
+                                cardScheme:
+                                    type: string
+                                    description: 'Payment organization: MC (MasterCard/Maestro), VS (Visa)'
+                                    example: 'MC'
+                                cardProfile:
+                                    type: string
+                                    description: Card profile (CONSUMER or BUSINESS)
+                                    example: 'CONSUMER'
+                                cardClassification:
+                                    type: string
+                                    description: Card classification (CREDIT/DEBIT)
+                                    example: 'DEBIT'
+                                cardResponseCode:
+                                    type: string
+                                    description: Response code
+                                    example: '000'
+                                cardResponseCodeDesc:
+                                    type: string
+                                    description: Response code with description
+                                    example: '000 - OK'
+                                cardEciCode:
+                                    type: string
+                                    description: Electronic Commerce Indicator
+                                    example: '2'
+                                card3DsStatus:
+                                    type: string
+                                    description: 3DS verification status
+                                    example: 'Y'
+                                card3DsFrictionlessIndicator:
+                                    type: string
+                                    description: Indicates whether the authentication was frictionless or with challenge
+                                    example: 'YES'
+                                card3DsStatusDescription:
+                                    type: string
+                                    description: Description of 3DS status
+                                    example: 'MessageVersion=2.1.0,browser flow,3DS method not available,dynamic authentication,no cancel indicator,no status reason'
+                                cardBinCountry:
+                                    type: string
+                                    description: Country in which card was issued. Two-letter country code compliant with ISO-3166
+                                    example: 'PL'
+                                firstTransactionId:
+                                    type: string
+                                    description: Identifier of the first of recurring payments or Card-on-File, granted by the payment organisation
+                                    example: 'MCC0111LL1121'
+                cardInstallmentProposal:
+                    type: object
+                    description: Chosen payment method
+                    properties:
+                        proposalId:
+                            type: string
+                            description: Mastercard installments proposal ID
+                            example: '5aff3ba8-0c37-4da1-ba4a-4ff24bcc2eed'
+                resultCode:
+                    type: string
+                    enum: [AUT_ERROR_NO_AUTHORIZATION, AUT_ERROR_ANTIFRAUD_DECLINED, REG_ERROR_ANTIFRAUD_DECLINED]
+                    description: "Optional informaction about transaction result code: 
+                        <ul>
+                            <li><b>AUT_ERROR_NO_AUTHORIZATION</b> - authorization was not received, transaction cancelled.</li>
+                            <li><b>AUT_ERROR_ANTIFRAUD_DECLINED</b> - transaction rejected at the authoriztion stage by the antifraud system.</li>
+                            <li><b>REG_ERROR_ANTIFRAUD_DECLINED</b> - transaction rejected at registration stage by antifraud system.</li>
+                        </ul>"
+                    example: AUT_ERROR_NO_AUTHORIZATION

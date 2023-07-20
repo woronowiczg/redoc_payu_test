@@ -1,0 +1,118 @@
+type: object
+description: Submerchant's data (if submerchant is a private person).
+required:
+    [
+        verificationId,
+        sellerId,
+        name,
+        surname,
+        legalForm,
+        address,
+        email,
+        dateOfBirth,
+    ]
+properties:
+    verificationId:
+        type: string
+        description: Unique id of the verification provided by PayU.
+        maxLength: 18
+        example: BZx65uYW
+    sellerId:
+        type: string
+        description: Unique id of seller (submerchant) given by marketplace side. This id must be constant for every verification concerning the same (submerchant).
+        maxLength: 50
+        example: seller_2"
+    email:
+        type: string
+        description: Contact email.
+        minLength: 5
+        maxLength: 80
+        example: test@test.com
+    phone:
+        type: string
+        description: Contact phone.
+        maxLength: 40
+        example: '111222333'
+    taxId:
+        type: string
+        description: Tax id. <b>Should be empty for private person</b>.
+        format: 'should be empty for private person'
+        maxLength: 60
+        example: ''
+    name:
+        type: string
+        description: First name of the seller.
+        maxLength: 40
+        example: Jan
+    surname:
+        type: string
+        description: Last name of the seller.
+        maxLength: 40
+        example: Kowalski
+    legalForm:
+        type: string
+        description: <b>LEGAL_ENTITY</b> - only for foreign, non EOG companies.
+        enum:
+            [
+                PRIVATE_PERSON,
+                SOLE_TRADER,
+                LEGAL_ENTITY,
+                ASSOCIATION,
+                CIVIL_LAW_PARTNERSHIP,
+                FOREIGN_COMPANY,
+                FOUNDATION,
+                GENERAL_PARTNERSHIP,
+                JOINT_STOCK_COMPANY,
+                LIMITED_JOINT_STOCK_PARTNERSHIP,
+                LIMITED_LIABILITY_COMPANY,
+                LIMITED_LIABILITY_PARTNERSHIP,
+                PROFESSIONAL_PARTNERSHIP,
+                LIMITED_PARTNERSHIP,
+                OTHER.,
+            ]
+        example: PRIVATE_PERSON
+    personalIdentificationNumber:
+        type: string
+        description: National, personal identification number e.g. PESEL in Poland. <b>Required for private persons for full verification Not required for basic data</b>.
+        maxLength: 150
+        example: '90112322330'
+    dateOfBirth:
+        type: string
+        description: ''
+        format: YYYY-MM-DD
+        example: '1988-10-12'
+    registryNumber:
+        type: string
+        description: Company registry number (eg REGON in Poland). <b>Should be empty for private person</b>.
+        maxLength: 40
+        example: ''
+    address:
+        type: object
+        description: Address of the private person.
+        required: [country]
+        properties:
+            street:
+                type: string
+                description: Street with building and apartment number. <b>Required for full verification</b>.
+                maxLength: 255
+                example: Grunwaldzka 186
+            zipcode:
+                type: string
+                description: Private person's address zipcode. <b>Required for full verification</b>.
+                maxLength: 20
+                example: 60-166
+            city:
+                type: string
+                description: <b>Required for full verification</b>.
+                maxLength: 40
+                example: Poznan
+            country:
+                type: string
+                description: Two letter ISO country code.
+                maxLength: 80
+                example: PL
+    isAccountCloned:
+        type: string
+        description: Information if the account was cloned for the same seller form the already exiting and verified one. Used when marketplace allows the account cloning operation.
+        enum: ['true', 'false']
+        example: 'false'
