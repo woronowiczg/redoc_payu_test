@@ -63,17 +63,11 @@ responses:
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\400.yaml
     404:
         x-summary: Not found
         description: Marketplace not found.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\401.yaml

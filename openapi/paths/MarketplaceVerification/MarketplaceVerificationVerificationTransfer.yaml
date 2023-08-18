@@ -110,27 +110,18 @@ responses:
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\400.yaml
     403:
         x-summary: Forbidden
         description: Error encountered during posting the data for verification.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\403.yaml
     404:
         x-summary: Not found
         description: Error encountered during posting the data for verification.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\404.yaml

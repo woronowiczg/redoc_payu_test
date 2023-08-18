@@ -4,7 +4,7 @@ summary: Delete a Token
 security:
     - Bearer:
           - trusted_merchant
-description: In case the cusstomer terminates the user account in your shop or chooses to remove the stored card from the user account, you need to delete the token.
+description: In case the customer terminates the user account in your shop or chooses to remove the stored card from the user account, you need to delete the token.
 operationId: delete-a-token
 parameters:
     - name: token
@@ -32,25 +32,20 @@ parameters:
       style: simple
       example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
 responses:
-    200:
-        x-summary: OK
+    204:
+        x-summary: No Content
+        description: 'SUCCESS'
+    400:
+        x-summary: Bad Request
         description: ''
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ../../components/responses/400.yaml
     401:
         x-summary: Unauthorized
         description: ''
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        error:
-                            type: string
-                        error_description:
-                            type: string
+                    $ref: ../../components/responses/401.yaml

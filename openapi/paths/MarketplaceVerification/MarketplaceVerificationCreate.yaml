@@ -115,11 +115,11 @@ responses:
         content:
             application/json:
                 schema:
-                    $ref: ../../components/responses/401.yaml
+                    $ref: ../../components/responses/400.yaml
     409:
         x-summary: 'Conflict'
         description: Verification may be already in progress.
         content:
             application/json:
                 schema:
-                    $ref: ../../components/responses/401.yaml
+                    $ref: ../../components/responses/409.yaml

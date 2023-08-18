@@ -48,27 +48,17 @@ responses:
     204:
         x-summary: 'No Content'
         description: SUCCESS
-        content:
-            application/json:
-                schema:
-                    type: object
     404:
         x-summary: Not found
         description: Verification not found.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\404.yaml
     409:
         x-summary: 'Conflict'
         description: Verification state does not allow cancel.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\409.yaml

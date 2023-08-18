@@ -1,18 +1,18 @@
 # Overview
 
-With PayU, you will quickly activate payments on your website or mobile device.
+This reference is designed to assist you in effectively utilizing the PayU REST API to enhance your online payment capabilities. Whether you're running an e-commerce store or developing applications that require secure and seamless payment processing, our API offers a range of features to meet your needs.
 
-We provide a full set of endpoints which allow you to create, capture, cancel and retrieve orders, perform payouts or download reports.
+Our API offers a comprehensive set of endpoints to empower you with full control over your payment processes. With these endpoints, you can seamlessly create, capture, cancel, and retrieve orders, conduct payouts, and access essential reports.
 
-The following reference is intended for merchants and developers to facilitate the use of the PayU API.
+For more details on the integration, please refer to the official <b><a href="/docs/">PayU documentation</a></b>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.
 
 ## Testing
 
-### Production environment
+### Production Environment
 
 For a basic integration, including only a redirection to PayU hosted payment page, it is perfectly enough to use the public test point of sale. However, if you would like to test a full set of endpoints, including e.g. refunds, consider registering for a sandbox account.
 
-**Public test POS (point of sale)**
+**Public Test POS (point of sale)**
 
 | Key name                       |                            Value |
 | ------------------------------ | -------------------------------: |
@@ -21,13 +21,13 @@ For a basic integration, including only a redirection to PayU hosted payment pag
 | Second key (MD5)               | 13a980d4f851f3d9a1cfc792fb1f5e50 |
 | OAuth protocol - client_secret | 12f071174cb7eb79d4aac5bc2f07563f |
 
-### Sandbox environment
+### Sandbox Environment
 
 Sandbox is an almost identical copy of PayU production system. It can be used for integration and testing purposes.
 
-**Public test POS (point of sale)**
+**Public Test POS (Point of Sale)**
 
-Although it is best to **<a href="https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/" target="_blank">create your own account</a>** to later be able to configure it as needed, you may also use a public sandbox test POS without registering:
+Although it is best to <b><a href="https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/" target="_blank">create your own account</a></b> to later be able to configure it as needed, you may also use a public sandbox test POS without registering:
 
 | Key name                       |                            Value |
 | ------------------------------ | -------------------------------: |
@@ -36,11 +36,11 @@ Although it is best to **<a href="https://registration-merch-prod.snd.payu.com/b
 | Second key (MD5)               | b6ca15b0d1020e8094d9b5f8d163db54 |
 | OAuth protocol - client_secret | 2ee86a66e5d97e3fadc400c9f19b065d |
 
-The availability of the sandbox environment can be checked on the **<a href="https://status.snd.payu.com/" target="_blank">Status page</a>**.
+The availability of the sandbox environment can be checked on the <b><a href="https://status.snd.payu.com/" target="_blank">Status page</a></b>.
 
-**Testing card payments**
+**Testing Card Payments**
 
-In order to test card payments on sandbox, please use credentials displayed on the **<a href="https://developers.payu.com/en/overview.html#sandbox" target="_blank">Overview</a>** documentation page.
+In order to test card payments on sandbox, please use credentials displayed on the <b><a href="/docs/testing/sandbox/" target="_blank">Sandbox</a></b> documentation page.
 
 ## Status Codes
 
@@ -77,7 +77,7 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
         <tr>
             <td>WARNING_CONTINUE_REDIRECT</td>
             <td></td>
-            <td>Request has been processed correctly. <code>redirectUri</code> is provided in the response Location header and in the response body (in JSON payload). Applies to transparent integration, if order request contains <code>payMethods</code> with following payment type values: <b>orx</b>, <b>bnx</b>, <b>gbx</b>, <b>nlx</b>.</td>
+            <td>Request has been processed correctly. <code>redirectUri</code> is provided in the response, in the <code>Location</code> header and in the response body (in JSON payload). Applies to transparent integration, if order request contains <code>payMethods</code> with following payment type values: <b>orx</b>, <b>bnx</b>, <b>gbx</b>, <b>nlx</b>.</td>
         </tr>
         <tr>
             <td>WARNING_CONTINUE_3DS</td>
@@ -87,7 +87,7 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
         <tr>
             <td>WARNING_CONTINUE_CVV</td>
             <td></td>
-            <td>CVV/CVC authorization required. Call the OpenPayU.authorizeCVV() method described <b><a href="https://developers.payu.com/en/card_tokenization.html#card_data_form" target="_blank">here</a></b>.</td>
+            <td>CVV/CVC authorization required. Call the OpenPayU.authorizeCVV() method described <b><a href="/docs/payment-flows/card-payments/text-form-data/" target="_blank">here</a></b>.</td>
         </tr>
         <tr>
             <td rowspan="23"><b>400</b> Bad request</td>
@@ -106,15 +106,15 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
         </tr>
         <tr>
             <td><b>statusDesc</b>: OPENPAYU_PAYMENT_CREATE_ BLOCKED_CHECKOUT_PAY_METHOD</td>
-            <td>Chosen payment method is currently unavailable. Payment methods availability can be checked by using <b><a href="https://developers.payu.com/en/restapi.html#Transparent_retrieve" target="_blank">Payment methods retrieval</a></b>.</td>
+            <td>Chosen payment method is currently unavailable. Payment methods availability can be checked by using <b><a href="/docs/checkout/payment-methods-retrieve/" target="_blank">Payment Methods Retrieval</a></b> service.</td>
         </tr>
         <tr>
             <td><b>codeLiteral</b>: SINGLE_CLICK_DISABLED</td>
-            <td><b><a href="" target="_blank">Card token</a></b> storing service is not available.</td>
+            <td><b><a href="/docs/tokenization/" target="_blank">Card token</a></b> storing service is not available.</td>
         </tr>
         <tr>
             <td><b>codeLiteral</b>: SINGLE_CLICK_RECURRING_DISABLED</td>
-            <td><b><a href="" target="_blank">Recurring payments</a></b> service not available.</td>
+            <td><b><a href="/docs/payment-methods/card-methods/recurring/" target="_blank">Recurring payments</a></b> service not available.</td>
         </tr>
         <tr>
             <td><b>statusDesc</b>: General MCP processing error</td>
@@ -649,3 +649,44 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
     </tbody>
 
 </table>
+
+## Transmission Encryption
+
+> Since 30 June 2018 PayU supports only TLS 1.2 protocol.
+
+Lack of support for older protocols is for security reasons. The TLS 1.2 protocol is the best transmission encryption method compliant with the highest security standard PCI DSS 3.2.
+
+**The change applies to all transmission via HTTPS, therefore it includes all REST API and Classic API endpoints.**
+
+Majority of e-commerce solutions and hosting providers make sure that their software is up-to-date. Therefore, if your site is using such a provider, most probably you have nothing to worry about. You can contact your service providers and ask whether they have updated their software.
+
+If your site is a custom-built solution, make sure that it uses the latest version of the protocol. The following information could be useful:
+
+### JAVA
+
+Java 1.5 and below does not support TLS 1.2 In Java 1.6, TLS 1.2 is not supported in Oracle public updates. It is supported in the business edition starting Oracle java version 6u115 b32.
+
+In Java 1.7, TLS1.2 is supported. But it needs to be explicitly enabled by selecting the enabled protocols while creating the SSLSocket & SSLEngine instances.
+
+Please refer to: <b><a href="https://blogs.oracle.com/java-platform-group/jdk-8-will-use-tls-12-as-default" target="_blank">Oracle blog</a></b> for more details.
+
+### cURL
+
+Curl supports TLS1.2 starting 7.34.0. Please use the following command to test the connection.
+
+> You may use any PayU endpoint. If you need help with Classic API integration contact our <b><a href="https://poland.payu.com/support/" target="_blank">support</a></b>.
+
+
+If it works, you'll see **Unauthorized** message.
+
+### cURL+PHP
+
+```
+    php -r '$ch = curl_init(); 
+    curl_setopt($ch, CURLOPT_URL, "https://secure.payu.com/api/v2_1/orders"); 
+    curl_setopt ($ch, CURLOPT_SSLVERSION, 6); 
+    var_dump(curl_exec($ch)); 
+    var_dump(curl_error($ch));' 
+```
+
+If it works, you'll see "Unauthorized" message. TLS 1.1 and TLS 1.2 are supported since OpenSSL 1.0.1. Forcing TLS 1.1 and 1.2 are only supported since curl 7.34.0.

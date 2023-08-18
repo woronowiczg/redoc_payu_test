@@ -1,7 +1,7 @@
 tags:
     - Marketplace-Verification
 summary: Retrieve Marketplace Verification Status
-description: 'Retrieve the status of the verification with the sepcific `Id`.'
+description: 'Retrieve the status of the verification with the specific `Id`.'
 operationId: retrieve-marketplace-verification-status
 parameters:
     - name: id
@@ -32,18 +32,15 @@ parameters:
 responses:
     200:
         x-summary: 'OK'
-        description: Verification found. Http 204 will return body which will contain one of below statuses.
+        description: Verification found. Http 200 will return body which will contain one of below statuses.
         content:
             application/json:
                 schema:
-                    $ref: ..\..\components\responses\MarketplaceVerificationGet\204.yaml
+                    $ref: ..\..\components\responses\MarketplaceVerificationGet\200.yaml
     404:
         x-summary: Not found
         description: Verification not found.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\components\responses\404.yaml

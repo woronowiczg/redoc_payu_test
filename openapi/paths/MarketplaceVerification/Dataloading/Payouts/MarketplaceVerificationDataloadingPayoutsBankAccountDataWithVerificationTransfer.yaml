@@ -40,47 +40,31 @@ responses:
     204:
         x-summary: No Content
         description: SUCCESS
-        content:
-            application/json:
-                schema:
-                    type: object
     400:
         x-summary: Bad request
         description: Error encountered during posting the data for verification
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\..\..\components\responses\400.yaml
     403:
         x-summary: Forbidden
         description: Error encountered during posting the data for verification
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\..\..\components\responses\403.yaml
     404:
         x-summary: Not found
         description: Error encountered during posting the data for verification
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\..\..\components\responses\404.yaml
     409:
         x-summary: 'Conflict'
         description: Verification state does not allow operation.
         content:
             application/json:
                 schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
+                    $ref: ..\..\..\..\components\responses\409.yaml

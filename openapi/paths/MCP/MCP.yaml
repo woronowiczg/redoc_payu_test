@@ -81,3 +81,7 @@ responses:
     404:
         x-summary: Not found
         description: ''
+        content:
+            application/json:
+                schema:
+                    $ref: ../../components/responses/404.yaml

@@ -130,4 +130,4 @@ responses:
         content:
             application/json:
                 schema:
-                    type: string
+                    $ref: ../../components/responses/404.yaml

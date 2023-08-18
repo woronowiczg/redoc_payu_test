@@ -1,0 +1,12 @@
+type: object
+properties:
+    status:
+        type: object
+        properties:
+            code:
+                type: string
+                description: Error type.
+                example: '409'
+            message:
+                type: string
+                description: Error message.
