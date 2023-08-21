@@ -106,7 +106,7 @@ responses:
         content:
             application/json:
                 schema:
-                    t$ref: ..\..\..\..\components\responses\400.yaml
+                    $ref: ..\..\..\..\components\responses\400.yaml
     404:
         x-summary: Not found
         description: Verification not found.

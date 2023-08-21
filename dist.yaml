@@ -3125,7 +3125,7 @@ paths:
           content:
             application/json:
               schema:
-                t$ref: ..\..\..\..\components\responses\400.yaml
+                $ref: '#/components/schemas/400'
         '404':
           x-summary: Not found
           description: Verification not found.
