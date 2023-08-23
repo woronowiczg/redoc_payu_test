@@ -556,7 +556,7 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
     </tbody>
 </table>
 
-## ECI (Electronic Commerce Indicator) Response Codes
+<!-- ## ECI (Electronic Commerce Indicator) Response Codes
 
 <table>
     <thead>
@@ -648,7 +648,7 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
         </tr>
     </tbody>
 
-</table>
+</table> -->
 
 ## Transmission Encryption
 
