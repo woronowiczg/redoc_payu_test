@@ -42,7 +42,7 @@ The availability of the sandbox environment can be checked on the <b><a href="ht
 
 In order to test card payments on sandbox, please use credentials displayed on the <b><a href="/docs/testing/sandbox/" target="_blank">Sandbox</a></b> documentation page.
 
-## Status Codes
+<!-- Status Codes
 
 > Below is a list of status codes sent by the PayU system. Some status codes may be sent with a more detailed message.
 
@@ -245,9 +245,9 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
             <td>PayU system is unavailable. Try again later.</td>
         </tr>
     </tbody>
-</table>
+</table-->
 
-## Card Status Codes
+<!--## Card Status Codes
 
 **Reason** column shows which side stopped the transaction and who should be contacted to give more information about the source of problem.
 
@@ -554,7 +554,7 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
             We are sorry, but the attempt to confirm this transaction took too long. Please try again.</td>
         </tr>
     </tbody>
-</table>
+</table -->
 
 <!-- ## ECI (Electronic Commerce Indicator) Response Codes
 
@@ -650,7 +650,7 @@ If you need for PayU technical support to investigate an unsuccessful API call, 
 
 </table> -->
 
-## Transmission Encryption
+<!-- ## Transmission Encryption
 
 > Since 30 June 2018 PayU supports only TLS 1.2 protocol.
 
@@ -690,3 +690,5 @@ If it works, you'll see **Unauthorized** message.
 ```
 
 If it works, you'll see "Unauthorized" message. TLS 1.1 and TLS 1.2 are supported since OpenSSL 1.0.1. Forcing TLS 1.1 and 1.2 are only supported since curl 7.34.0.
+
+-->
