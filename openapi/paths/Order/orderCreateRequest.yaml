@@ -83,7 +83,12 @@ requestBody:
                         example: FIRST
                     recurring:
                         type: string
-                        description: Marks the order as recurring payment - first or subsequent. "recurring" parameter cannot be used with "cardOnFile" parameter
+                        description: "Marks the order as recurring payment:
+                            <ul>
+                                <li><b>FIRST</b> - payment initialized by the card owner who agreed to save card for future use in recurring plan. You can expect full authentication (3D Secure and/or CVV). If you want to use multi-use token (TOKC_) later, you have to be confident, that first recurring payment was successful.</li>
+                                <li><b>STANDARD</b> - subsequent recurring payment (user is not present). This transaction has multi use token (TOKC_). You cannot use it if FIRST recurring payment failed.</li>
+                            </ul>
+                            <b><code>recurring</code> parameter cannot be used with <code>cardOnFile</code> parameter</b> ."
                         enum: [FIRST, STANDARD]
                         example: FIRST
                     buyer:

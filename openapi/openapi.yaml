@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
-    version: 1.0.0
-    title: PayU REST API
+    version: 2.1.0
+    title: PayU GPO Europe REST API
     license:
         name: Apache 2.0
         url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
@@ -39,25 +39,25 @@ tags:
       description: According to regulations in the European Union countries, payment service providers and parties providing currency conversion services at the point of sale are obliged to express the total currency conversion charges as a percentage mark-up over the latest available euro foreign exchange reference rates issued by the European Central Bank (ECB).
     - name: Card-Installments-Proposal
       x-displayName: Card Installments Proposal
-      description: ''
+      description: 'You can offer the payer the option to split their card payment into installments.'
     - name: Marketplace-Seller
       x-displayName: Marketplace Seller
-      description: ''
+      description: 'In PayU, as a marketplace, you have the capability to manage various aspects of your submerchants.'
     - name: Marketplace-Verification
       x-displayName: Marketplace Verification
       description: 'PayU is required by the Anti-Money Laundering Act to verify customers in this context. For this purpose, we provide a collection of endpoints to make it easier for you to verify sellers.'
     - name: Statements
       x-displayName: Statements
-      description: ''
+      description: 'Statements in PayU are comprehensive reports that provide a detailed summary of completed purchase transactions, refunds, and payouts.'
     # - name: Visa-Checkout-Proxy
     #   x-displayName: Visa Checkout Proxy
     #   description: ''
     - name: Partner-Merchant-Registration
       x-displayName: Partner Merchant Registration
-      description: ''
+      description: 'Below are the endpoints that enable you to create the necessary entities (Firm, Url, Shop, POS) for your partner.'
     - name: PF-Submerchant-Registration
       x-displayName: Payment Facilitator Submerchant Registration
-      description: ''
+      description: 'Payment Facilitator (PF) is an advanced form of partnership where PayU cedes much of its own responsibilities, like e.g. Know Your Customer (KYC) and verification, customer support and settlement (payouts) to the PF. Below are the endpoints for registering and handling PF submerchants.'
 paths:
     /pl/standard/user/oauth/authorize:
         post:
@@ -73,9 +73,12 @@ paths:
             $ref: paths/Order/OrderRetrieveRequest.yaml
         delete:
             $ref: paths/Order/OrderCancelRequest.yaml
+    /api/v2_1/orders/{orderId}/captures:
+        post:
+            $ref: paths/Order/OrderCaptureRequest.yaml
     /api/v2_1/orders/{orderId}/status:
         put:
-            $ref: paths/Order/OrderCaptureRequest.yaml
+            $ref: paths/Order/OrderCaptureRequestDeprecated.yaml
     /api/v2_1/orders/{orderId}/transactions:
         get:
             $ref: paths/Order/TransactionRetrieveRequest.yaml

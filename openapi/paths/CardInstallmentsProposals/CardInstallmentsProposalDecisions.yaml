@@ -1,7 +1,7 @@
 tags:
     - Card-Installments-Proposal
 summary: Send Payer's Decision
-description: ''
+description: 'After retrieving and displaying the installment proposal, the payer has a 15-minute window to make a decision. Then you need to send back their''s decision'
 operationId: card-installments-proposal-send-payers-decision
 parameters:
     - name: proposalId

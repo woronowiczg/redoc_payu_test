@@ -1,7 +1,7 @@
 tags:
     - Card-Installments-Proposal
 summary: Retrieve Card Installments Proposal
-description: ''
+description: 'If you encounter the `cardInstallmentProposal` parameter while retrieving transaction data, it indicates that the payment can be divided into installments. In such cases, you should present this installment option to the payer. To proceed, you will need to retrieve the installment proposal.'
 operationId: proposal-retrieve-card-installments-proposal
 parameters:
     - name: proposalId

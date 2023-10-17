@@ -1,7 +1,6 @@
 tags:
     - PF-Submerchant-Registration
-summary: Update Submerchants Data
-description: ''
+summary: Update Submerchant Data
 operationId: update-submerchants-data
 parameters:
     - name: firmPublicId

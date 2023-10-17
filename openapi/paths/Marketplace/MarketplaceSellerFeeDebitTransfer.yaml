@@ -1,7 +1,6 @@
 tags:
     - Marketplace-Seller
 summary: Transfer Funds from Seller to Marketplace Balance
-description: ''
 operationId: transfer-funds-from-seller-to-marketplace-balance
 parameters:
     - name: extCustomerId

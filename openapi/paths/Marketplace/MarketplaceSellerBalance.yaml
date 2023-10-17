@@ -1,7 +1,6 @@
 tags:
     - Marketplace-Seller
 summary: Retrieve Seller Balance
-description: ''
 operationId: retrieve-seller-balance
 parameters:
     - name: extCustomerId

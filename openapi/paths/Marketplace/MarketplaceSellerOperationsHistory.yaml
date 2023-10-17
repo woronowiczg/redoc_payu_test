@@ -1,7 +1,6 @@
 tags:
     - Marketplace-Seller
 summary: Retrieve Seller Operation History
-description: ''
 operationId: retrieve-seller-operation-history
 parameters:
     - name: extCustomerId

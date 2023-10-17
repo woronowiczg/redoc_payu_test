@@ -65,15 +65,15 @@ responses:
                                     properties:
                                         merchantPosId:
                                             type: string
-                                            description: POS identifier used for API calls.
+                                            description: POS identifier used for API calls. It has the same value as the `client_id` used in the OAuth calls.
                                             example: '385234'
                                         key:
                                             type: string
-                                            description: First API key (<code>client_id</code>) used to obtain OAuth access tokens for REST API calls.
-                                            example: 9c0041e05fdee99749de4c2d2ce4c66e
+                                            description: Has the same value as the "`client_secret` used to obtain OAuth access tokens for REST API calls.
+                                            example: 9c0041e05fdee99749de4c2d2ce4c66e"
                                         secondKey:
                                             type: string
-                                            description: Second API key (<code>client_id</code>) used to sign REST API forms and to validate notifications.
+                                            description: The second API key is utilized for signing notifications sent by PayU, as well as for verifying the notification signature provided by PayU. Additionally, it is used for basic authorization when fetching statement files via the API.
                                             example: f096a39d78fbe03b8d23dde43b728cfd
                                         authKey:
                                             type: string

@@ -1,8 +1,8 @@
 tags:
     - Order
-summary: Capture Authorized Order
-description: Capture whole order and update its status to COMPLETED (ended).
-operationId: capture-authorized-order
+summary: (deprecated) Capture Authorized Order 
+description: Capture an order and update its status to COMPLETED (ended).
+operationId: capture-authorized-order-deprecated
 parameters:
     - name: orderId
       in: path
@@ -29,24 +29,23 @@ parameters:
           type: string
       style: simple
       example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-requestBody: 
-    content: 
+requestBody:
+    content:
         application/json:
-            schema: 
+            schema:
                 type: object
-                description: 
-                required: []
+                required:
+                    - orderId
+                    - orderStatus
                 properties:
-                    amount:
+                    orderId:
                         type: string
-                        description: Amount you want to capture. Must be less than captured order amount. **Can be used only during partial capture**.
-                        example: 900
-                    currnecyCode:
+                        description: Identifier of the order you want to update.
+                        example: VVLR1HXK2S160929GUEST000P01
+                    orderStatus:
                         type: string
-                        description: Currency of the order. **Can be used only during partial capture**
-                        example: EUR
-              
-  
+                        description: Status of the order after update.
+                        example: COMPLETED
 responses:
     200:
         x-summary: OK

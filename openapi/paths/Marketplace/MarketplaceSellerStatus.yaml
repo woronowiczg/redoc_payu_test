@@ -1,7 +1,7 @@
 tags:
     - Marketplace-Seller
 summary: Retrieve Seller Status
-description: Marketplace Seller Status
+description: You can check the verification status of your submerchants.
 operationId: retrieve-seller-status
 parameters:
     - name: extCustomerId

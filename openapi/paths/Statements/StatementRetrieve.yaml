@@ -1,7 +1,10 @@
 tags:
     - Statements
 summary: Retrieve Statement
-description: Stetement retrieval via API
+description: | 
+    In response to retrieving a statement via the API, PayU returns a statement file (as indicated by the `Content-Type=application/octet-stream`) in the `Content-Disposition` header. You should take this attached binary data and save it with the same name and file extension. 
+    
+    For example, if the value of the `Content-Disposition` header is **attachment; filename="69e45495-bed9-4824-ace9-f7c191449bbb.zip"**, then you should save the attached data on your computer with the same name **69e45495-bed9-4824-ace9-f7c191449bbb.zip**.
 operationId: retrieve-statement
 security:
     - Basic:
@@ -30,21 +33,4 @@ parameters:
           type: string
       style: simple
       example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-responses:
-    200:
-        x-summary: OK
-        description: ''
-        content:
-            application/json:
-                schema:
-                    type: object
-                    properties:
-                        loremIpsum:
-                            type: string
-    401:
-        x-summary: Unauthorized
-        description: ''
-        content:
-            application/json:
-                schema:
-                    $ref: ../../components/responses/401.yaml
+

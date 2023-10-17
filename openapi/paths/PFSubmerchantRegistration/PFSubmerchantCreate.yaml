@@ -1,7 +1,6 @@
 tags:
     - PF-Submerchant-Registration
 summary: Create a Submerchant
-description: ''
 operationId: create-a-submerchant
 parameters:
     - name: firmPublicId

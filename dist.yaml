@@ -1,14 +1,14 @@
 openapi: 3.1.0
 info:
-  version: 1.0.0
-  title: PayU REST API
+  version: 2.1.0
+  title: PayU GPO Europe REST API
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   x-logo:
     url: >-
       https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg
-  description: "# Overview\r\n\r\nThis reference is designed to assist you in effectively utilizing the PayU REST API to enhance your online payment capabilities. Whether you're running an e-commerce store or developing applications that require secure and seamless payment processing, our API offers a range of features to meet your needs.\r\n\r\nOur API offers a comprehensive set of endpoints to empower you with full control over your payment processes. With these endpoints, you can seamlessly create, capture, cancel, and retrieve orders, conduct payouts, and access essential reports.\r\n\r\nFor more details on the integration, please refer to the official <b><a href=\"/docs/\">PayU documentation</a></b>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.\r\n\r\n## Testing\r\n\r\n### Production Environment\r\n\r\nFor a basic integration, including only a redirection to PayU hosted payment page, it is perfectly enough to use the public test point of sale. However, if you would like to test a full set of endpoints, including e.g. refunds, consider registering for a sandbox account.\r\n\r\n**Public Test POS (point of sale)**\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           145227 |\r\n| OAuth protocol - client_id     |                           145227 |\r\n| Second key (MD5)               | 13a980d4f851f3d9a1cfc792fb1f5e50 |\r\n| OAuth protocol - client_secret | 12f071174cb7eb79d4aac5bc2f07563f |\r\n\r\n### Sandbox Environment\r\n\r\nSandbox is an almost identical copy of PayU production system. It can be used for integration and testing purposes.\r\n\r\n**Public Test POS (Point of Sale)**\r\n\r\nAlthough it is best to <b><a href=\"https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/\" target=\"_blank\">create your own account</a></b> to later be able to configure it as needed, you may also use a public sandbox test POS without registering:\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           300746 |\r\n| OAuth protocol - client_id     |                           300746 |\r\n| Second key (MD5)               | b6ca15b0d1020e8094d9b5f8d163db54 |\r\n| OAuth protocol - client_secret | 2ee86a66e5d97e3fadc400c9f19b065d |\r\n\r\nThe availability of the sandbox environment can be checked on the <b><a href=\"https://status.snd.payu.com/\" target=\"_blank\">Status page</a></b>.\r\n\r\n**Testing Card Payments**\r\n\r\nIn order to test card payments on sandbox, please use credentials displayed on the <b><a href=\"/docs/testing/sandbox/\" target=\"_blank\">Sandbox</a></b> documentation page.\r\n\r\n<!-- Status Codes\r\n\r\n> Below is a list of status codes sent by the PayU system. Some status codes may be sent with a more detailed message.\r\n\r\nIf you need for PayU technical support to investigate an unsuccessful API call, please **[contact us](https://poland.payu.com/pomoc/)** and provide the value of the `Correlation-Id` header returned in the response.\r\n\r\n<table>\r\n    <thead>\r\n        <th>HTTP Status Code</th>\r\n        <th>Status Code</th>\r\n        <th>codeLiteral/statusDesc</th>\r\n        <th>Description</th>\r\n    </thead>\r\n    <tbody>\r\n        <tr>\r\n            <td><b>200</b> OK</td>\r\n            <td>SUCCESS</td>\r\n            <td></td>\r\n            <td>Request has been processed correctly.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>201</b> Created</td>\r\n            <td>SUCCESS</td>\r\n            <td></td>\r\n            <td>Order with <code>payMethods</code> array with card token or BLIK auth code has been created.</td>\r\n        </tr>\r\n        <tr>\r\n            <td rowspan='4'><b>302</b> Found</td>\r\n            <td>SUCCESS</td>\r\n            <td></td>\r\n            <td>Request has been processed correctly. <code>redirectUri</code> is provided in the response Location header and in the response body (in JSON payload).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>WARNING_CONTINUE_REDIRECT</td>\r\n            <td></td>\r\n            <td>Request has been processed correctly. <code>redirectUri</code> is provided in the response, in the <code>Location</code> header and in the response body (in JSON payload). Applies to transparent integration, if order request contains <code>payMethods</code> with following payment type values: <b>orx</b>, <b>bnx</b>, <b>gbx</b>, <b>nlx</b>.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>WARNING_CONTINUE_3DS</td>\r\n            <td></td>\r\n            <td>3DS authorization is required. Redirect the buyer to perform 3DS authentication process.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>WARNING_CONTINUE_CVV</td>\r\n            <td></td>\r\n            <td>CVV/CVC authorization required. Call the OpenPayU.authorizeCVV() method described <b><a href=\"/docs/payment-flows/card-payments/text-form-data/\" target=\"_blank\">here</a></b>.</td>\r\n        </tr>\r\n        <tr>\r\n            <td rowspan=\"23\"><b>400</b> Bad request</td>\r\n            <td>ERROR_SYNTAX</td>\r\n            <td></td>\r\n            <td>Incorrect request syntax. Supported format is JSON.</td>\r\n        </tr>\r\n        <tr>\r\n            <td rowspan=\"18\">ERROR_VALUE_INVALID</td>\r\n            <td></td>\r\n            <td>One or more required values are incorrect.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: INVALID_BLIK_CODE</td>\r\n            <td>BLIK authorization code must have 6 digits.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: OPENPAYU_PAYMENT_CREATE_ BLOCKED_CHECKOUT_PAY_METHOD</td>\r\n            <td>Chosen payment method is currently unavailable. Payment methods availability can be checked by using <b><a href=\"/docs/checkout/payment-methods-retrieve/\" target=\"_blank\">Payment Methods Retrieval</a></b> service.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>codeLiteral</b>: SINGLE_CLICK_DISABLED</td>\r\n            <td><b><a href=\"/docs/tokenization/\" target=\"_blank\">Card token</a></b> storing service is not available.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>codeLiteral</b>: SINGLE_CLICK_RECURRING_DISABLED</td>\r\n            <td><b><a href=\"/docs/payment-methods/card-methods/recurring/\" target=\"_blank\">Recurring payments</a></b> service not available.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: General MCP processing error</td>\r\n            <td>General MCP processing error.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Fx Rate Table is outdated</td>\r\n            <td>Fx Rate Table specified by <code>mcpFxTableId</code> is outdated.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: MCP is not supported for merchant</td>\r\n            <td>MCP is not supported for merchant.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Rate is null</td>\r\n            <td>Field <code>mcpRate</code> is empty.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Fx Table Id is null</td>\r\n            <td>Field <code>mcpFxTableId</code> is empty.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Amount is null</td>\r\n            <td>Field <code>mcpAmount</code> is empty.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Currency is null</td>\r\n            <td>Field <code>mcpCurrency</code> is empty.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Partner Id is null</td>\r\n            <td>Field <code>mcpPartnerId</code> is empty.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Invalid currency pair for given Fx Table</td>\r\n            <td>Invalid currency pair specified by <code>mcpCurrency</code> and <code>currencyCode</code> for given Fx Table.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Invalid rate value for given Fx Table</td>\r\n            <td>Invalid rate value specified by <code>mcpRate</code> for given Fx Table.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Invalid amount value for given Fx Table (amount was not calculated properly)</td>\r\n            <td>Invalid amount value specified by <code>mcpAmount</code> for given Fx Table, amount was not calculated properly.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Currency is not supported</td>\r\n            <td>Currency specified by <code>mcpCurrency</code> is not supported.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>statusDesc</b>: Wrong params. You're trying to send MIT/Recurring request for non-verified first Payment</td>\r\n            <td>MIT/recurring payment attempt with a token that has not been fully authenticated with 3DSecure. With a given token, depending on the payment type, you must first make a payment with the appropriate parameter: MIT (<code>cardOnFile=FIRST</code>), recurring (<code>recurring=FIRST</code>).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ERROR_VALUE_MISSING</td>\r\n            <td></td>\r\n            <td>One or more required values are missing.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ERROR_ORDER_NOT_UNIQUE</td>\r\n            <td></td>\r\n            <td>Order already exists. This error may be caused by a not unique <code>extOrderId</code> parameter.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ERROR_INTERNAL</td>\r\n            <td><b>codeLiteral</b>: CARD_CARD_EXPIRED</td>\r\n            <td>Card expired.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>BUSINESS_ERROR</td>\r\n            <td><b>codeLiteral</b>: ERROR_VALUE_INVALID <br/> <b>statusDesc</b>: Order was rejected by antifraud system</td>\r\n            <td>Order was rejected by antifraud system.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>401</b> Unauthorized</td>\r\n            <td>UNAUTHORIZED</td>\r\n            <td></td>\r\n            <td>Incorrect authentication. Check signature parameters and implementation of the signature algorithm</td>\r\n        </tr>\r\n        <tr>\r\n            <td rowspan=\"2\"><b>403</b> Forbidden</td>\r\n            <td>UNAUTHORIZED_REQUEST</td>\r\n            <td></td>\r\n            <td>No privileges to perform the request</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ERROR_VALUE_INVALID</td>\r\n            <td><b>codeLiteral</b>: INVALID_AUTH_FOR_THIS_ORDER</td>\r\n            <td>POS ID parameter in OAuth request does not match <code>posId</code> in OrderCreateRequest. Both values must be the same.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>404</b> Not found</td>\r\n            <td>DATA_NOT_FOUND</td>\r\n            <td></td>\r\n            <td>Data indicated in the request is not available in the PayU system.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>408</b> Request timeout</td>\r\n            <td>TIMEOUT</td>\r\n            <td></td>\r\n            <td>Permitted time to process the request has expired.</td>\r\n        </tr>\r\n        <tr>\r\n            <td rowspan=\"4\"><b>500</b> Internal server error</td>\r\n            <td>BUSINESS_ERROR</td>\r\n            <td></td>\r\n            <td>PayU system is unavailable. Try again later.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ERROR_INTERNAL</td>\r\n            <td></td>\r\n            <td>PayU system is unavailable. Try again later.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>GENERAL_ERROR</td>\r\n            <td></td>\r\n            <td>Unexpected error. Try again later.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>WARNING</td>\r\n            <td></td>\r\n            <td>Minor unexpected error. Try again later.</td>\r\n        </tr>\r\n        <tr>\r\n            <td><b>503</b> Service unavailable</td>\r\n            <td>SERVICE_NOT_AVAILABLE</td>\r\n            <td></td>\r\n            <td>PayU system is unavailable. Try again later.</td>\r\n        </tr>\r\n    </tbody>\r\n</table-->\r\n\r\n<!--## Card Status Codes\r\n\r\n**Reason** column shows which side stopped the transaction and who should be contacted to give more information about the source of problem.\r\n\r\n<table>\r\n    <thead>\r\n        <tr>\r\n            <td>Card ResponseCode</td>\r\n            <td>Card ResponseCodeDesc</td>\r\n            <td>Reason</td>\r\n            <td>Additional information</td>\r\n            <td>Public communication</td>\r\n        </tr>\r\n    </thead>\r\n    <tbody>\r\n        <tr>\r\n            <td>000</td>\r\n            <td>000 - OK</td>\r\n            <td></td>\r\n            <td></td>\r\n            <td><b>Successful authorization</b>. Funds were transferred to the\r\n            recipient.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S01</td>\r\n            <td>S01 - Refer to card issuer</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td rowspan=\"3\"><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S04</td>\r\n            <td>S04 - Pickup card</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>S05</td>\r\n            <td>S05 - Do not honor</td>\r\n            <td>Bank</td>\r\n            <td>Ask yor Customer to call the bank and clear up any problems that are causing\r\n            the card to be declined.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S12</td>\r\n            <td>S12 - Invalid transaction</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. Check if you can use your card to pay online or contact your bank.\r\n            Please try again, choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S13</td>\r\n            <td>S13 - Invalid amount</td>\r\n            <td>Bank</td>\r\n            <td>Currency conversion field overflow or amount exceeds maximum for Card\r\n            program.</td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. Check your card's limits or contact your bank. Please try again,\r\n            choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S30</td>\r\n            <td>S30 - Message format error</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td rowspan=\"2\"><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S43</td>\r\n            <td>S43 - Pickup card (stolen card)</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>S51</td>\r\n            <td>S51 - Insufficient funds</td>\r\n            <td>Bank</td>\r\n            <td>Not enough funds or attempt to exceed limits (at the bank side).</td>\r\n            <td><b>Insufficient funds</b>. Check funds available on your card or contact your\r\n            bank. Please try again, choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S54</td>\r\n            <td>S54 - Expired card</td>\r\n            <td>Bank</td>\r\n            <td>Card is expired or Customer made a mistake giving card dates.</td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. Check your card's expiration date or contact your bank. Please try\r\n            again, choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S57</td>\r\n            <td>S57 - Card disabled for e-commerce or cross-border transactions</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. Check if you can use your card to pay online or contact your bank.\r\n            Please try again, choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S61</td>\r\n            <td>S61 - Exceeds approval amount</td>\r\n            <td>Bank</td>\r\n            <td>Attempt to exceed limits (at the bank side).</td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>S62</td>\r\n            <td>S62 - Restricted card / Country exclusion table</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S65</td>\r\n            <td>S65 - Exceeds withdrawal frequency limit.</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S89</td>\r\n            <td>S89 - S89 - No such issuer</td>\r\n            <td>Bank</td>\r\n            <td>Attempt (bank side) to exceed the limit.</td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this transaction. Check the limit settings on your card or contact your bank. Please try again using a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S90</td>\r\n            <td>S90 - Destination not available</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>S93</td>\r\n            <td>S93 - Card disabled for e-commerce transactions</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>S99</td>\r\n            <td>S99 - authorization error – default</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td rowspan=\"5\"><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>SN0</td>\r\n            <td>SN0 - Unable to authorize / Force STIP</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>SSD</td>\r\n            <td>SSD - Soft decline (strong authentication required)</td>\r\n            <td>Bank</td>\r\n            <td>Payment can be retried, but 3DS authentication must be used.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ST3</td>\r\n            <td>ST3 - Card not supported</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>ST5</td>\r\n            <td>ST5 - Card inactive or closed (updated information needed)</td>\r\n            <td>Bank</td>\r\n            <td>Payment can be retried, but card data needs to be updated (e.g. expiry\r\n            date).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>ST8</td>\r\n            <td>ST8 - Invalid account</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. Check if you can use your card to pay online or contact your bank.\r\n            Please try again, choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>SP1</td>\r\n            <td>SP1 - Over daily limit (try again later)</td>\r\n            <td>Bank</td>\r\n            <td>Payment can be retried, preferrably after 24 hours.</td>\r\n            <td rowspan=\"3\"><b>Authorization error</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. If you would like to learn about the reason for this transaction to be\r\n            rejected, please contact your bank. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>SAC</td>\r\n            <td>SAC - Account closed (do not try again)</td>\r\n            <td>Bank</td>\r\n            <td>Payment must not be retried, all further attempts will be declined.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>SPF</td>\r\n            <td>SPF - Possible fraud (do not try again)</td>\r\n            <td>Bank</td>\r\n            <td>Payment must not be retried, all further attempts will be declined.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>SP9</td>\r\n            <td>SP9 - Enter lesser amount</td>\r\n            <td>Bank</td>\r\n            <td></td>\r\n            <td><b>No authorization</b>. We are sorry, but your card's issuer rejected this\r\n            transaction. Check your card's limits or contact your bank. Please try again,\r\n            choosing a different payment method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>114</td>\r\n            <td>114 - 3ds authentication error (global)</td>\r\n            <td>PayU</td>\r\n            <td>Incorrect 3DS result (default configuration).</td>\r\n            <td rowspan=\"5\"><b>No authorization</b>. Your card's issuer did not confirm the\r\n            transaction. Please try again.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>115</td>\r\n            <td>115 - 3ds authentication error (company)</td>\r\n            <td>PayU</td>\r\n            <td>Incorrect 3DS result (company configuration).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>116</td>\r\n            <td>116 - 3ds authentication error (merchant)</td>\r\n            <td>PayU</td>\r\n            <td>Incorrect 3DS result (merchant configuration).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>117</td>\r\n            <td>117 - 3ds authentication error (fallback)</td>\r\n            <td>PayU</td>\r\n            <td>Incorrect 3DS result (fallback configuration).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>120</td>\r\n            <td>120 - 3ds processing error</td>\r\n            <td>PayU</td>\r\n            <td>Error during 3DS processing.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>123</td>\r\n            <td>123 - Missing cryptogram for Network Token's authorization.</td>\r\n            <td>Visa/Mastercard</td>\r\n            <td></td>\r\n            <td><b>Authorization error</b>.\r\n            We are sorry, but the attempt to confirm this transaction took too long. Please try again.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>130</td>\r\n            <td>130 - Non-compliant prepaid card</td>\r\n            <td>PayU</td>\r\n            <td>Card recognized as not compliant with AMLD5.</td>\r\n            <td><b>No authorization</b>. We are sorry, but this card is not accepted within the\r\n            European Economic Area. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>131</td>\r\n            <td>131 - Credit card not allowed for debt merchants</td>\r\n            <td>PayU</td>\r\n            <td>Card recognized as not allowed for this transaction.</td>\r\n            <td><b>No authorization</b>. We are sorry, but credit card cannot be used to repay debt. Please try again, choosing a different payment\r\n            method.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>222</td>\r\n            <td>222 - Transaction not received by merchant</td>\r\n            <td>Merchant</td>\r\n            <td>Merchant has not received transaction; status possible when auto-receive option\r\n            is off.</td>\r\n            <td></td>\r\n        </tr>\r\n        <tr>\r\n            <td>001, 002, 003, 004, 005, 110, 111, 112, 113, 121, 122, 221, 223, 998, 999</td>\r\n            <td>different messages</td>\r\n            <td>PayU</td>\r\n            <td>Contact PayU for details</td>\r\n            <td><b>Authorization error</b>.\r\n            We are sorry, but the attempt to confirm this transaction took too long. Please try again.</td>\r\n        </tr>\r\n    </tbody>\r\n</table -->\r\n\r\n<!-- ## ECI (Electronic Commerce Indicator) Response Codes\r\n\r\n<table>\r\n    <thead>\r\n        <th>cardEciCode</th>\r\n        <th>Card Issuer</th>\r\n        <th>Liable Party</th>\r\n        <th>Chargeback Fraud Protection</th>\r\n        <th>Additional Information</th>\r\n    </thead>\r\n    <tbody>\r\n        <tr>\r\n            <td>5 / 2</td>\r\n            <td>Visa / Mastercard</td>\r\n            <td>Issuer</td>\r\n            <td>Protected</td>\r\n            <td>Cardholder authenticated by the Issuer.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>6 / 1</td>\r\n            <td>Visa / Mastercard</td>\r\n            <td>Issuer</td>\r\n            <td>Protected</td>\r\n            <td>Merchant attempted to authenticate the cardholder but either the cardholder or Issuer is not participating in 3DS or the Issuer’s ACS is currently unavailable.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>7 / 0</td>\r\n            <td>Visa / Mastercard</td>\r\n            <td>Merchant</td>\r\n            <td>Not Protected</td>\r\n            <td>Payment authentication has not been performed.</td>\r\n        </tr>\r\n    </tbody>\r\n    \r\n</table>\r\n\r\n## Card 3DS Statuses\r\n\r\n<table>\r\n    <thead>\r\n        <th>card3DsStatus</th>\r\n        <th>3DS version</th>\r\n        <th>Additional information</th>\r\n    </thead>\r\n    <tbody>\r\n        <tr>\r\n            <td>AY / Y</td>\r\n            <td>3DS / 3DS2</td>\r\n            <td>Authentication successful.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>AA / A</td>\r\n            <td>3DS / 3DS2</td>\r\n            <td>Authentication attempted.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>AU / U</td>\r\n            <td>3DS / 3DS2</td>\r\n            <td>Authentication could not be performed due to technical or other problem.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>AN / N</td>\r\n            <td>3DS / 3DS2</td>\r\n            <td>Authentication failed. Authorization denied.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>VE</td>\r\n            <td>3DS</td>\r\n            <td>An error occurred during verification whether the card supports 3ds.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>AE</td>\r\n            <td>3DS</td>\r\n            <td>An error has occurred in the authentication process.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>R</td>\r\n            <td>3DS2</td>\r\n            <td>Authentication rejected. Authorization denied.</td>\r\n        </tr>\r\n        <tr>\r\n            <td>I</td>\r\n            <td>3DS2</td>\r\n            <td>Informational status (the card issuer has accepted an exception to strong authentication).</td>\r\n        </tr>\r\n        <tr>\r\n            <td>A0</td>\r\n            <td>3DS</td>\r\n            <td>Error on the card organization side.</td>\r\n        </tr>\r\n    </tbody>\r\n\r\n</table> -->\r\n\r\n<!-- ## Transmission Encryption\r\n\r\n> Since 30 June 2018 PayU supports only TLS 1.2 protocol.\r\n\r\nLack of support for older protocols is for security reasons. The TLS 1.2 protocol is the best transmission encryption method compliant with the highest security standard PCI DSS 3.2.\r\n\r\n**The change applies to all transmission via HTTPS, therefore it includes all REST API and Classic API endpoints.**\r\n\r\nMajority of e-commerce solutions and hosting providers make sure that their software is up-to-date. Therefore, if your site is using such a provider, most probably you have nothing to worry about. You can contact your service providers and ask whether they have updated their software.\r\n\r\nIf your site is a custom-built solution, make sure that it uses the latest version of the protocol. The following information could be useful:\r\n\r\n### JAVA\r\n\r\nJava 1.5 and below does not support TLS 1.2 In Java 1.6, TLS 1.2 is not supported in Oracle public updates. It is supported in the business edition starting Oracle java version 6u115 b32.\r\n\r\nIn Java 1.7, TLS1.2 is supported. But it needs to be explicitly enabled by selecting the enabled protocols while creating the SSLSocket & SSLEngine instances.\r\n\r\nPlease refer to: <b><a href=\"https://blogs.oracle.com/java-platform-group/jdk-8-will-use-tls-12-as-default\" target=\"_blank\">Oracle blog</a></b> for more details.\r\n\r\n### cURL\r\n\r\nCurl supports TLS1.2 starting 7.34.0. Please use the following command to test the connection.\r\n\r\n> You may use any PayU endpoint. If you need help with Classic API integration contact our <b><a href=\"https://poland.payu.com/support/\" target=\"_blank\">support</a></b>.\r\n\r\n\r\nIf it works, you'll see **Unauthorized** message.\r\n\r\n### cURL+PHP\r\n\r\n```\r\n    php -r '$ch = curl_init(); \r\n    curl_setopt($ch, CURLOPT_URL, \"https://secure.payu.com/api/v2_1/orders\"); \r\n    curl_setopt ($ch, CURLOPT_SSLVERSION, 6); \r\n    var_dump(curl_exec($ch)); \r\n    var_dump(curl_error($ch));' \r\n```\r\n\r\nIf it works, you'll see \"Unauthorized\" message. TLS 1.1 and TLS 1.2 are supported since OpenSSL 1.0.1. Forcing TLS 1.1 and 1.2 are only supported since curl 7.34.0.\r\n\r\n-->"
+  description: "# Overview\r\n\r\nThis reference is designed to assist you in effectively utilizing the PayU REST API to enhance your online payment capabilities. Whether you're running an e-commerce store or developing applications that require secure and seamless payment processing, our API offers a range of features to meet your needs.\r\n\r\nOur API offers a comprehensive set of endpoints to empower you with full control over your payment processes. With these endpoints, you can seamlessly create, capture, cancel, and retrieve orders, conduct payouts, and access essential reports.\r\n\r\nFor more details on the integration, please refer to the official <a href=\"/docs/\">PayU documentation</a>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.\r\n\r\n## Testing\r\n\r\n### Production Environment\r\n\r\nFor a basic integration, including only a redirection to PayU hosted payment page, it is perfectly enough to use the public test point of sale. However, if you would like to test a full set of endpoints, including e.g. refunds, consider registering for a sandbox account.\r\n\r\n**Public Test POS (point of sale)**\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           145227 |\r\n| OAuth protocol - client_id     |                           145227 |\r\n| Second key (MD5)               | 13a980d4f851f3d9a1cfc792fb1f5e50 |\r\n| OAuth protocol - client_secret | 12f071174cb7eb79d4aac5bc2f07563f |\r\n\r\n### Sandbox Environment\r\n\r\nSandbox is an almost identical copy of PayU production system. It can be used for integration and testing purposes.\r\n\r\n**Public Test POS (Point of Sale)**\r\n\r\nAlthough it is best to <a href=\"https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/\" target=\"_blank\">create your own account</a> to later be able to configure it as needed, you may also use a public sandbox test POS without registering:\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           300746 |\r\n| OAuth protocol - client_id     |                           300746 |\r\n| Second key (MD5)               | b6ca15b0d1020e8094d9b5f8d163db54 |\r\n| OAuth protocol - client_secret | 2ee86a66e5d97e3fadc400c9f19b065d |\r\n\r\nThe availability of the sandbox environment can be checked on the <a href=\"https://status.snd.payu.com/\" target=\"_blank\">Status page</a>.\r\n\r\n**Testing Card Payments**\r\n\r\nIn order to test card payments on sandbox, please use credentials displayed on the <a href=\"/docs/testing/sandbox/\" target=\"_blank\">Sandbox</a> documentation page."
 servers:
   - url: https://secure.payu.com
     description: Production Server
@@ -59,10 +59,14 @@ tags:
       reference rates issued by the European Central Bank (ECB).
   - name: Card-Installments-Proposal
     x-displayName: Card Installments Proposal
-    description: ''
+    description: >-
+      You can offer the payer the option to split their card payment into
+      installments.
   - name: Marketplace-Seller
     x-displayName: Marketplace Seller
-    description: ''
+    description: >-
+      In PayU, as a marketplace, you have the capability to manage various
+      aspects of your submerchants.
   - name: Marketplace-Verification
     x-displayName: Marketplace Verification
     description: >-
@@ -71,13 +75,21 @@ tags:
       make it easier for you to verify sellers.
   - name: Statements
     x-displayName: Statements
-    description: ''
+    description: >-
+      Statements in PayU are comprehensive reports that provide a detailed
+      summary of completed purchase transactions, refunds, and payouts.
   - name: Partner-Merchant-Registration
     x-displayName: Partner Merchant Registration
-    description: ''
+    description: >-
+      Below are the endpoints that enable you to create the necessary entities
+      (Firm, Url, Shop, POS) for your partner.
   - name: PF-Submerchant-Registration
     x-displayName: Payment Facilitator Submerchant Registration
-    description: ''
+    description: >-
+      Payment Facilitator (PF) is an advanced form of partnership where PayU
+      cedes much of its own responsibilities, like e.g. Know Your Customer (KYC)
+      and verification, customer support and settlement (payouts) to the PF.
+      Below are the endpoints for registering and handling PF submerchants.
 paths:
   /pl/standard/user/oauth/authorize:
     post:
@@ -382,9 +394,17 @@ paths:
                 recurring:
                   type: string
                   description: >-
-                    Marks the order as recurring payment - first or subsequent.
-                    "recurring" parameter cannot be used with "cardOnFile"
-                    parameter
+                    Marks the order as recurring payment: <ul> <li><b>FIRST</b>
+                    - payment initialized by the card owner who agreed to save
+                    card for future use in recurring plan. You can expect full
+                    authentication (3D Secure and/or CVV). If you want to use
+                    multi-use token (TOKC_) later, you have to be confident,
+                    that first recurring payment was successful.</li>
+                    <li><b>STANDARD</b> - subsequent recurring payment (user is
+                    not present). This transaction has multi use token (TOKC_).
+                    You cannot use it if FIRST recurring payment failed.</li>
+                    </ul> <b><code>recurring</code> parameter cannot be used
+                    with <code>cardOnFile</code> parameter</b> .
                   enum:
                     - FIRST
                     - STANDARD
@@ -1736,7 +1756,11 @@ paths:
       tags:
         - FX-Reference
       summary: Retrieve Reference Rates
-      description: FX reference
+      description: >-
+        You can retrieve a reference rate table that is updated daily. This
+        table encompasses rates released by the European Central Bank (ECB)
+        against EUR, as well as additional rates that are triangulated using EUR
+        (e.g., PLN/USD, CZK/GBP, etc.).
       operationId: retrieve-reference-rates
       parameters:
         - name: termCurrency
@@ -1819,7 +1843,12 @@ paths:
       tags:
         - Card-Installments-Proposal
       summary: Retrieve Card Installments Proposal
-      description: ''
+      description: >-
+        If you encounter the `cardInstallmentProposal` parameter while
+        retrieving transaction data, it indicates that the payment can be
+        divided into installments. In such cases, you should present this
+        installment option to the payer. To proceed, you will need to retrieve
+        the installment proposal.
       operationId: proposal-retrieve-card-installments-proposal
       parameters:
         - name: proposalId
@@ -1964,7 +1993,10 @@ paths:
       tags:
         - Card-Installments-Proposal
       summary: Send Payer's Decision
-      description: ''
+      description: >-
+        After retrieving and displaying the installment proposal, the payer has
+        a 15-minute window to make a decision. Then you need to send back
+        their's decision
       operationId: card-installments-proposal-send-payers-decision
       parameters:
         - name: proposalId
@@ -2041,7 +2073,7 @@ paths:
       tags:
         - Marketplace-Seller
       summary: Retrieve Seller Status
-      description: Marketplace Seller Status
+      description: You can check the verification status of your submerchants.
       operationId: retrieve-seller-status
       parameters:
         - name: extCustomerId
@@ -2113,7 +2145,6 @@ paths:
       tags:
         - Marketplace-Seller
       summary: Retrieve Seller Balance
-      description: ''
       operationId: retrieve-seller-balance
       parameters:
         - name: extCustomerId
@@ -2183,7 +2214,6 @@ paths:
       tags:
         - Marketplace-Seller
       summary: Retrieve Seller Operation History
-      description: ''
       operationId: retrieve-seller-operation-history
       parameters:
         - name: extCustomerId
@@ -2331,7 +2361,6 @@ paths:
       tags:
         - Marketplace-Seller
       summary: Transfer Funds from Seller to Marketplace Balance
-      description: ''
       operationId: transfer-funds-from-seller-to-marketplace-balance
       parameters:
         - name: extCustomerId
@@ -3685,7 +3714,18 @@ paths:
       tags:
         - Statements
       summary: Retrieve Statement
-      description: Stetement retrieval via API
+      description: >
+        In response to retrieving a statement via the API, PayU returns a
+        statement file (as indicated by the
+        `Content-Type=application/octet-stream`) in the `Content-Disposition`
+        header. You should take this attached binary data and save it with the
+        same name and file extension. 
+
+
+        For example, if the value of the `Content-Disposition` header is
+        **attachment; filename="69e45495-bed9-4824-ace9-f7c191449bbb.zip"**,
+        then you should save the attached data on your computer with the same
+        name **69e45495-bed9-4824-ace9-f7c191449bbb.zip**.
       operationId: retrieve-statement
       security:
         - Basic: null
@@ -3714,30 +3754,12 @@ paths:
             type: string
           style: simple
           example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
-      responses:
-        '200':
-          x-summary: OK
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  loremIpsum:
-                    type: string
-        '401':
-          x-summary: Unauthorized
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/401'
   /api/v2_1/firms:
     post:
       tags:
         - Partner-Merchant-Registration
       summary: Create a Firm
-      description: Partner Merchant Registration Firm Create
+      description: Create a Firm entity for your partner.
       operationId: create-a-firm
       security:
         - Bearer:
@@ -4363,19 +4385,25 @@ paths:
                         properties:
                           merchantPosId:
                             type: string
-                            description: POS identifier used for API calls.
+                            description: >-
+                              POS identifier used for API calls. It has the same
+                              value as the `client_id` used in the OAuth calls.
                             example: '385234'
                           key:
                             type: string
                             description: >-
-                              First API key (<code>client_id</code>) used to
+                              Has the same value as the "`client_secret` used to
                               obtain OAuth access tokens for REST API calls.
-                            example: 9c0041e05fdee99749de4c2d2ce4c66e
+                            example: 9c0041e05fdee99749de4c2d2ce4c66e"
                           secondKey:
                             type: string
                             description: >-
-                              Second API key (<code>client_id</code>) used to
-                              sign REST API forms and to validate notifications.
+                              The second API key is utilized for signing
+                              notifications sent by PayU, as well as for
+                              verifying the notification signature provided by
+                              PayU. Additionally, it is used for basic
+                              authorization when fetching statement files via
+                              the API.
                             example: f096a39d78fbe03b8d23dde43b728cfd
                           authKey:
                             type: string
@@ -4393,7 +4421,6 @@ paths:
       tags:
         - PF-Submerchant-Registration
       summary: Create a Submerchant
-      description: ''
       operationId: create-a-submerchant
       parameters:
         - name: firmPublicId
@@ -4668,8 +4695,7 @@ paths:
     put:
       tags:
         - PF-Submerchant-Registration
-      summary: Update Submerchants Data
-      description: ''
+      summary: Update Submerchant Data
       operationId: update-submerchants-data
       parameters:
         - name: firmPublicId
@@ -6182,13 +6208,22 @@ components:
       properties:
         frequency:
           type: string
-          description: Minimum number of days between payments.
-          example: 30
+          description: >-
+            The minimum number of days between recurring payments (e.g. setting
+            it to <b>7</b> for a weekly cycle). However, according to the
+            recommendations of card schemes, when dealing with recurring
+            payments that have a variable frequency, it's advised to use a value
+            of <b>1</b> for this parameter.
+          example: '7'
         expiry:
           type: string
-          format: '2019-03-27T10:57:59.000+01:00'
-          description: Date after no further recurring payments will be performed.
-          example: '2019-03-27T10:57:59.000+01:00'
+          format: '2025-03-27T00:00:00.000Z'
+          description: >-
+            Date after no further recurring payments will be performed.
+            According to recommendation by the card schemes, in cases where
+            there is no established expiry or end date of recurring (e.g.
+            subscriptions), the value of "9999-12-31T00:00:00Z" should be used.
+          example: '2025-03-27T00:00:00.000Z'
     accountInformation:
       type: object
       description: Informations about cardholders account.

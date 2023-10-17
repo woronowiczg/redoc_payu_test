@@ -1,7 +1,7 @@
 tags:
     - FX-Reference
 summary: Retrieve Reference Rates
-description: FX reference
+description: You can retrieve a reference rate table that is updated daily. This table encompasses rates released by the European Central Bank (ECB) against EUR, as well as additional rates that are triangulated using EUR (e.g., PLN/USD, CZK/GBP, etc.).
 operationId: retrieve-reference-rates
 parameters:
     - name: termCurrency

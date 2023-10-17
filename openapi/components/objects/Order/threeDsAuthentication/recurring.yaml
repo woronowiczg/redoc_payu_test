@@ -3,10 +3,10 @@ description: Additional information in case of a recurring payment.
 properties:
     frequency:
         type: string
-        description: Minimum number of days between payments.
-        example: 30
+        description: The minimum number of days between recurring payments (e.g. setting it to <b>7</b> for a weekly cycle). However, according to the recommendations of card schemes, when dealing with recurring payments that have a variable frequency, it's advised to use a value of <b>1</b> for this parameter.
+        example: "7"
     expiry:
         type: string
-        format: '2019-03-27T10:57:59.000+01:00'
-        description: Date after no further recurring payments will be performed.
-        example: '2019-03-27T10:57:59.000+01:00'
+        format: '2025-03-27T00:00:00.000Z'
+        description: Date after no further recurring payments will be performed. According to recommendation by the card schemes, in cases where there is no established expiry or end date of recurring (e.g. subscriptions), the value of "9999-12-31T00:00:00Z" should be used.
+        example: '2025-03-27T00:00:00.000Z'
