@@ -14,6 +14,11 @@ properties:
         type: string
         description: 'Optional, usage differs depending on payment method. For BLIK integrated transparently: enables to collect 6-digit BLIK code on your website instead of redirecting to BLIK.'
         example: '777123'
+    authorizationType:
+        type: string
+        description: Applicable only to card-based payments, incl. Apple Pay, Google Pay, Masterpass and Visa Checkout.
+        default: AUTHORIZATION
+        enum: [PRE_AUTHORIZATION, AUTHORIZATION]
     card:
         $ref: cardPlainData.yaml
     specificData:

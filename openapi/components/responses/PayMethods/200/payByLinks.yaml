@@ -6,7 +6,7 @@ items:
         value:
             type: string
             example: sgb
-            description: <code>payType</code> value. You can find available values <b><a href="/docs/get-started/introduction/index.mdx#payment-methods" target="_blank">here</a></b>.
+            description: <code>payType</code> value. You can find available values <b><a href="/europe/docs/get-started/introduction/#paymethods" target="_blank">here</a></b>.
         brandImageUrl:
             type: string
             example: https://static.payu.com/images/mobile/logos/pbl_sgb_off.png

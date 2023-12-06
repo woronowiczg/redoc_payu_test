@@ -27,6 +27,7 @@ requestBody:
                         type: string
                         description: Address for redirecting the customer after payment is commenced.
                         example: www.example.com/path
+                        maxLength: 1024
                     notifyUrl:
                         type: string
                         description: The address for sending notifications

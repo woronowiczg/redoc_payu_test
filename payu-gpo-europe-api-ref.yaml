@@ -8,7 +8,7 @@ info:
   x-logo:
     url: >-
       https://poland.payu.com/wp-content/themes/global-website/assets/src/images/payu-logo.svg
-  description: "# Overview\r\n\r\nThis reference is designed to assist you in effectively utilizing the PayU REST API to enhance your online payment capabilities. Whether you're running an e-commerce store or developing applications that require secure and seamless payment processing, our API offers a range of features to meet your needs.\r\n\r\nOur API offers a comprehensive set of endpoints to empower you with full control over your payment processes. With these endpoints, you can seamlessly create, capture, cancel, and retrieve orders, conduct payouts, and access essential reports.\r\n\r\nFor more details on the integration, please refer to the official <a href=\"/docs/\">PayU documentation</a>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.\r\n\r\n## Testing\r\n\r\n### Production Environment\r\n\r\nFor a basic integration, including only a redirection to PayU hosted payment page, it is perfectly enough to use the public test point of sale. However, if you would like to test a full set of endpoints, including e.g. refunds, consider registering for a sandbox account.\r\n\r\n**Public Test POS (point of sale)**\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           145227 |\r\n| OAuth protocol - client_id     |                           145227 |\r\n| Second key (MD5)               | 13a980d4f851f3d9a1cfc792fb1f5e50 |\r\n| OAuth protocol - client_secret | 12f071174cb7eb79d4aac5bc2f07563f |\r\n\r\n### Sandbox Environment\r\n\r\nSandbox is an almost identical copy of PayU production system. It can be used for integration and testing purposes.\r\n\r\n**Public Test POS (Point of Sale)**\r\n\r\nAlthough it is best to <a href=\"https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/\" target=\"_blank\">create your own account</a> to later be able to configure it as needed, you may also use a public sandbox test POS without registering:\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           300746 |\r\n| OAuth protocol - client_id     |                           300746 |\r\n| Second key (MD5)               | b6ca15b0d1020e8094d9b5f8d163db54 |\r\n| OAuth protocol - client_secret | 2ee86a66e5d97e3fadc400c9f19b065d |\r\n\r\nThe availability of the sandbox environment can be checked on the <a href=\"https://status.snd.payu.com/\" target=\"_blank\">Status page</a>.\r\n\r\n**Testing Card Payments**\r\n\r\nIn order to test card payments on sandbox, please use credentials displayed on the <a href=\"/docs/testing/sandbox/\" target=\"_blank\">Sandbox</a> documentation page."
+  description: "# Overview\r\n\r\nThis reference is designed to assist you in effectively utilizing the PayU REST API to enhance your online payment capabilities. Whether you're running an e-commerce store or developing applications that require secure and seamless payment processing, our API offers a range of features to meet your needs.\r\n\r\nOur API offers a comprehensive set of endpoints to empower you with full control over your payment processes. With these endpoints, you can seamlessly create, capture, cancel, and retrieve orders, conduct payouts, and access essential reports.\r\n\r\nFor more details on the integration, please refer to the official <a href=\"/europe/docs/\">PayU documentation</a>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.\r\n\r\n## Testing\r\n\r\n### Production Environment\r\n\r\nFor a basic integration, including only a redirection to PayU hosted payment page, it is perfectly enough to use the public test point of sale. However, if you would like to test a full set of endpoints, including e.g. refunds, consider registering for a sandbox account.\r\n\r\n**Public Test POS (point of sale)**\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           145227 |\r\n| OAuth protocol - client_id     |                           145227 |\r\n| Second key (MD5)               | 13a980d4f851f3d9a1cfc792fb1f5e50 |\r\n| OAuth protocol - client_secret | 12f071174cb7eb79d4aac5bc2f07563f |\r\n\r\n### Sandbox Environment\r\n\r\nSandbox is an almost identical copy of PayU production system. It can be used for integration and testing purposes.\r\n\r\n**Public Test POS (Point of Sale)**\r\n\r\nAlthough it is best to <a href=\"https://registration-merch-prod.snd.payu.com/boarding/#/registerSandbox/\" target=\"_blank\">create your own account</a> to later be able to configure it as needed, you may also use a public sandbox test POS without registering:\r\n\r\n| Key name                       |                            Value |\r\n| ------------------------------ | -------------------------------: |\r\n| POS ID (pos_id)                |                           300746 |\r\n| OAuth protocol - client_id     |                           300746 |\r\n| Second key (MD5)               | b6ca15b0d1020e8094d9b5f8d163db54 |\r\n| OAuth protocol - client_secret | 2ee86a66e5d97e3fadc400c9f19b065d |\r\n\r\nThe availability of the sandbox environment can be checked on the <a href=\"https://status.snd.payu.com/\" target=\"_blank\">Status page</a>.\r\n\r\n**Testing Card Payments**\r\n\r\nIn order to test card payments on sandbox, please use credentials displayed on the <a href=\"/europe/docs/testing/sandbox/\" target=\"_blank\">Sandbox</a> documentation page."
 servers:
   - url: https://secure.payu.com
     description: Production Server
@@ -313,6 +313,7 @@ paths:
                     Address for redirecting the customer after payment is
                     commenced.
                   example: www.example.com/path
+                  maxLength: 1024
                 notifyUrl:
                   type: string
                   description: The address for sending notifications
@@ -823,13 +824,107 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/500'
+  /api/v2_1/orders/{orderId}/captures:
+    post:
+      tags:
+        - Order
+      summary: Capture Authorized Order
+      description: Capture whole order and update its status to COMPLETED (ended).
+      operationId: capture-authorized-order
+      parameters:
+        - name: orderId
+          in: path
+          example: WZHF5FFDRJ140731GUEST000P01
+          description: Order ID generated by the PayU system
+          required: true
+          content:
+            application/json:
+              schema:
+                type: string
+        - name: Content-Type
+          in: header
+          description: Content type
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: application/json
+        - name: Authorization
+          in: header
+          description: Auth token
+          required: true
+          schema:
+            type: string
+          style: simple
+          example: Bearer 3e5cac39-7e38-4139-8fd6-30adc06a61bd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: null
+              required: []
+              properties:
+                amount:
+                  type: string
+                  description: >-
+                    Amount you want to capture. Must be less than captured order
+                    amount. **Can be used only during partial capture**.
+                  example: 900
+                currencyCode:
+                  type: string
+                  description: >-
+                    Currency of the order. **Can be used only during partial
+                    capture**
+                  example: EUR
+      responses:
+        '200':
+          x-summary: OK
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      statusCode:
+                        type: string
+                        description: Status after update.
+                        example: SUCCESS
+                      statusDesc:
+                        type: string
+                        description: Status message.
+                        example: Status was updated
+        '400':
+          x-summary: Bad Request
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+        '401':
+          x-summary: Unauthorized
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+        '500':
+          x-summary: Internal server error
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/500'
   /api/v2_1/orders/{orderId}/status:
     put:
       tags:
         - Order
-      summary: Capture Authorized Order
+      summary: (deprecated) Capture Authorized Order
       description: Capture an order and update its status to COMPLETED (ended).
-      operationId: capture-authorized-order
+      operationId: capture-authorized-order-deprecated
       parameters:
         - name: orderId
           in: path
@@ -3299,7 +3394,7 @@ paths:
                   description: >-
                     Changes the language of the sent email message. Possible
                     values you can find in <b><a
-                    href="/get-started/introduction/index.mdx#languages"
+                    href="/europe/docs/get-started/introduction/#languages"
                     target="_blank">languages</a></b> table.
       responses:
         '201':
@@ -5566,7 +5661,7 @@ components:
             example: sgb
             description: >-
               <code>payType</code> value. You can find available values <b><a
-              href="/docs/get-started/introduction/index.mdx#payment-methods"
+              href="/europe/docs/get-started/introduction/#paymethods"
               target="_blank">here</a></b>.
           brandImageUrl:
             type: string
@@ -5923,6 +6018,15 @@ components:
             integrated transparently: enables to collect 6-digit BLIK code on
             your website instead of redirecting to BLIK.
           example: '777123'
+        authorizationType:
+          type: string
+          description: >-
+            Applicable only to card-based payments, incl. Apple Pay, Google Pay,
+            Masterpass and Visa Checkout.
+          default: AUTHORIZATION
+          enum:
+            - PRE_AUTHORIZATION
+            - AUTHORIZATION
         card:
           $ref: '#/components/schemas/cardPlainData'
         specificData:
@@ -7028,7 +7132,7 @@ components:
           description: >-
             Allows sending additional information to the system (Variable
             Symbol). Data from this field is send only to the supporting banks.
-            <b>This solution is dedicated only for Czech market.</b>
+            <b>This solution is dedicated only for Czech market</b>.
           example: VS=888111
         postalOrder:
           type: string
@@ -7036,12 +7140,9 @@ components:
             Flag indicating whether the payout was in the form of a postal
             transfer order. Setting this flag forces the completion of address
             fields and removes the requirement for the account number field.
-            <b>Used in the payouts to designated bank accounts</b>
         foreign:
           type: string
-          description: >-
-            Flag indicating whether payout was was made to a foreign account.
-            <b>Used in the payouts to designated bank accounts</b>
+          description: Flag indicating whether payout was made to a foreign account.
     account:
       type: object
       required:

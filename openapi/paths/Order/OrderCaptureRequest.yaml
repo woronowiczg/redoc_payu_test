@@ -41,7 +41,7 @@ requestBody:
                         type: string
                         description: Amount you want to capture. Must be less than captured order amount. **Can be used only during partial capture**.
                         example: 900
-                    currnecyCode:
+                    currencyCode:
                         type: string
                         description: Currency of the order. **Can be used only during partial capture**
                         example: EUR

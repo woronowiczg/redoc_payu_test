@@ -49,7 +49,7 @@ requestBody:
                         example: user@example.com
                     language:
                         type: string
-                        description: Changes the language of the sent email message. Possible values you can find in <b><a href="/get-started/introduction/index.mdx#languages" target="_blank">languages</a></b> table.
+                        description: Changes the language of the sent email message. Possible values you can find in <b><a href="/europe/docs/get-started/introduction/#languages" target="_blank">languages</a></b> table.
 responses:
     201:
         x-summary: Created

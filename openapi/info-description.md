@@ -4,7 +4,7 @@ This reference is designed to assist you in effectively utilizing the PayU REST 
 
 Our API offers a comprehensive set of endpoints to empower you with full control over your payment processes. With these endpoints, you can seamlessly create, capture, cancel, and retrieve orders, conduct payouts, and access essential reports.
 
-For more details on the integration, please refer to the official <a href="/docs/">PayU documentation</a>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.
+For more details on the integration, please refer to the official <a href="/europe/docs/">PayU documentation</a>. It provides comprehensive explanations, code samples, and best practices for seamless integration of the PayU API into your applications.
 
 ## Testing
 
@@ -40,4 +40,4 @@ The availability of the sandbox environment can be checked on the <a href="https
 
 **Testing Card Payments**
 
-In order to test card payments on sandbox, please use credentials displayed on the <a href="/docs/testing/sandbox/" target="_blank">Sandbox</a> documentation page.
+In order to test card payments on sandbox, please use credentials displayed on the <a href="/europe/docs/testing/sandbox/" target="_blank">Sandbox</a> documentation page.
